@@ -58,6 +58,9 @@ export default function Input(theme: Theme) {
             borderColor: theme.palette.primary.light,
             borderRadius: '20px'
           },
+          '& .MuiSvgIcon-root': {
+            color: theme.palette.primary.light
+          },
           '&:hover': {
             backgroundColor: theme.palette.primary.lighter
           },
