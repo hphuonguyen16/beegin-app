@@ -12,6 +12,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
 
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded'
+import { Poppins } from 'next/font/google'
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64
@@ -22,6 +23,12 @@ const StyledRoot = styled('div')({
   minHeight: '100%',
   overflow: 'hidden',
   maxHeight: '100vh'
+})
+
+const poppins = Poppins({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap'
 })
 
 const Main = styled('div')(({ theme }) => ({
@@ -53,7 +60,8 @@ const StyledIconBox = styled('div')(({ theme }) => ({
   '& svg': {
     fontSize: '28px',
     color: 'white'
-  }
+  },
+  boxShadow: '-7px 10px 21px 1px rgba(204.44, 128.17, 240.32, 0.30)'
 }))
 
 const StyledIconNotifBox = styled('div')(({ theme }) => ({
@@ -86,7 +94,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       <aside>
         <Sidebar />
       </aside>
-      <Main>
+      <Main className={poppins.className}>
         <HeaderBar>
           <FormControl sx={{ width: '700px' }}>
             <TextField

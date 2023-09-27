@@ -10,10 +10,11 @@ import Image from 'next/image'
 import logo from '@/assets/logo.png'
 import { Box, Stack, Typography, styled } from '@mui/material'
 import { usePathname } from 'next/navigation'
+import { Poppins } from 'next/font/google'
 
 const StyledSidebar = styled(Box)(({ theme }) => ({
   height: '100%',
-  width: '300px',
+  width: '290px',
   backgroundColor: '#fff'
 }))
 
@@ -105,7 +106,7 @@ const Sidebar = () => {
                     style={{
                       fontWeight: 'bold',
                       verticalAlign: 'middle',
-                      opacity: isLinkActive(item.path) ? 0.8 : 0.5
+                      opacity: isLinkActive(item.path) ? 1 : 0.5
                     }}
                   >
                     {item.label}
