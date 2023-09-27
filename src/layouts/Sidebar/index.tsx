@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
 import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded'
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
@@ -18,7 +18,8 @@ const StyledSidebar = styled(Box)(({ theme }) => ({
   backgroundColor: '#fff'
 }))
 
-const StyledLinkBox = styled('div')(({ theme }) => ({
+// Define StyledLinkBox with conditional styles
+const StyledLinkBox = styled('div')<{ isActive: boolean }>((props) => ({
   width: '100%',
   padding: '15px 0',
   '& a': {
@@ -26,11 +27,18 @@ const StyledLinkBox = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center'
   },
-  transition: 'background-color 0.3s ease-in-out', //Smooth background color transition on hover
+  transition: 'background-color 0.3s ease-in-out', // Smooth background color transition on hover
   '&:hover': {
     backdropFilter: 'blur(4px)', // Use 'backdropFilter' with a CSS value
-    boxShadow: '-2px 5px 13px rgba(0, 0, 0, 0.06)'
-  }
+    boxShadow: '-2px 5px 13px rgba(0, 0, 0, 0.06)',
+    transition: 'background-color 0.3s ease-in-out' // Smooth background color transition on hover
+  },
+  // Conditional styles based on isActive
+  ...(props.isActive && {
+    backdropFilter: 'blur(4px)',
+    boxShadow: '-2px 5px 13px rgba(0, 0, 0, 0.06)',
+    transition: 'background-color 0.5s ease-in-out'
+  })
 }))
 
 const StyledStack = styled(Stack)(({ theme }) => ({
@@ -85,15 +93,15 @@ const Sidebar = () => {
   return (
     <StyledSidebar>
       <Box sx={{ padding: '35px 0' }}>
-        <Image src={logo} alt='logo' width={100} height={100} style={{ margin: 'auto' }} />
+        <Image src={logo} alt='logo' width={110} height={110} style={{ margin: 'auto' }} />
       </Box>
       <Box>
-        <Typography variant='h4' sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px' }}>
+        <Typography variant='h4' sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px', color: 'black' }}>
           Menu
         </Typography>
-        <Stack direction='column' sx={{ marginTop: '20px', width: '100%' }}>
+        <Stack direction='column' spacing={1} sx={{ marginTop: '25px', width: '100%' }}>
           {menuItems.map((item) => (
-            <StyledLinkBox key={item.path}>
+            <StyledLinkBox key={item.path} isActive={isLinkActive(item.path)}>
               <Link href={item.path}>
                 <StyledStack>
                   <StyledIconBox>
@@ -106,7 +114,8 @@ const Sidebar = () => {
                     style={{
                       fontWeight: 'bold',
                       verticalAlign: 'middle',
-                      opacity: isLinkActive(item.path) ? 1 : 0.5
+                      opacity: isLinkActive(item.path) ? 1 : 0.5,
+                      fontSize: '18px'
                     }}
                   >
                     {item.label}
