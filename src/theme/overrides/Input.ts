@@ -1,4 +1,4 @@
-import { alpha, Theme } from '@mui/material/styles';
+import { alpha, Theme } from '@mui/material/styles'
 
 // ----------------------------------------------------------------------
 
@@ -8,60 +8,67 @@ export default function Input(theme: Theme) {
       styleOverrides: {
         root: {
           '&.Mui-disabled': {
-            '& svg': { color: theme.palette.text.disabled },
-          },
+            '& svg': { color: theme.palette.text.disabled }
+          }
         },
         input: {
           '&::placeholder': {
             opacity: 1,
-            color: theme.palette.text.disabled,
-          },
-        },
-      },
+            color: theme.palette.text.disabled
+          }
+        }
+      }
     },
     MuiInput: {
       styleOverrides: {
         underline: {
           '&:before': {
-            borderBottomColor: alpha(theme.palette.grey[500], 0.56),
-          },
-        },
-      },
+            borderBottomColor: alpha(theme.palette.grey[500], 0.56)
+          }
+        }
+      }
     },
     MuiFilledInput: {
       styleOverrides: {
         root: {
           backgroundColor: alpha(theme.palette.grey[500], 0.12),
           '&:hover': {
-            backgroundColor: alpha(theme.palette.grey[500], 0.16),
+            backgroundColor: alpha(theme.palette.grey[500], 0.16)
           },
           '&.Mui-focused': {
-            backgroundColor: theme.palette.action.focus,
+            backgroundColor: theme.palette.action.focus
           },
           '&.Mui-disabled': {
-            backgroundColor: theme.palette.action.disabledBackground,
-          },
+            backgroundColor: theme.palette.action.disabledBackground
+          }
         },
         underline: {
           '&:before': {
-            borderBottomColor: alpha(theme.palette.grey[500], 0.56),
-          },
-        },
-      },
+            borderBottomColor: alpha(theme.palette.grey[500], 0.56)
+          }
+        }
+      }
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
+          backgroundColor: theme.palette.primary.lighter,
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: alpha(theme.palette.grey[500], 0.32),
+            // borderColor: alpha(theme.palette.grey[500], 0.32),
+            borderColor: theme.palette.primary.light,
+            borderRadius: '20px'
+          },
+          '&:hover': {
+            backgroundColor: theme.palette.primary.lighter
           },
           '&.Mui-disabled': {
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: theme.palette.action.disabledBackground,
-            },
-          },
-        },
-      },
-    },
-  };
+              // borderColor: theme.palette.action.disabledBackground
+              borderColor: theme.palette.primary.light
+            }
+          }
+        }
+      }
+    }
+  }
 }
