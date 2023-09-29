@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Stack, Grid, Typography } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 
-function TrendingCard(props: any) {
+export default function TrendingCard(props: any) {
   const { des, trend, postCount } = props.item
   return (
     <Box
@@ -72,5 +72,3 @@ function TrendingCard(props: any) {
     </Box>
   )
 }
-
-export default TrendingCard

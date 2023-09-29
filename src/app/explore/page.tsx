@@ -1,8 +1,10 @@
 'use client'
 import React from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled } from '@mui/material'
+import { Grid, Typography, Box, Stack } from '@mui/material'
 
-import TrendingCard from '@/components/TrendingCard/TrendingCard'
+import TrendingCard from '@/components/TrendingList/TrendingCard'
+import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
+import TrendingList from '@/components/TrendingList/TrendingList'
 
 //temp data
 const trendingItems = [
@@ -25,46 +27,29 @@ const trendingItems = [
     postCount: '14K'
   }
 ]
-function Page() {
+export default function Page() {
   return (
-    <Grid
-      sx={{
-        maxHeight: '90%',
-        overflow: 'auto',
-        width: '60%',
-        backgroundColor: '#d9f3ff',
-        padding: '20px',
-        borderRadius: '10px'
-      }}
-    >
-      <Typography variant='h3' sx={{ paddingBottom: '10px' }}>
-        Trendings for you
-      </Typography>
-      <Stack spacing={1}>
-        {trendingItems.map((item) => (
-          <TrendingCard key={item.id} item={item} />
-        ))}
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-      </Stack>
-      <Typography
-        color='primary'
+    <Box sx={{ display: 'flex', height: '100%', marginRight: '20px' }}>
+      <Grid
         sx={{
-          fontWeight: 'bold',
-          verticalAlign: 'middle',
-          fontSize: '18px',
-          marginTop: '10px',
-          cursor: 'pointer'
+          width: '60%',
+          backgroundColor: '#d4f7ff',
+          padding: '20px',
+          borderRadius: '10px',
+          marginRight: '20px'
         }}
       >
-        Show more
-      </Typography>
-    </Grid>
+        <TrendingList />
+      </Grid>
+      <Grid
+        sx={{
+          width: '40%',
+          padding: '0 20px',
+          borderRadius: '10px'
+        }}
+      >
+        <SuggestFollow />
+      </Grid>
+    </Box>
   )
 }
-
-export default Page
