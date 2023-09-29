@@ -4,7 +4,15 @@ import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded'
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import FaceRoundedIcon from '@mui/icons-material/FaceRounded'
-import { HomeOutlined, TextsmsOutlined, Person2Outlined, SettingsOutlined, FaceOutlined } from '@mui/icons-material'
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import {
+  HomeOutlined,
+  TextsmsOutlined,
+  Person2Outlined,
+  SettingsOutlined,
+  FaceOutlined,
+  ExploreOutlined
+} from '@mui/icons-material'
 import Link from 'next/link'
 import Image from 'next/image'
 import logo from '@/assets/logo.png'
@@ -62,6 +70,12 @@ const menuItems = [
     iconActive: <HomeRoundedIcon />,
     label: 'Home',
     path: '/'
+  },
+  {
+    icon: <ExploreOutlined />,
+    iconActive: <ExploreRoundedIcon />,
+    label: 'Explore',
+    path: '/explore'
   },
   {
     icon: <TextsmsOutlined />,
