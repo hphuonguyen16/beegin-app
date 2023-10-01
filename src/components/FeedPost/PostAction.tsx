@@ -21,15 +21,15 @@ export default function PostAction() {
     // set some logic code and call api here
   }
   return (
-    <CardActions disableSpacing sx={{ justifyContent: 'space-between', margin: '0 15px' }}>
-      <IconButton onClick={handleLikeClick} size='large' color='primary'>
-        {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+    <CardActions disableSpacing sx={{ justifyContent: 'space-between', margin: '0 15px', paddingTop: '0' }}>
+      <IconButton onClick={handleLikeClick} color='primary'>
+        {isLiked ? <FavoriteIcon fontSize='large' /> : <FavoriteBorderIcon fontSize='large' />}
       </IconButton>
       <IconButton color='primary'>
-        <ChatBubbleOutlineIcon />
+        <ChatBubbleOutlineIcon fontSize='large' />
       </IconButton>
       <IconButton color='primary'>
-        <ShareOutlinedIcon />
+        <ShareOutlinedIcon fontSize='large' />
       </IconButton>
     </CardActions>
   )

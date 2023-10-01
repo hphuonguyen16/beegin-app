@@ -24,7 +24,7 @@ export default function PostMedia() {
   }
 
   return (
-    <Grid sx={{ maxHeight: '100%', maxWidth: '100%', position: 'relative', margin: '20px' }}>
+    <Grid sx={{ maxHeight: '100%', maxWidth: '100%', position: 'relative', margin: '5px 20px' }}>
       {imageIndex > 0 && (
         <IconButton
           sx={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}
