@@ -40,12 +40,12 @@ export default function TrendingList() {
         {trendingItems.map((item) => (
           <TrendingCard key={item.id} item={item} />
         ))}
+        {/* <TrendingCard item={trendingItems[0]} />
         <TrendingCard item={trendingItems[0]} />
         <TrendingCard item={trendingItems[0]} />
         <TrendingCard item={trendingItems[0]} />
         <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
+        <TrendingCard item={trendingItems[0]} /> */}
       </Stack>
       <Typography
         color='primary'
