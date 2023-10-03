@@ -22,8 +22,8 @@ import { Poppins } from 'next/font/google'
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from '@mui/material'
 
 const StyledSidebar = styled(Box)(({ theme }) => ({
-  height: '100%',
-  width: '290px',
+  height: '100vh',
+  width: '310px',
   paddingLeft: '10px',
   backgroundColor: '#fff'
 }))
@@ -112,46 +112,48 @@ const Sidebar = () => {
   }
   return (
     <StyledSidebar>
-      <Box sx={{ padding: '30px 0' }}>
-        <Image src={logo} alt='logo' width={130} height={130} style={{ margin: 'auto' }} />
+      <Box sx={{ padding: '20px 0', height: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Image src={logo} alt='logo' width={130} style={{ margin: 'auto' }} />
       </Box>
-      <Box>
-        <Typography variant='h4' sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px', color: 'black' }}>
-          Menu
-        </Typography>
-        <Stack direction='column' spacing={1} sx={{ marginTop: '25px', width: '100%' }}>
-          {menuItems.map((item) => (
-            <StyledLinkBox key={item.path} isActive={isLinkActive(item.path)}>
-              <Link href={item.path}>
-                <StyledStack>
-                  <StyledIconBox isActive={isLinkActive(item.path)}>
-                    {
-                      isLinkActive(item.path) ? item.iconActive : item.icon // Use the outlined icon
-                    }
-                  </StyledIconBox>
-                  <Typography
-                    color='primary'
-                    style={{
-                      fontWeight: 'bold',
-                      verticalAlign: 'middle',
-                      opacity: isLinkActive(item.path) ? 1 : 0.5,
-                      fontSize: '18px'
-                    }}
-                  >
-                    {item.label}
-                  </Typography>
-                </StyledStack>
-              </Link>
-            </StyledLinkBox>
-          ))}
-        </Stack>
-      </Box>
-      <ListItem sx={{ marginTop: '350px' }}>
-        <ListItemAvatar>
-          <Avatar></Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Morgan</span>} secondary='@morgan_jackson' />
-      </ListItem>
+      <Stack sx={{ justifyContent: 'space-between', height: '85%' }}>
+        <Box>
+          <Typography variant='h4' sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px', color: 'black' }}>
+            Menu
+          </Typography>
+          <Stack direction='column' spacing={1} sx={{ marginTop: '25px', width: '100%' }}>
+            {menuItems.map((item) => (
+              <StyledLinkBox key={item.path} isActive={isLinkActive(item.path)}>
+                <Link href={item.path}>
+                  <StyledStack>
+                    <StyledIconBox isActive={isLinkActive(item.path)}>
+                      {
+                        isLinkActive(item.path) ? item.iconActive : item.icon // Use the outlined icon
+                      }
+                    </StyledIconBox>
+                    <Typography
+                      color='primary'
+                      style={{
+                        fontWeight: 'bold',
+                        verticalAlign: 'middle',
+                        opacity: isLinkActive(item.path) ? 1 : 0.5,
+                        fontSize: '18px'
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                  </StyledStack>
+                </Link>
+              </StyledLinkBox>
+            ))}
+          </Stack>
+        </Box>
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar></Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Morgan</span>} secondary='@morgan_jackson' />
+        </ListItem>
+      </Stack>
     </StyledSidebar>
   )
 }
