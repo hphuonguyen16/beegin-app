@@ -5,7 +5,7 @@ import React, { PropsWithChildren, ReactNode } from 'react'
 
 import Sidebar from '@/layouts/Sidebar'
 
-import { TextField, InputAdornment, FormControl, Box, Stack } from '@mui/material'
+import { TextField, InputAdornment, FormControl, Box, Stack, Button } from '@mui/material'
 
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 
@@ -13,6 +13,7 @@ import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
 
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded'
 import { Poppins } from 'next/font/google'
+import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64
@@ -34,8 +35,7 @@ const poppins = Poppins({
 const Main = styled('div')(({ theme }) => ({
   flexGrow: 1,
   minHeight: '100%',
-  maxHeight: '100vh',
-  overflow: 'hidden',
+  // overflow: 'auto',
   marginLeft: '50px',
   paddingBottom: theme.spacing(10)
 }))
@@ -49,8 +49,8 @@ const HeaderBar = styled('div')(({ theme }) => ({
 }))
 
 const StyledIconBox = styled('div')(({ theme }) => ({
-  width: '50px',
-  height: '50px',
+  width: '60px',
+  height: '60px',
   borderRadius: '50%',
   backgroundColor: theme.palette.primary.light,
   display: 'flex',
@@ -65,8 +65,8 @@ const StyledIconBox = styled('div')(({ theme }) => ({
 }))
 
 const StyledIconNotifBox = styled('div')(({ theme }) => ({
-  width: '50px',
-  height: '50px',
+  width: '60px',
+  height: '60px',
   borderRadius: '50%',
   backgroundColor: 'white',
   display: 'flex',
@@ -121,12 +121,16 @@ const Layout = ({ children }: PropsWithChildren) => {
             />
           </FormControl>
           <Stack direction={'row'} spacing={2}>
-            <StyledIconNotifBox>
-              <NotificationsRoundedIcon />
-            </StyledIconNotifBox>
-            <StyledIconBox>
-              <Person2RoundedIcon />
-            </StyledIconBox>
+            <Button sx={{ borderRadius: '50%' }}>
+              <StyledIconNotifBox>
+                <NotificationsRoundedIcon />
+              </StyledIconNotifBox>
+            </Button>
+            <Button sx={{ borderRadius: '50%' }}>
+              <StyledIconBox>
+                <Person2RoundedIcon />
+              </StyledIconBox>
+            </Button>
           </Stack>
         </HeaderBar>
         {children}

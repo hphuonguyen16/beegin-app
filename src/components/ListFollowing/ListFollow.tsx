@@ -1,5 +1,5 @@
 import { Box, Typography, Stack } from '@mui/material'
-import SuggestFollowCard from './SuggestFollowCard'
+import ListFollowCard from './ListFollowCard'
 
 //temp data
 const suggested_follow_list = [
@@ -19,12 +19,12 @@ const suggested_follow_list = [
     avatar: 'https://pbs.twimg.com/profile_images/1699898466959347712/WS3HVOtW_400x400.jpg'
   }
 ]
-function SuggestFollow() {
+function ListFollow() {
   return (
     <Box>
       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
         <Typography variant='h4' sx={{ color: 'black' }}>
-          Suggestions for you
+          List following
         </Typography>
         <Typography
           color='secondary'
@@ -40,11 +40,11 @@ function SuggestFollow() {
       </Stack>
       <Box sx={{ marginLeft: '-13px' }}>
         {suggested_follow_list.map((user, index) => (
-          <SuggestFollowCard key={index} user={user} />
+          <ListFollowCard key={index} user={user} />
         ))}
       </Box>
     </Box>
   )
 }
 
-export default SuggestFollow
+export default ListFollow

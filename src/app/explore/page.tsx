@@ -5,6 +5,7 @@ import { Grid, Typography, Box, Stack } from '@mui/material'
 import TrendingCard from '@/components/TrendingList/TrendingCard'
 import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
 import TrendingList from '@/components/TrendingList/TrendingList'
+import PostLayout from '@/layouts/PostLayout'
 
 //temp data
 const trendingItems = [
@@ -29,27 +30,8 @@ const trendingItems = [
 ]
 export default function Page() {
   return (
-    <Box sx={{ display: 'flex', height: '100%', marginRight: '20px' }}>
-      <Grid
-        sx={{
-          width: '60%',
-          backgroundColor: '#d4f7ff',
-          padding: '20px',
-          borderRadius: '10px',
-          marginRight: '20px'
-        }}
-      >
-        <TrendingList />
-      </Grid>
-      <Grid
-        sx={{
-          width: '40%',
-          padding: '0 20px',
-          borderRadius: '10px'
-        }}
-      >
-        <SuggestFollow />
-      </Grid>
-    </Box>
+    <PostLayout>
+      <TrendingList />
+    </PostLayout>
   )
 }
