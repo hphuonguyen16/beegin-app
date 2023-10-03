@@ -36,7 +36,7 @@ const Main = styled('div')(({ theme }) => ({
   minHeight: '100%',
   maxHeight: '100vh',
   overflow: 'hidden',
-  marginLeft: '25px',
+  marginLeft: '50px',
   paddingBottom: theme.spacing(10)
 }))
 

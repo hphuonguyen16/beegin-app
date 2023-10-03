@@ -19,10 +19,12 @@ import logo from '@/assets/logo.png'
 import { Box, Stack, Typography, styled } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { Poppins } from 'next/font/google'
+import { ListItem, ListItemAvatar, Avatar, ListItemText } from '@mui/material'
 
 const StyledSidebar = styled(Box)(({ theme }) => ({
   height: '100%',
   width: '290px',
+  paddingLeft: '10px',
   backgroundColor: '#fff'
 }))
 
@@ -56,13 +58,17 @@ const StyledStack = styled(Stack)(({ theme }) => ({
   marginLeft: '25px'
 }))
 
-const StyledIconBox = styled('div')(({ theme }) => ({
-  marginRight: '23px',
-  '& svg': {
-    fontSize: '32px',
-    color: theme.palette.primary.main
-  }
-}))
+const StyledIconBox = styled('div', { shouldForwardProp: (prop) => prop !== 'isActive' })<{ isActive: boolean }>(
+  ({ theme, isActive }) => ({
+    marginRight: '23px',
+    '& svg': {
+      fontSize: '32px',
+      opacity: isActive ? 1 : 0.5,
+      color: theme.palette.primary.main,
+      transition: 'opacity 0.3s, color 0.3s' // Add a transition for smoother changes
+    }
+  })
+)
 
 const menuItems = [
   {
@@ -106,8 +112,8 @@ const Sidebar = () => {
   }
   return (
     <StyledSidebar>
-      <Box sx={{ padding: '35px 0' }}>
-        <Image src={logo} alt='logo' width={110} height={110} style={{ margin: 'auto' }} />
+      <Box sx={{ padding: '30px 0' }}>
+        <Image src={logo} alt='logo' width={130} height={130} style={{ margin: 'auto' }} />
       </Box>
       <Box>
         <Typography variant='h4' sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px', color: 'black' }}>
@@ -118,7 +124,7 @@ const Sidebar = () => {
             <StyledLinkBox key={item.path} isActive={isLinkActive(item.path)}>
               <Link href={item.path}>
                 <StyledStack>
-                  <StyledIconBox>
+                  <StyledIconBox isActive={isLinkActive(item.path)}>
                     {
                       isLinkActive(item.path) ? item.iconActive : item.icon // Use the outlined icon
                     }
@@ -140,6 +146,12 @@ const Sidebar = () => {
           ))}
         </Stack>
       </Box>
+      <ListItem sx={{ marginTop: '350px' }}>
+        <ListItemAvatar>
+          <Avatar></Avatar>
+        </ListItemAvatar>
+        <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Morgan</span>} secondary='@morgan_jackson' />
+      </ListItem>
     </StyledSidebar>
   )
 }
