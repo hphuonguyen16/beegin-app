@@ -1,12 +1,15 @@
 'use client'
-import React from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled } from '@mui/material'
+import React, { useState } from 'react'
+import { Grid, Paper, Typography, Box, Stack, styled, Button, Modal } from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import avatar from '@/assets/tom.jpg'
 import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
+import Friends from './Friends'
+import EditProfile from './EditProfile'
+//component-style
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
@@ -16,50 +19,61 @@ const StyledProfile = styled('div')(({ theme }) => ({
 }))
 
 const Information = styled('div')(({ theme }) => ({
-  width: '330px',
   height: '350px',
   borderRadius: '15px',
   backgroundColor: 'white',
-  position: 'absolute',
-  top: '200px',
-  left: '35px'
+  transform: 'translateY(-40px)'
 }))
 const Posts = styled('div')(({ theme }) => ({
-  width: '730px',
-  height: '530px',
+  height: '730px',
   borderRadius: '15px',
   backgroundColor: 'white',
-  position: 'absolute',
-  top: '200px',
-  right: '35px'
+  transform: 'translateY(-40px)'
 }))
-const Friend = styled('div')(({ theme }) => ({
+const ButtonCustom = styled('div')(({ theme }) => ({
   width: '120px',
   height: '80px',
   borderRadius: '15px',
   backgroundColor: '#FEFAFA',
-  position: 'absolute',
-  top: '600px',
-  left: '35px',
-  border: '1px solid #D9D9D9'
-}))
-const Edit = styled('div')(({ theme }) => ({
-  width: '120px',
-  height: '80px',
-  borderRadius: '15px',
-  backgroundColor: '#FEFAFA',
-  position: 'absolute',
-  top: '600px',
-  left: '235px',
-  border: '1px solid #D9D9D9'
+  border: '1px solid #D9D9D9',
+  cursor: 'pointer'
 }))
 function page() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [action, setAction] = useState(true)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [open, setOpen] = useState(false)
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+  const handleClose = () => {
+    setOpen(false)
+  }
   return (
     <StyledProfile>
-      <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
+      <Box>
+        <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
+        <Button
+          variant={'outlined'}
+          sx={{
+            padding: '10px 20px',
+            width: '130px',
+            borderRadius: '18px',
+            top: '50%',
+            position: 'absolute',
+            transform: 'translate(630px,-160px)',
+            backgroundColor: 'white !important'
+          }}
+          onClick={handleOpen}
+        >
+          Edit profile
+        </Button>
+        <EditProfile open={open} onClose={handleClose} data={'Tran Thanh Binh'}></EditProfile>
+      </Box>
 
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={12} md={4}>
           <Paper>
             <Stack spacing={2} alignItems='center'>
               <Box>
@@ -95,7 +109,7 @@ function page() {
                         “ Whoever is happy will make you happy too ”
                       </Typography>
                     </Paper>
-                    <Box style={{ backgroundColor: 'white', marginTop: '3px' }}>
+                    <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
                       <Grid container spacing={2}>
                         <Grid item xs={4} paddingRight='16px'>
                           <Stack spacing={2}>
@@ -125,7 +139,7 @@ function page() {
                               variant='h4'
                               sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
                             >
-                              Follower
+                              Followers
                             </Typography>
                             <Typography
                               variant='h4'
@@ -169,57 +183,53 @@ function page() {
                 </Information>
               </Box>
               <Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Paper>
-                      <Friend>
-                        <Stack spacing={2} textAlign='center' alignItems='center'>
-                          <PeopleIcon fontSize='medium' style={{ marginTop: '10px' }} />
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              fontWeight: '200',
-                              textAlign: 'center',
-                              fontSize: '16px',
-                              fontFamily: 'Inria Sans',
-                              marginTop: '3px !important'
-                            }}
-                          >
-                            Friend
-                          </Typography>
-                        </Stack>
-                      </Friend>
-                    </Paper>
+                <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
+                  <Grid item xs={6}>
+                    <ButtonCustom onClick={() => setAction(true)}>
+                      <Stack spacing={2} textAlign='center' alignItems='center'>
+                        <PeopleIcon fontSize='medium' style={{ marginTop: '10px' }} />
+                        <Typography
+                          variant='h4'
+                          sx={{
+                            fontWeight: '200',
+                            textAlign: 'center',
+                            fontSize: '16px',
+                            fontFamily: 'Inria Sans',
+                            marginTop: '3px !important'
+                          }}
+                        >
+                          Activity
+                        </Typography>
+                      </Stack>
+                    </ButtonCustom>
                   </Grid>
-                  <Grid item xs={4}>
-                    <Paper>
-                      <Edit>
-                        <Stack spacing={2} textAlign='center' alignItems='center'>
-                          <ManageAccountsIcon fontSize='medium' style={{ marginTop: '10px' }} />
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              fontWeight: '200',
-                              textAlign: 'center',
-                              fontSize: '16px',
-                              fontFamily: 'Inria Sans',
-                              marginTop: '3px !important'
-                            }}
-                          >
-                            Edit Profile
-                          </Typography>
-                        </Stack>
-                      </Edit>
-                    </Paper>
+                  <Grid item xs={6}>
+                    <ButtonCustom onClick={() => setAction(false)}>
+                      <Stack spacing={2} textAlign='center' alignItems='center'>
+                        <BoltOutlinedIcon fontSize='medium' style={{ marginTop: '10px' }} />
+                        <Typography
+                          variant='h4'
+                          sx={{
+                            fontWeight: '200',
+                            textAlign: 'center',
+                            fontSize: '16px',
+                            fontFamily: 'Inria Sans',
+                            marginTop: '3px !important'
+                          }}
+                        >
+                          Friend
+                        </Typography>
+                      </Stack>
+                    </ButtonCustom>
                   </Grid>
                 </Grid>
               </Box>
             </Stack>
           </Paper>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={12} md={8}>
           <Paper>
-            <Posts></Posts>
+            <Posts>{action === true ? '<Post>' : <Friends></Friends>}</Posts>
           </Paper>
         </Grid>
       </Grid>
