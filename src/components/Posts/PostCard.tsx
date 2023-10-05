@@ -12,13 +12,12 @@ import { ImageAspectRatioRounded } from '@mui/icons-material'
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: 'grid',
   gridGap: '5px',
-  width: '800px',
-  height: '500px',
-  gridTemplateColumns: props.number === 1 ? '1fr' : 'repeat(2, 1fr)',
-  gridTemplateRows: props.number !== 1 ? '1fr' : 'repeat(2, 1fr)',
+  width: '100%',
+  height: 'auto',
+  gridTemplateColumns: props.number === 1 ? 'minmax(100%,1fr)' : 'repeat(2, 1fr)',
+  gridTemplateRows: props.number === 1 || props.number === 2 ? 'minmax(1fr, 100%)' : 'repeat(2, 320px)',
   '& img': {
     borderRadius: '12px',
-    objectFit: 'cover',
     width: '100%',
     height: '100%'
   },
@@ -38,8 +37,9 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
 
 const images = [
   'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600'
+  'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
 ]
 
 const PostCard = () => {
@@ -54,7 +54,6 @@ const PostCard = () => {
           sx={{ width: '60px', height: '60px' }}
           src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwXgjGKE09VrSaXebUnIUdPwDUvD003fJ-6zfbJIlPE4-it8WwGpaAzWTdUZOz1iiMT4g&usqp=CAU'
         ></Avatar>
-
         <Stack>
           <Stack direction={'row'} sx={{ alignItems: 'center' }}>
             <Typography variant='h4' sx={{ fontWeight: 'bold', wordWrap: 'break-word' }}>
@@ -89,10 +88,10 @@ const PostCard = () => {
                 marginLeft: '15px'
               }}
             >
-              5 mins
+              5 mins ago
             </Typography>
           </Stack>
-          <Box>
+          <Box sx={{ width: '50%', minWidth: '700px' }}>
             <Box sx={{ margin: '10px 0' }}>yummy #hashtag</Box>
             <ImageContainerStyled number={images.length}>
               {images.map((src, index) => (
@@ -102,7 +101,7 @@ const PostCard = () => {
             </ImageContainerStyled>
             <Stack
               direction={'row'}
-              sx={{ margin: '35px 10px', justifyContent: 'space-between', alignItems: 'center' }}
+              sx={{ margin: '10px 10px 30px 10px', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Button
                 onClick={() => {
