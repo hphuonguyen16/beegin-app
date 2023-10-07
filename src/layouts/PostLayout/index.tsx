@@ -1,6 +1,7 @@
 'use client'
 import ListFollow from '@/components/ListFollowing/ListFollow'
 import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
+import useResponsive from '@/hooks/useResponsive'
 import { Divider, Grid, Stack } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { ReactNode } from 'react'
@@ -10,12 +11,14 @@ interface PostLayoutProps {
 }
 
 const PostLayout = ({ children }: PostLayoutProps) => {
+  const isMobile = useResponsive('down', 'sm')
+  const isDesktop = useResponsive('up', 'md')
   return (
-    <Box sx={{ display: 'flex', height: '100%', marginRight: '20px' }}>
+    <Box sx={{ display: 'flex', height: '100%' }}>
       <Grid
         sx={{
-          width: '65%',
-          padding: '20px',
+          width: isMobile ? '100%' : '68%',
+          padding: isMobile ? '12px' : '20px',
           borderRadius: '10px',
           overflow: 'auto'
         }}
@@ -25,7 +28,8 @@ const PostLayout = ({ children }: PostLayoutProps) => {
       <Divider orientation='vertical' flexItem sx={{ color: 'rgba(204.44, 128.17, 240.32, 0.25)' }} />
       <Grid
         sx={{
-          width: '35%',
+          display: { xs: 'none', sm: 'none', md: 'block' },
+          width: isMobile ? '0' : '32%',
           padding: '0 22px',
           borderRadius: '10px'
         }}

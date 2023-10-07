@@ -1,8 +1,11 @@
+'use client'
 import PostCard from '@/components/Posts/PostCard'
 import { Box, Typography, Stack, FormControl, TextField, Avatar, Grid } from '@mui/material'
 import PostLayout from '@/layouts/PostLayout'
+import useResponsive from '@/hooks/useResponsive'
 
 export default function Home() {
+  const isMobile = useResponsive('down', 'sm')
   return (
     <PostLayout>
       <Box>
