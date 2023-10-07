@@ -121,7 +121,8 @@ const Layout = ({ children }: PropsWithChildren) => {
   const pathname = usePathname() // Get the current route from the router
   // Split the path by '/' and get the last segment
   const pathSegments = pathname.split('/')
-  const topic = pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
+  const topic =
+    pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
   return (
     <StyledRoot>
