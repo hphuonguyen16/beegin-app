@@ -49,7 +49,7 @@ const Main = styled('div')(({ theme }) => ({
   minHeight: '100%',
   width: '100%',
   // overflow: 'auto',
-  marginLeft: '50px',
+  marginLeft: '20px',
   paddingBottom: theme.spacing(10),
   [theme.breakpoints.down('sm')]: {
     // Media query for screens with a width of 600px or less (mobile)
