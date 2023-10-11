@@ -97,8 +97,9 @@ const palette = {
     disabled: GREY[500]
   },
   background: {
-    paper: '#FDF4FF',
+    paper: '#fff',
     default: GREY[100],
+    white: "#fff",
     neutral: GREY[300]
   },
   action: {
