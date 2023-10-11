@@ -8,6 +8,7 @@ export default function Card(theme: CustomTheme) {
 		MuiCard: {
 			styleOverrides: {
 				root: {
+					backgroundColor: '#fff',
 					boxShadow: theme.customShadows.card,
 					borderRadius: Number(theme.shape.borderRadius) * 2,
 					position: "relative",

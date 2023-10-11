@@ -49,7 +49,7 @@ const Main = styled('div')(({ theme }) => ({
   minHeight: '100%',
   width: '100%',
   // overflow: 'auto',
-  marginLeft: '50px',
+  marginLeft: '20px',
   paddingBottom: theme.spacing(10),
   [theme.breakpoints.down('sm')]: {
     // Media query for screens with a width of 600px or less (mobile)
@@ -121,7 +121,8 @@ const Layout = ({ children }: PropsWithChildren) => {
   const pathname = usePathname() // Get the current route from the router
   // Split the path by '/' and get the last segment
   const pathSegments = pathname.split('/')
-  const topic = pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
+  const topic =
+    pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
   return (
     <StyledRoot>
