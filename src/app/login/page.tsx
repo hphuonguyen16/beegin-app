@@ -10,10 +10,11 @@ import { LogoDev } from '@mui/icons-material'
 // hooks
 import useResponsive from '@/hooks/useResponsive'
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+
 import { useRouter } from 'next/navigation'
 
 // auth
-import { signIn, useSession } from 'next-auth/react'
 import Cookies from 'js-cookie' // Import js-cookie
 
 // components
@@ -22,6 +23,7 @@ import Image from 'next/image'
 // assets
 import LoginBanner from '@/assets/login_banner.jpg'
 import { useAuth } from '@/context/AuthContext'
+import urlConfig from '@/config/urlConfig'
 
 //----------------------------------------------------------------
 
@@ -77,22 +79,13 @@ const StyledContent = styled('div')(({ theme }) => ({
 //----------------------------------------------------------------
 
 export default function LoginPage() {
-  let redirectUrl = ''
-  const { isAuthenticated, setIsAuthenticated } = useAuth()
+  const { setIsAuthenticated } = useAuth()
   const router = useRouter()
-
-  useEffect(() => {
-    const url = new URL(location.href)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    redirectUrl = url.searchParams.get('callbackUrl') || ''
-  }, [])
-  const { data: session } = useSession()
-  // const router = useRouter();
+  const pathname = usePathname() // Get the current route from the router
   const [username, setUsername] = useState<string>('')
-
   const [password, setPassword] = useState<string>('')
   const handleLogin = async () => {
-    const res = await fetch(`http://localhost:8000/api/v1/users/login`, {
+    const res = await fetch(urlConfig.user.login, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -112,109 +105,114 @@ export default function LoginPage() {
   }
   const mdUp = useResponsive('up', 'md')
 
-  if (isAuthenticated) {
-    router.push('/')
-  } else
-    return (
-      <>
-        <title> Login | BTS </title>
-        <StyledRoot>
-          {mdUp && (
-            <StyledBanner>
-              {/* <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5, zIndex: 10 }}>
+  // if (isAuthenticated) {
+  //   if (pathname === '/login') {
+  //     router.push('/')
+  //   } else {
+  //     router.push(pathname)
+  //   }
+  // } else {
+  return (
+    <>
+      <title> Login | BTS </title>
+      <StyledRoot>
+        {mdUp && (
+          <StyledBanner>
+            {/* <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5, zIndex: 10 }}>
 								Hi, Welcome Back
 							</Typography> */}
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative'
-                }}
-              >
-                <Image
-                  style={{ objectFit: 'cover', borderTopLeftRadius: 12, borderBottomLeftRadius: 12 }}
-                  fill
-                  src={LoginBanner}
-                  alt='login'
-                />
-              </Box>
-            </StyledBanner>
-          )}
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                position: 'relative'
+              }}
+            >
+              <Image
+                style={{ objectFit: 'cover', borderTopLeftRadius: 12, borderBottomLeftRadius: 12 }}
+                fill
+                src={LoginBanner}
+                alt='login'
+              />
+            </Box>
+          </StyledBanner>
+        )}
 
-          <Container
-            maxWidth='sm'
-            sx={{
-              backgroundColor: '#fff',
-              margin: 0,
-              minWidth: '50%',
-              width: 'auto',
-              height: '100%',
-              zIndex: 10,
-              borderTopRightRadius: '12px',
-              borderBottomRightRadius: '12px',
-              display: 'flex',
-              justifyContent: 'center'
-            }}
-          >
-            <StyledContent>
-              <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
-              <Typography variant='h4' gutterBottom className='mt-8 mb-6'>
-                Sign in to Beegin
-              </Typography>
-              <Stack spacing={3} className='w-full'>
-                <TextField
-                  name='username'
-                  label='Username'
-                  className='mt-6'
-                  onChange={(e) => {
-                    setUsername(e.target.value)
-                  }}
-                />
-
-                <TextField
-                  name='password'
-                  label='Password'
-                  type='password'
-                  className='mt-3'
-                  onChange={(e) => {
-                    setPassword(e.target.value)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleLogin()
-                    }
-                  }}
-                />
-              </Stack>
-
-              <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ my: 2, width: '100%' }}>
-                <FormControlLabel control={<Checkbox defaultChecked />} label='Remember me' />
-                <Link variant='subtitle2' underline='hover'>
-                  Forgot password?
-                </Link>
-              </Stack>
-              <Button
-                size='large'
-                color='inherit'
-                variant='outlined'
-                sx={{
-                  background: (theme) => `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
-                  color: 'white !important',
-                  width: '100%'
+        <Container
+          maxWidth='sm'
+          sx={{
+            backgroundColor: '#fff',
+            margin: 0,
+            minWidth: '50%',
+            width: 'auto',
+            height: '100%',
+            zIndex: 10,
+            borderTopRightRadius: '12px',
+            borderBottomRightRadius: '12px',
+            display: 'flex',
+            justifyContent: 'center'
+          }}
+        >
+          <StyledContent>
+            <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
+            <Typography variant='h4' gutterBottom className='mt-8 mb-6'>
+              Sign in to Beegin
+            </Typography>
+            <Stack spacing={3} className='w-full'>
+              <TextField
+                name='username'
+                label='Username'
+                className='mt-6'
+                onChange={(e) => {
+                  setUsername(e.target.value)
                 }}
-                onClick={() => {
-                  handleLogin()
+              />
+
+              <TextField
+                name='password'
+                label='Password'
+                type='password'
+                className='mt-3'
+                onChange={(e) => {
+                  setPassword(e.target.value)
                 }}
-              >
-                Login
-              </Button>
-              <Typography variant='body2' sx={{ mt: 1, mb: 8, width: '100%' }} textAlign={'right'}>
-                Don’t have an account?
-                <Link variant='subtitle2'>Get started</Link>
-              </Typography>
-            </StyledContent>
-          </Container>
-        </StyledRoot>
-      </>
-    )
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleLogin()
+                  }
+                }}
+              />
+            </Stack>
+
+            <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ my: 2, width: '100%' }}>
+              <FormControlLabel control={<Checkbox defaultChecked />} label='Remember me' />
+              <Link variant='subtitle2' underline='hover'>
+                Forgot password?
+              </Link>
+            </Stack>
+            <Button
+              size='large'
+              color='inherit'
+              variant='outlined'
+              sx={{
+                background: (theme) => `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
+                color: 'white !important',
+                width: '100%'
+              }}
+              onClick={() => {
+                handleLogin()
+              }}
+            >
+              Login
+            </Button>
+            <Typography variant='body2' sx={{ mt: 1, mb: 8, width: '100%' }} textAlign={'right'}>
+              Don’t have an account?
+              <Link variant='subtitle2'>Get started</Link>
+            </Typography>
+          </StyledContent>
+        </Container>
+      </StyledRoot>
+    </>
+  )
 }
+//}

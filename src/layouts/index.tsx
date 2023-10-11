@@ -123,8 +123,6 @@ const Layout = ({ children }: PropsWithChildren) => {
   const isMobile = useResponsive('down', 'sm')
   const [isLoading, setIsLoading] = React.useState(true)
   const pathname = usePathname() // Get the current route from the router
-  const { isAuthenticated } = useAuth()
-  const router = useRouter()
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -136,10 +134,6 @@ const Layout = ({ children }: PropsWithChildren) => {
   const topic =
     pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
-  if (!isAuthenticated && pathname !== '/login' && pathname !== '/register') {
-    router.push('/login')
-    return
-  }
   if (isLoading) {
     return <Loader />
   }

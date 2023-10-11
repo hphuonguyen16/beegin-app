@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User } from '@/types/user'
 import Cookies from 'js-cookie' // Import js-cookie
 import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 // Define a user type or interface
 
@@ -34,6 +35,8 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const router = useRouter()
+  const pathname = usePathname() // Get the current route from the router
 
   useEffect(() => {
     // set isAuthenticated to true if have cookie in browser name 'jwt'
@@ -41,6 +44,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsAuthenticated(true)
     }
   }, [])
+
+  useEffect(() => {
+    // set isAuthenticated to true if have cookie in browser name 'jwt'
+    if (Cookies.get('jwt') && pathname !== 'login' && pathname !== 'register') {
+      router.push(pathname)
+    }
+    if (!Cookies.get('jwt') && pathname !== '/login' && pathname !== '/register') {
+      router.push('/login')
+      return
+    }
+  }, [router, pathname])
 
   const logout = () => {
     // Implement your logout logic here
