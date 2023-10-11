@@ -101,7 +101,7 @@ const PostCard = () => {
               5 mins ago
             </Typography>
           </Stack>
-          <Box sx={{ width: '50%', minWidth: !isMobile ? '700px' : '100%' }}>
+          <Box sx={{ width: '50%', minWidth: !isMobile ? '80%' : '100%' }}>
             <Box
               sx={{
                 margin: isMobile ? '5px 0' : '10px 0',

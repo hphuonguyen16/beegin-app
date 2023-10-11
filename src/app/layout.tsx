@@ -7,6 +7,7 @@ import Layout from '@/layouts'
 import { usePathname } from 'next/navigation'
 import Head from 'next/head'
 import { SessionProvider } from 'next-auth/react'
+import { AuthProvider } from '@/context/AuthContext'
 
 const poppins = Poppins({
   weight: '400',
@@ -32,9 +33,11 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
         <body className={poppins.className}>
-          <SessionProvider session={session}>
-            <ThemeProvider>{children}</ThemeProvider>
-          </SessionProvider>
+          <AuthProvider>
+            <SessionProvider session={session}>
+              <ThemeProvider>{children}</ThemeProvider>
+            </SessionProvider>
+          </AuthProvider>
         </body>
       </html>
     )
@@ -48,11 +51,13 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
         <body className={poppins.className}>
-          <SessionProvider session={session}>
-            <ThemeProvider>
-              <Layout>{children}</Layout>
-            </ThemeProvider>
-          </SessionProvider>
+          <AuthProvider>
+            <SessionProvider session={session}>
+              <ThemeProvider>
+                <Layout>{children}</Layout>
+              </ThemeProvider>
+            </SessionProvider>
+          </AuthProvider>
         </body>
       </html>
     )
