@@ -24,6 +24,8 @@ import Image from 'next/image'
 import LoginBanner from '@/assets/login_banner.jpg'
 import { useAuth } from '@/context/AuthContext'
 import urlConfig from '@/config/urlConfig'
+import Snackbar from '@/components/common/Snackbar'
+import useSnackbar from '@/context/snackbarContext'
 
 //----------------------------------------------------------------
 
@@ -81,6 +83,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 export default function LoginPage() {
   const { setIsAuthenticated } = useAuth()
   const router = useRouter()
+  const { snack, setSnack } = useSnackbar()
   const pathname = usePathname() // Get the current route from the router
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -101,6 +104,8 @@ export default function LoginPage() {
       // redirect to '/'
       setIsAuthenticated(true)
       router.push('/')
+    } else {
+      setSnack({ open: true, type: 'error', message: resJson.message })
     }
   }
   const mdUp = useResponsive('up', 'md')
@@ -114,6 +119,7 @@ export default function LoginPage() {
   // } else {
   return (
     <>
+      <Snackbar />
       <title> Login | BTS </title>
       <StyledRoot>
         {mdUp && (
