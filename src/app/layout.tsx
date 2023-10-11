@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation'
 import Head from 'next/head'
 import { SessionProvider } from 'next-auth/react'
 import { AuthProvider } from '@/context/AuthContext'
+import { Snackbar } from '@mui/material'
+import { SnackbarContextProvider } from '@/context/snackbarContext'
 
 const poppins = Poppins({
   weight: '400',
@@ -34,9 +36,11 @@ export default function RootLayout({ children, session }: { children: React.Reac
         </Head>
         <body className={poppins.className}>
           <AuthProvider>
-            <SessionProvider session={session}>
-              <ThemeProvider>{children}</ThemeProvider>
-            </SessionProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <ThemeProvider>{children}</ThemeProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
           </AuthProvider>
         </body>
       </html>
@@ -52,11 +56,13 @@ export default function RootLayout({ children, session }: { children: React.Reac
         </Head>
         <body className={poppins.className}>
           <AuthProvider>
-            <SessionProvider session={session}>
-              <ThemeProvider>
-                <Layout>{children}</Layout>
-              </ThemeProvider>
-            </SessionProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <ThemeProvider>
+                  <Layout>{children}</Layout>
+                </ThemeProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
           </AuthProvider>
         </body>
       </html>
