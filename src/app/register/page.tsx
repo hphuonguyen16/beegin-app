@@ -30,7 +30,7 @@ import Image from "next/image";
 import RegisterForms from "./RegisterForms";
 
 // assets
-import LoginBanner from '@/assets/login_banner.jpg'
+import SignupBanner from '@/assets/signup_banner.jpg'
 
 
 //----------------------------------------------------------------
@@ -56,7 +56,7 @@ const StyledRoot = styled("div")(({ theme }) => ({
 }));
 
 const StyledBanner = styled("div")(({ theme }) => ({
-    width: "30%",
+    width: "42%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -67,7 +67,7 @@ const StyledBanner = styled("div")(({ theme }) => ({
 
 const StyledForm = styled(Container)(({ theme }) => ({
     margin: 0,
-    minWidth: "70%",
+    minWidth: "58%",
     width: "auto",
     height: "100%",
     zIndex: 10,
@@ -80,23 +80,24 @@ const StyledForm = styled(Container)(({ theme }) => ({
 const StyledContent = styled("div")(({ theme }) => ({
     [theme.breakpoints.up("md")]: {
         width: "80%",
-        maxWidth: 420,
+        maxWidth: 480,
         margin: "auto",
         display: "flex",
         height: "100%",
         justifyContent: "space-between",
         flexDirection: "column",
-        padding: theme.spacing(8, 0),
+        padding: theme.spacing(6, 0),
     },
     [theme.breakpoints.down("md")]: {
-        width: "85%",
-        maxWidth: 420,
+        width: "95%",
+        maxWidth: 480,
         margin: "auto",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "space-between",
         flexDirection: "column",
         padding: theme.spacing(10, 0),
         alignItems: "center",
+        height: "100%",
     },
 }));
 
@@ -229,13 +230,13 @@ export default function Register() {
     } else
         return (
             <>
-                <title> Login | Beegin </title>
+                <title> Signup | Beegin </title>
                 <StyledRoot>
                     <StyledForm>
                         <StyledContent>
                             <Box>
-                                <LogoDev fontSize="large" sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
-                                <Typography variant="h4" gutterBottom className="mt-6 mb-6">
+                                <LogoDev fontSize="large" sx={{ color: (theme) => theme.palette.primary.main, marginLeft: 1.75 }}></LogoDev>
+                                <Typography variant="h4" gutterBottom className="mt-4 mb-6 ml-4">
                                     Create a new account
                                 </Typography>
 
@@ -250,7 +251,7 @@ export default function Register() {
 
                             <RegisterForms step={activeStep} />
 
-                            <Stack direction={"row"} justifyContent={"space-between"}>
+                            <Stack direction={"row"} justifyContent={"space-between"} className="w-full">
                                 {activeStep !== 0 ? (
                                     <Button onClick={_handleBack} >
                                         Back
@@ -286,8 +287,8 @@ export default function Register() {
                                 <Image
                                     style={{ objectFit: "cover", borderRadius: BORDER_RADIUS, }}
                                     fill
-                                    src={LoginBanner}
-                                    alt="login"
+                                    src={SignupBanner}
+                                    alt="signup"
                                 />
                             </Box>
                         </StyledBanner>

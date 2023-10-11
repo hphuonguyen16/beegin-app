@@ -36,7 +36,7 @@ const RegisterForms = ({ step }: { step: number }) => {
         })
     }
 
-    return (<form>
+    return (<form className="w-full">
         <FormGroup sx={{ display: step === 0 ? "" : "none" }}>
             <Stack spacing={3} className="w-full px-5">
                 <TextField
