@@ -19,6 +19,9 @@ import Image from 'next/image'
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
+import Loader from '@/components/common/Loader/Loader'
 
 // ----------------------------------------------------------------------
 
@@ -118,11 +121,22 @@ const StyledIconNotifBox = styled('div')(({ theme }) => ({
 
 const Layout = ({ children }: PropsWithChildren) => {
   const isMobile = useResponsive('down', 'sm')
+  const [isLoading, setIsLoading] = React.useState(true)
   const pathname = usePathname() // Get the current route from the router
-  // Split the path by '/' and get the last segment
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+  }, [])
+
   const pathSegments = pathname.split('/')
   const topic =
     pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
+
+  if (isLoading) {
+    return <Loader />
+  }
 
   return (
     <StyledRoot>
