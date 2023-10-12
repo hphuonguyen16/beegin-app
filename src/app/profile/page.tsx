@@ -9,6 +9,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from './Friends'
 import EditProfile from './EditProfile'
+import Post from '../../components/Posts/PostCard'
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
@@ -19,7 +20,7 @@ const StyledProfile = styled('div')(({ theme }) => ({
 }))
 
 const Information = styled('div')(({ theme }) => ({
-  height: '350px',
+  height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
   transform: 'translateY(-40px)'
@@ -60,9 +61,9 @@ function page() {
             padding: '10px 20px',
             width: '130px',
             borderRadius: '18px',
-            top: '50%',
+            top: '22%',
             position: 'absolute',
-            transform: 'translate(630px,-160px)',
+            right:'100px',
             backgroundColor: 'white !important'
           }}
           onClick={handleOpen}
@@ -74,162 +75,168 @@ function page() {
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
-          <Paper>
-            <Stack spacing={2} alignItems='center'>
-              <Box>
-                <Information>
-                  <Stack spacing={2} alignItems='center'>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Image
-                        src={avatar}
-                        alt='avatar'
-                        style={{ width: '100px', height: '100px', borderRadius: '50%', marginTop: '25px' }}
-                      />
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography variant='h4'>Tom Holland</Typography>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
-                        <LocationOnIcon fontSize='medium' /> United Kingdom
-                      </Typography>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
+          <Stack spacing={2} alignItems='center'>
+            <Box>
+              <Information>
+                <Stack spacing={2} alignItems='center'>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Image
+                      src={avatar}
+                      alt='avatar'
+                      style={{ width: '100px', height: '100px', borderRadius: '50%', marginTop: '25px' }}
+                    />
+                  </Paper>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Typography variant='h4'>Tom Holland</Typography>
+                  </Paper>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
+                      <LocationOnIcon fontSize='medium' /> United Kingdom
+                    </Typography>
+                  </Paper>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Typography
+                      variant='h6'
+                      sx={{
+                        fontWeight: 'light',
+                        textAlign: 'center',
+                        fontSize: '15px',
+                        fontFamily: 'Inter',
+                        margin: '0 15px'
+                      }}
+                    >
+                      {' '}
+                      “ Whoever is happy will make you happy too ”
+                    </Typography>
+                  </Paper>
+                  <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={4} paddingRight='16px'>
+                        <Stack spacing={2}>
+                          <Typography
+                            variant='h4'
+                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                          >
+                            Posts
+                          </Typography>
+                          <Typography
+                            variant='h4'
+                            sx={{
+                              fontWeight: 'medium',
+                              textAlign: 'center',
+                              fontSize: '15px',
+                              fontFamily: 'Inter',
+                              marginTop: '6px !important'
+                            }}
+                          >
+                            1.2K
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={4} paddingRight='16px'>
+                        <Stack spacing={2} paddingBottom={2}>
+                          <Typography
+                            variant='h4'
+                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                          >
+                            Followers
+                          </Typography>
+                          <Typography
+                            variant='h4'
+                            sx={{
+                              fontWeight: 'medium',
+                              textAlign: 'center',
+                              fontSize: '15px',
+                              fontFamily: 'Inter',
+                              marginTop: '6px !important'
+                            }}
+                          >
+                            5.8M
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={4} paddingRight='16px'>
+                        <Stack spacing={2}>
+                          <Typography
+                            variant='h4'
+                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                          >
+                            Following
+                          </Typography>
+                          <Typography
+                            variant='h4'
+                            sx={{
+                              fontWeight: 'medium',
+                              textAlign: 'center',
+                              fontSize: '15px',
+                              fontFamily: 'Inter',
+                              marginTop: '6px !important'
+                            }}
+                          >
+                            1
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Stack>
+              </Information>
+            </Box>
+            <Box>
+              <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
+                <Grid item xs={6}>
+                  <ButtonCustom onClick={() => setAction(true)}>
+                    <Stack spacing={2} textAlign='center' alignItems='center'>
+                      <BoltOutlinedIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
                       <Typography
-                        variant='h6'
+                        variant='h4'
                         sx={{
-                          fontWeight: 'light',
+                          fontWeight: '200',
                           textAlign: 'center',
                           fontSize: '15px',
-                          fontFamily: 'Inter',
-                          margin: '0 15px'
+                          marginTop: '3px !important',
+                          color:theme=>theme.palette.primary.main
                         }}
                       >
-                        {' '}
-                        “ Whoever is happy will make you happy too ”
+                        Activities
                       </Typography>
-                    </Paper>
-                    <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Posts
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              1.2K
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Followers
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              5.8M
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Following
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              1
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Stack>
-                </Information>
-              </Box>
-              <Box>
-                <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
-                  <Grid item xs={6}>
-                    <ButtonCustom onClick={() => setAction(true)}>
-                      <Stack spacing={2} textAlign='center' alignItems='center'>
-                        <PeopleIcon fontSize='medium' style={{ marginTop: '10px' }} />
-                        <Typography
-                          variant='h4'
-                          sx={{
-                            fontWeight: '200',
-                            textAlign: 'center',
-                            fontSize: '16px',
-                            fontFamily: 'Inria Sans',
-                            marginTop: '3px !important'
-                          }}
-                        >
-                          Activity
-                        </Typography>
-                      </Stack>
-                    </ButtonCustom>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <ButtonCustom onClick={() => setAction(false)}>
-                      <Stack spacing={2} textAlign='center' alignItems='center'>
-                        <BoltOutlinedIcon fontSize='medium' style={{ marginTop: '10px' }} />
-                        <Typography
-                          variant='h4'
-                          sx={{
-                            fontWeight: '200',
-                            textAlign: 'center',
-                            fontSize: '16px',
-                            fontFamily: 'Inria Sans',
-                            marginTop: '3px !important'
-                          }}
-                        >
-                          Friend
-                        </Typography>
-                      </Stack>
-                    </ButtonCustom>
-                  </Grid>
+                    </Stack>
+                  </ButtonCustom>
                 </Grid>
-              </Box>
-            </Stack>
-          </Paper>
+                <Grid item xs={6}>
+                  <ButtonCustom onClick={() => setAction(false)}>
+                    <Stack spacing={2} textAlign='center' alignItems='center'>
+                      <PeopleIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
+                      <Typography
+                        variant='h4'
+                        sx={{
+                          fontWeight: '200',
+                          textAlign: 'center',
+                          fontSize: '15px',
+                          marginTop: '3px !important',
+                          color:theme=>theme.palette.primary.main
+                        }}
+                      >
+                        Socials
+                      </Typography>
+                    </Stack>
+                  </ButtonCustom>
+                </Grid>
+              </Grid>
+            </Box>
+          </Stack>
         </Grid>
         <Grid item xs={12} md={8}>
           <Paper>
-            <Posts>{action === true ? '<Post>' : <Friends></Friends>}</Posts>
+            <Posts>
+              {action === true ? (
+                <Box padding={3}>
+                  <Post></Post>
+                </Box>
+              ) : (
+                <Friends></Friends>
+              )}
+            </Posts>
           </Paper>
         </Grid>
       </Grid>
