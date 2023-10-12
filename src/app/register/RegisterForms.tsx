@@ -32,29 +32,6 @@ const RegisterForms = ({ step }: { step: number }) => {
     })
   }
 
-  const handleSignup = async () => {
-    const res = await fetch(urlConfig.user.login, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: formValues.username,
-        password: formValues.password,
-        phonenumber: '0123456789',
-        passwordConfirm: '123456789',
-        role: 'user',
-        firstname: 'Hoang',
-        lastname: 'Uyen',
-        gender: true,
-        avatar: 'string',
-        address: 'Hue',
-        bio: '123'
-      }),
-      credentials: 'include' // Add this option
-    })
-  }
-
   return (
     <form>
       <FormGroup sx={{ display: step === 0 ? '' : 'none' }}>
