@@ -81,7 +81,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 //----------------------------------------------------------------
 
 export default function LoginPage() {
-  const { setIsAuthenticated } = useAuth()
+  const { setIsAuthenticated, setAccessToken, setUser } = useAuth()
   const router = useRouter()
   const { snack, setSnack } = useSnackbar()
   const pathname = usePathname() // Get the current route from the router
@@ -103,6 +103,10 @@ export default function LoginPage() {
     if (resJson.status === 'success') {
       // redirect to '/'
       setIsAuthenticated(true)
+      setAccessToken(resJson.token)
+      setUser(resJson.data.user)
+      //set local storage
+      localStorage.setItem('persist', 'persist')
       router.push('/')
     } else {
       setSnack({ open: true, type: 'error', message: resJson.message })
@@ -120,7 +124,7 @@ export default function LoginPage() {
   return (
     <>
       <Snackbar />
-      <title> Login | BTS </title>
+      <title> Login | Beegin </title>
       <StyledRoot>
         {mdUp && (
           <StyledBanner>

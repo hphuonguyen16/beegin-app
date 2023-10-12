@@ -10,9 +10,11 @@ import { usePathname } from 'next/navigation'
 export interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  accessToken: string | null
+  setAccessToken: (accessToken: string | null) => void
   setIsAuthenticated: (isAuthenticated: boolean) => void
   setUser: (user: User | null) => void
-  //   login: any
+  // login: any
   logout: () => void
 }
 
@@ -35,21 +37,24 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const router = useRouter()
   const pathname = usePathname() // Get the current route from the router
 
   useEffect(() => {
     // set isAuthenticated to true if have cookie in browser name 'jwt'
-    if (Cookies.get('jwt')) {
+    if (localStorage.getItem('persist')) {
       setIsAuthenticated(true)
     }
   }, [])
 
   useEffect(() => {
     // set isAuthenticated to true if have cookie in browser name 'jwt'
-    if (Cookies.get('jwt') && pathname !== 'login' && pathname !== 'register') {
+    if (localStorage.getItem('persist') && pathname === '/login') {
+      router.push('/')
+    } else if (localStorage.getItem('persist') && pathname !== 'login' && pathname !== 'register') {
       router.push(pathname)
-    } else if (!Cookies.get('jwt') && pathname !== '/login' && pathname !== '/register') {
+    } else if (!localStorage.getItem('persist') && pathname !== '/login' && pathname !== '/register') {
       router.push('/login')
       return
     }
@@ -65,6 +70,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     setUser,
     logout,
+    accessToken,
+    setAccessToken,
     isAuthenticated,
     setIsAuthenticated
   }
