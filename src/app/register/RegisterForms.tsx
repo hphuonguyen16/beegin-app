@@ -2,27 +2,16 @@
 
 import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { useState } from 'react'
+import { Register } from '@/types/register'
 
-interface FormValues {
-  username: string
-  password: string
-  passwordConfirm: string
-  firstname: string
-  lastname: string
-  gender: boolean
-  address?: string
-  bio?: string
+interface RegisterFormsProps {
+  step: number
+  formValues: Register
+  setFormValues: (formValues: Register) => void
 }
 
-const RegisterForms = ({ step }: { step: number }) => {
-  const [formValues, setFormValues] = useState<FormValues>({
-    username: '',
-    password: '',
-    passwordConfirm: '',
-    firstname: '',
-    lastname: '',
-    gender: true
-  })
+const RegisterForms = ({ step, formValues, setFormValues }: RegisterFormsProps) => {
+  console.log(formValues)
 
   const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
@@ -36,13 +25,7 @@ const RegisterForms = ({ step }: { step: number }) => {
     <form>
       <FormGroup sx={{ display: step === 0 ? '' : 'none' }}>
         <Stack spacing={3} className='w-full px-5'>
-          <TextField
-            id='name'
-            name='name'
-            label='Username'
-            value={formValues.username}
-            onChange={handleTextFieldChange}
-          />
+          <TextField id='email' name='email' label='Email' value={formValues.email} onChange={handleTextFieldChange} />
           <TextField
             id='password'
             name='password'
@@ -53,7 +36,7 @@ const RegisterForms = ({ step }: { step: number }) => {
           />
           <TextField
             id='password'
-            name='password'
+            name='passwordConfirm'
             type='password'
             label='Confirm Password'
             value={formValues.passwordConfirm}
@@ -65,18 +48,17 @@ const RegisterForms = ({ step }: { step: number }) => {
         <Stack spacing={3} className='w-full px-5'>
           <Stack direction='row' spacing={3}>
             <TextField
-              id='name'
-              name='name'
+              id='firstname'
+              name='firstname'
               label='First Name'
-              value={formValues.username}
+              value={formValues.firstname}
               onChange={handleTextFieldChange}
             />
             <TextField
-              id='password'
-              name='password'
-              type='password'
+              id='lastname'
+              name='lastname'
               label='Last Name'
-              value={formValues.password}
+              value={formValues.lastname}
               onChange={handleTextFieldChange}
             />
           </Stack>

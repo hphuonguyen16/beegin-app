@@ -26,6 +26,7 @@ import { useAuth } from '@/context/AuthContext'
 import urlConfig from '@/config/urlConfig'
 import Snackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
+import Loader from '@/components/common/Loader/Loader'
 
 //----------------------------------------------------------------
 
@@ -82,11 +83,25 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const { setIsAuthenticated, setAccessToken, setUser } = useAuth()
+  const pathname = usePathname()
+  const isMobile = useResponsive('down', 'md')
   const router = useRouter()
-  const { snack, setSnack } = useSnackbar()
-  const pathname = usePathname() // Get the current route from the router
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [isLoading, setIsLoading] = React.useState(true)
+  const { setSnack } = useSnackbar()
+  const mdUp = useResponsive('up', 'md')
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 700)
+  }, [])
+
+  if (isLoading) {
+    return <Loader />
+  }
+
   const handleLogin = async () => {
     const res = await fetch(urlConfig.user.login, {
       method: 'POST',
@@ -112,7 +127,6 @@ export default function LoginPage() {
       setSnack({ open: true, type: 'error', message: resJson.message })
     }
   }
-  const mdUp = useResponsive('up', 'md')
 
   // if (isAuthenticated) {
   //   if (pathname === '/login') {

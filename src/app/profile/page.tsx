@@ -63,7 +63,7 @@ function page() {
             borderRadius: '18px',
             top: '22%',
             position: 'absolute',
-            right:'100px',
+            right: '100px',
             backgroundColor: 'white !important'
           }}
           onClick={handleOpen}
@@ -195,7 +195,7 @@ function page() {
                           textAlign: 'center',
                           fontSize: '15px',
                           marginTop: '3px !important',
-                          color:theme=>theme.palette.primary.main
+                          color: (theme) => theme.palette.primary.main
                         }}
                       >
                         Activities
@@ -214,7 +214,7 @@ function page() {
                           textAlign: 'center',
                           fontSize: '15px',
                           marginTop: '3px !important',
-                          color:theme=>theme.palette.primary.main
+                          color: (theme) => theme.palette.primary.main
                         }}
                       >
                         Socials
