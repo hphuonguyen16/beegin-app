@@ -25,7 +25,7 @@ const poppins = Poppins({
 
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/login' || pathname === '/register' || pathname.startsWith('/verify')) {
     return (
       <html lang='en'>
         <Head>
