@@ -38,6 +38,9 @@ import RegisterForms from './RegisterForms'
 
 // assets
 import LoginBanner from '@/assets/login_banner.jpg'
+import CustomSnackbar from '@/components/common/Snackbar'
+import useSnackbar from '@/context/snackbarContext'
+import { sassFalse } from 'sass'
 
 //----------------------------------------------------------------
 
@@ -178,7 +181,18 @@ export default function Register() {
     lastname: '',
     gender: true
   })
+  const [formErrors, setFormErrors] = useState<Register>({
+    email: true,
+    password: true,
+    passwordConfirm: true,
+    firstname: true,
+    lastname: true,
+    address: true,
+    bio: true,
+    gender: true
+  })
   const [success, setSuccess] = useState<boolean>(false)
+  const { setSnack } = useSnackbar()
   useEffect(() => {
     const url = new URL(location.href)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,8 +200,22 @@ export default function Register() {
   }, [])
   const { data: session } = useSession()
   // const router = useRouter();
-  const [username, setUsername] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
+
+  const checkFormValues = (fields: (keyof Register)[]) => {
+    let values = { ...formValues }
+    let errors = { ...formErrors }
+    let hasError = false
+    fields.forEach((field) => {
+      if (values[field] === '') {
+        errors[field] = false
+        hasError = true
+      } else {
+        errors[field] = true
+      }
+    })
+    setFormErrors(errors)
+    return hasError
+  }
 
   const handleSubmit = () => {
     axios
@@ -195,7 +223,13 @@ export default function Register() {
       .then((res) => {
         setSuccess(true)
       })
-      .catch((err) => {})
+      .catch((err) => {
+        setSnack({
+          open: true,
+          message: err.response.data.message,
+          type: 'error'
+        })
+      })
   }
   const mdUp = useResponsive('up', 'md')
 
@@ -218,10 +252,16 @@ export default function Register() {
     if (isLastStep) {
       // _submitForm(values, actions);
       handleSubmit()
-    } else {
-      setActiveStep(activeStep + 1)
-      // actions.setTouched({});
-      // actions.setSubmitting(false);
+    } else if (activeStep === 0) {
+      const hasError = checkFormValues(['email', 'password', 'passwordConfirm'])
+      if (!hasError) {
+        setActiveStep(activeStep + 1)
+      }
+    } else if (activeStep === 1) {
+      const hasError = checkFormValues(['firstname', 'lastname', 'address', 'bio'])
+      if (!hasError) {
+        setActiveStep(activeStep + 1)
+      }
     }
   }
 
@@ -234,6 +274,7 @@ export default function Register() {
   } else
     return (
       <>
+        <CustomSnackbar />
         <title> Login | Beegin </title>
         {!success ? (
           <StyledRoot>
@@ -254,7 +295,13 @@ export default function Register() {
                   </Stepper>
                 </Box>
 
-                <RegisterForms step={activeStep} formValues={formValues} setFormValues={setFormValues} />
+                <RegisterForms
+                  step={activeStep}
+                  formValues={formValues}
+                  setFormValues={setFormValues}
+                  formErrors={formErrors}
+                  setFormErrors={setFormErrors}
+                />
 
                 <Stack direction={'row'} justifyContent={'space-between'}>
                   {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
