@@ -61,23 +61,24 @@ const PostCard = () => {
   const handleLike = () => {
     setLiked(!liked)
   }
-  // const getUsers = async () => {
-  //   try {
-  //     const response = await axiosPrivate.get(`${UrlConfig.me.getMe}`)
-  //   } catch (err) {}
-  // }
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await getUsers()
-  //       // You can do other things after fetching data if needed
-  //     } catch (error) {
-  //       // Handle errors here
-  //     }
-  //   }
+  const getUsers = async () => {
+    try {
+      const response = await axiosPrivate.get(`${UrlConfig.me.getMe}`)
+    } catch (err) {}
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getUsers()
+        // You can do other things after fetching data if needed
+      } catch (error) {
+        // Handle errors here
+      }
+    }
 
-  //   fetchData() // Call the async function immediately
-  // }, []) // Add dependencies as needed
+    fetchData() // Call the async function immediately
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Add dependencies as needed
   return (
     <Box>
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>

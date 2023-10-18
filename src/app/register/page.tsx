@@ -20,6 +20,10 @@ import { LogoDev } from '@mui/icons-material'
 import { LockPerson, PersonSearch, AddAPhoto, Check } from '@mui/icons-material'
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector'
 import { StepIconProps } from '@mui/material/StepIcon'
+import { Register } from '@/types/register'
+import axios from 'axios'
+import UrlConfig from '@/config/urlConfig'
+import RegistrationComplete from './RegistrationSuccess'
 
 // hooks
 import useResponsive from '@/hooks/useResponsive'
@@ -34,6 +38,9 @@ import RegisterForms from './RegisterForms'
 
 // assets
 import LoginBanner from '@/assets/login_banner.jpg'
+import CustomSnackbar from '@/components/common/Snackbar'
+import useSnackbar from '@/context/snackbarContext'
+import { sassFalse } from 'sass'
 
 //----------------------------------------------------------------
 
@@ -166,6 +173,26 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture']
 
 export default function Register() {
   let redirectUrl = ''
+  const [formValues, setFormValues] = useState<Register>({
+    email: '',
+    password: '',
+    passwordConfirm: '',
+    firstname: '',
+    lastname: '',
+    gender: true
+  })
+  const [formErrors, setFormErrors] = useState<Register>({
+    email: true,
+    password: true,
+    passwordConfirm: true,
+    firstname: true,
+    lastname: true,
+    address: true,
+    bio: true,
+    gender: true
+  })
+  const [success, setSuccess] = useState<boolean>(false)
+  const { setSnack } = useSnackbar()
   useEffect(() => {
     const url = new URL(location.href)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,15 +200,36 @@ export default function Register() {
   }, [])
   const { data: session } = useSession()
   // const router = useRouter();
-  const [username, setUsername] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const login = async () => {
-    const res = await signIn('credentials', {
-      userNameOrEmailAddress: username,
-      password: password,
-      redirect: true,
-      callbackUrl: redirectUrl
+
+  const checkFormValues = (fields: (keyof Register)[]) => {
+    let values = { ...formValues }
+    let errors = { ...formErrors }
+    let hasError = false
+    fields.forEach((field) => {
+      if (values[field] === '') {
+        errors[field] = false
+        hasError = true
+      } else {
+        errors[field] = true
+      }
     })
+    setFormErrors(errors)
+    return hasError
+  }
+
+  const handleSubmit = () => {
+    axios
+      .post(UrlConfig.user.signup, formValues)
+      .then((res) => {
+        setSuccess(true)
+      })
+      .catch((err) => {
+        setSnack({
+          open: true,
+          message: err.response.data.message,
+          type: 'error'
+        })
+      })
   }
   const mdUp = useResponsive('up', 'md')
 
@@ -203,10 +251,17 @@ export default function Register() {
   function _handleSubmit() {
     if (isLastStep) {
       // _submitForm(values, actions);
-    } else {
-      setActiveStep(activeStep + 1)
-      // actions.setTouched({});
-      // actions.setSubmitting(false);
+      handleSubmit()
+    } else if (activeStep === 0) {
+      const hasError = checkFormValues(['email', 'password', 'passwordConfirm'])
+      if (!hasError) {
+        setActiveStep(activeStep + 1)
+      }
+    } else if (activeStep === 1) {
+      const hasError = checkFormValues(['firstname', 'lastname', 'address', 'bio'])
+      if (!hasError) {
+        setActiveStep(activeStep + 1)
+      }
     }
   }
 
@@ -219,57 +274,73 @@ export default function Register() {
   } else
     return (
       <>
+        <CustomSnackbar />
         <title> Login | Beegin </title>
-        <StyledRoot>
-          <StyledForm>
-            <StyledContent>
-              <Box>
-                <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
-                <Typography variant='h4' gutterBottom className='mt-6 mb-6'>
-                  Create a new account
-                </Typography>
+        {!success ? (
+          <StyledRoot>
+            <StyledForm>
+              <StyledContent>
+                <Box>
+                  <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
+                  <Typography variant='h4' gutterBottom className='mt-6 mb-6'>
+                    Create a new account
+                  </Typography>
 
-                <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
-                  {steps.map((label) => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Box>
+                  <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Box>
 
-              <RegisterForms step={activeStep} />
+                <RegisterForms
+                  step={activeStep}
+                  formValues={formValues}
+                  setFormValues={setFormValues}
+                  formErrors={formErrors}
+                  setFormErrors={setFormErrors}
+                />
 
-              <Stack direction={'row'} justifyContent={'space-between'}>
-                {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
-                <div>
-                  <Button type='submit' variant='contained' color='primary' onClick={_handleSubmit}>
-                    {isLastStep ? 'Register' : 'Next'}
-                  </Button>
-                  {/* {1 && (
+                <Stack direction={'row'} justifyContent={'space-between'}>
+                  {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
+                  <div>
+                    <Button type='submit' variant='contained' color='primary' onClick={_handleSubmit}>
+                      {isLastStep ? 'Register' : 'Next'}
+                    </Button>
+                    {/* {1 && (
                                         <CircularProgress
                                             size={24}
                                         />
                                     )} */}
-                </div>
-              </Stack>
-            </StyledContent>
-          </StyledForm>
+                  </div>
+                </Stack>
+              </StyledContent>
+            </StyledForm>
 
-          {mdUp && (
-            <StyledBanner>
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative'
-                }}
-              >
-                <Image style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }} fill src={LoginBanner} alt='login' />
-              </Box>
-            </StyledBanner>
-          )}
-        </StyledRoot>
+            {mdUp && (
+              <StyledBanner>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative'
+                  }}
+                >
+                  <Image
+                    style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
+                    fill
+                    src={LoginBanner}
+                    alt='login'
+                  />
+                </Box>
+              </StyledBanner>
+            )}
+          </StyledRoot>
+        ) : (
+          <RegistrationComplete />
+        )}
       </>
     )
 }

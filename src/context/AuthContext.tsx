@@ -52,9 +52,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // set isAuthenticated to true if have cookie in browser name 'jwt'
     if (localStorage.getItem('persist') && pathname === '/login') {
       router.push('/')
-    } else if (localStorage.getItem('persist') && pathname !== 'login' && pathname !== 'register') {
-      router.push(pathname)
-    } else if (!localStorage.getItem('persist') && pathname !== '/login' && pathname !== '/register') {
+    } else if (localStorage.getItem('persist')) {
+      if (pathname === '/login' || pathname === '/register') {
+        router.push('/')
+      }
+    } else if (
+      !localStorage.getItem('persist') &&
+      pathname !== '/login' &&
+      pathname !== '/register' &&
+      !pathname.startsWith('/verify')
+    ) {
       router.push('/login')
       return
     }
