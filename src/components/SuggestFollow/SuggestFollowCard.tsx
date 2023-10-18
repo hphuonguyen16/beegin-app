@@ -2,8 +2,8 @@ import React from 'react'
 import { Card, CardHeader, Avatar, Button, Box } from '@mui/material'
 
 export default function SuggestFollowCard(props: any) {
-  const { name, username, avatar } = props.user
-  const [follow, setFollow] = React.useState(false)
+  const { firstname, lastname, avatar } = props.user
+  const [follow, setFollow] = React.useState(props.isFollowing)
   const handleFollow = () => {
     setFollow((prev: boolean) => !prev)
   }
@@ -12,8 +12,8 @@ export default function SuggestFollowCard(props: any) {
       <CardHeader
         sx={{ padding: '20px' }}
         avatar={<Avatar src={avatar} sx={{ width: '60px', height: '60px', marginRight: '10px' }} />}
-        title={name}
-        subheader={`@${username}`}
+        title={firstname + ' ' + lastname}
+        // subheader={`@${username}`}
         action={
           <Button
             onClick={handleFollow}
