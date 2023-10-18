@@ -1,7 +1,7 @@
 // ModalComponent.tsx
 
-import React, { useState } from 'react'
-import { Box, Typography, Modal, Button, Input, styled, Grid, TextField } from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Box, Typography, Modal, Button, Input, styled, Grid, TextField, Avatar } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -11,7 +11,6 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
-import background from '@/assets/background1.jpg'
 
 const style = {
   top: '50%',
@@ -19,7 +18,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 'auto',
   maxWidth: '600px',
-  height: '100%',
+  height: 'auto',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
@@ -27,28 +26,49 @@ const style = {
   overflow: 'auto',
   position: 'relative'
 }
-const Avatar = styled('div')(({ theme }) => ({
-  width: '115px',
-  height: '100px',
-  background: 'white',
-  borderRadius: '50%',
-  transform: 'translateY(-40px)',
-  marginLeft: '20px',
-  border: '2px solid #f283ea'
-}))
-// Define a type for the props
+
 interface ModalProps {
   open: boolean
   onClose: () => void
-  data: string
+  data: Object
 }
 
 const ModalComponent = (props: ModalProps) => {
   const { onClose, data, open } = props
-
-  const [gender, setGender] = useState('male') //
-  const handleChange = (event: any) => {
-    setGender(event.target.value)
+  const [formValues, setFormValues] = useState({
+    firstname: '',
+    lastname: '',
+    address: '',
+    bio: '',
+    background: '',
+    avatar: '',
+    gender: '',
+    birthday: ''
+  })
+  useEffect(() => {
+    if (data) {
+      setFormValues({
+        firstname: data.firstname,
+        lastname: data.lastname,
+        address: data.address,
+        bio: data.bio,
+        background: data.background,
+        avatar: data.avatar,
+        gender: data.gender,
+        birthday: data.birthday
+      })
+    }
+  }, [data])
+  // const [gender, setGender] = useState('male')
+  // const handleChange = (event: any) => {
+  //   setGender(event.target.value)
+  // }
+  const handleInputChange = (event) => {
+    const { name, value } = event.target
+    setFormValues({
+      ...formValues,
+      [name]: value
+    })
   }
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-title' aria-describedby='modal-description'>
@@ -56,21 +76,42 @@ const ModalComponent = (props: ModalProps) => {
         <Box style={{ width: '100%', height: '200px', borderRadius: '10px', background: '#d2cece' }}>
           <FileInput></FileInput>
         </Box>
-        <Avatar>
+        <Avatar
+          src={data.avatar}
+          sx={{ width: '100px', height: '100px', marginLeft: '25px', transform: 'translateY(-40px)' }}
+        >
           <FileInput></FileInput>
         </Avatar>
         <Box marginTop={'-30px'}>
           <Grid container>
             <Grid item xs={12} md={6} marginTop={3} marginRight={5}>
-              <TextField id='outlined-basic' label='First Name' variant='outlined' />
+              <TextField
+                id='outlined-basic'
+                label='First Name'
+                variant='outlined'
+                value={formValues.firstname}
+                onChange={handleInputChange}
+              />
             </Grid>
             <Grid item xs={12} md={5} marginTop={3}>
-              <TextField id='outlined-basic' label='Last Name' variant='outlined' />
+              <TextField
+                id='outlined-basic'
+                label='Last Name'
+                variant='outlined'
+                value={formValues.lastname}
+                onChange={handleInputChange}
+              />
             </Grid>
           </Grid>
           <Grid container>
             <Grid item xs={12} md={6} marginTop={3} marginRight={5}>
-              <TextField id='outlined-basic' label='Location' variant='outlined' />
+              <TextField
+                id='outlined-basic'
+                label='Location'
+                variant='outlined'
+                value={formValues.address}
+                onChange={handleInputChange}
+              />
             </Grid>
             <Grid item xs={12} md={5} marginTop={3}>
               <TextField id='outlined-basic' label='Phone Number' variant='outlined' />
@@ -88,16 +129,24 @@ const ModalComponent = (props: ModalProps) => {
                 row
                 aria-labelledby='demo-row-radio-buttons-group-label'
                 name='row-radio-buttons-group'
-                value={gender}
-                onChange={handleChange}
+                value={formValues.gender}
+                onChange={handleInputChange}
               >
-                <FormControlLabel value='male' control={<Radio />} label='Male' />
-                <FormControlLabel value='female' control={<Radio />} label='Female' />
+                <FormControlLabel value='true' control={<Radio />} label='Male' />
+                <FormControlLabel value='false' control={<Radio />} label='Female' />
               </RadioGroup>
             </Grid>
           </Grid>
           <Box marginTop={3}>
-            <TextField id='outlined-multiline-static' label='Bio' multiline rows={4} style={{ width: '100%' }} />
+            <TextField
+              id='outlined-multiline-static'
+              label='Bio'
+              multiline
+              rows={4}
+              style={{ width: '100%' }}
+              value={formValues.bio}
+              onChange={handleInputChange}
+            />
           </Box>
         </Box>
         <Grid container marginTop={0}>
@@ -109,8 +158,7 @@ const ModalComponent = (props: ModalProps) => {
                 width: '100px',
                 display: 'flex',
                 backgroundColor: 'white !important',
-                boxShadow: 'none',
-               
+                boxShadow: 'none'
               }}
               onClick={onClose}
             >
@@ -126,7 +174,7 @@ const ModalComponent = (props: ModalProps) => {
                 display: 'flex',
                 backgroundColor: '#E078D8 !important',
                 color: 'white',
-                border:'none'
+                border: 'none'
               }}
               onClick={onClose}
             >
