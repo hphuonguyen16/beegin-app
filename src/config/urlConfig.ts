@@ -18,7 +18,8 @@ const UrlConfig = {
   },
   posts: {
     getPosts: `/api/v1/posts`,
-    getComments: (postId: string) => `/api/v1/posts/${postId}/comments`
+    getComments: (postId: string) => `/api/v1/posts/${postId}/comments`,
+    getMyPosts: `/api/v1/posts/me`
   }
 }
 
