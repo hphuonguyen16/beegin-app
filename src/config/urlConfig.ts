@@ -15,6 +15,10 @@ const UrlConfig = {
     getMyNumberOfFollows: `/api/v1/follows/getNumberOfFollows/:id`,
     getMyFollowerList: `/api/v1/follows/getAllFollowers/:id`,
     getMyFollowingList: `/api/v1/follows/getAllFollowings/:id`
+  },
+  posts: {
+    getPosts: `/api/v1/posts`,
+    getComments: (postId: string) => `/api/v1/posts/${postId}/comments`
   }
 }
 
