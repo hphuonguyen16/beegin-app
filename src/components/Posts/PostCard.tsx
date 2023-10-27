@@ -59,9 +59,20 @@ const PostCard = ({ post }: PostCardProps) => {
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
-  const handleLike = () => {
-    setLiked(!liked)
+  const handleLike = async () => {
+    try {
+      if (!liked) {
+        await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
+        setLiked(true)
+        post.numLikes++
+      } else {
+        await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
+        setLiked(false)
+        post.numLikes--
+      }
+    } catch (err) {}
   }
+
   const openPostDetail = () => {
     setOpen(true)
   }
@@ -69,9 +80,27 @@ const PostCard = ({ post }: PostCardProps) => {
     setOpen(false)
   }
 
+  useEffect(() => {
+    const checkLiked = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
+        setLiked(response.data.data)
+      } catch (err) {}
+    }
+    checkLiked()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <Box>
-      <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} />
+      <PostDetail
+        key={post._id}
+        post={post}
+        open={open}
+        liked={liked}
+        setLiked={setLiked}
+        handleClose={closePostDetail}
+      />
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>
         <Avatar
           sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
