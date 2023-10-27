@@ -72,13 +72,11 @@ export default function Home() {
       try {
         const response = await axios.get(urlConfig.posts.getPosts)
         setPostsData(response.data.data.data)
-      } catch (error) {
-        console.log(error)
-      }
+      } catch (error) {}
     }
     fetchPosts()
-  },[1])
-  console.log(postsData)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [1])
   return (
     <PostLayout>
       <Box>

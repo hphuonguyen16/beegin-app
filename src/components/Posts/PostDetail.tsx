@@ -28,19 +28,14 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Comment } from '@/types/comment'
 
-const images = [
-  'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-]
-
 interface PostDetailProps {
   post: Post
   open: boolean
+  liked: boolean
+  setLiked: (like: boolean) => void
   handleClose: () => void
 }
-const PostDetail = ({ post, open, handleClose }: PostDetailProps) => {
+const PostDetail = ({ post, open, liked, setLiked, handleClose }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
@@ -49,7 +44,19 @@ const PostDetail = ({ post, open, handleClose }: PostDetailProps) => {
     const response = await axiosPrivate.get(urlConfig.posts.getComments(post._id))
     setComments(response.data.data)
   }
-  console.log(comments)
+  const handleLike = async () => {
+    try {
+      if (!liked) {
+        await axiosPrivate.post(urlConfig.posts.likePost(post._id))
+        setLiked(true)
+        post.numLikes++
+      } else {
+        await axiosPrivate.delete(urlConfig.posts.unlikePost(post._id))
+        setLiked(false)
+        post.numLikes--
+      }
+    } catch (err) {}
+  }
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,9 +65,19 @@ const PostDetail = ({ post, open, handleClose }: PostDetailProps) => {
         // Handle any errors that occur during the fetchComments() function
       }
     }
+    const checkLiked = async () => {
+      try {
+        const response = await axiosPrivate.get(urlConfig.posts.checkLikePost(post._id))
+        setLiked(response.data.data)
+      } catch (err) {}
+    }
 
     fetchData()
+    checkLiked()
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
   return (
     <Modal open={open}>
       <Box
@@ -210,7 +227,7 @@ const PostDetail = ({ post, open, handleClose }: PostDetailProps) => {
                 bottom: '0px', // Adjust the position as needed
                 zIndex: 999, // Adjust the z-index as needed
                 backgroundColor: 'white', // Background color
-                height: '170px',
+                height: '190px',
                 borderTop: '1px solid #e8ebed'
               }}
             >
@@ -224,12 +241,16 @@ const PostDetail = ({ post, open, handleClose }: PostDetailProps) => {
               >
                 <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
                   <IconButton
-                  // onClick={() => {
-                  //   handleLike()
-                  // }}
+                    onClick={() => {
+                      handleLike()
+                    }}
                   >
-                    {/* {liked ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />} */}
-                    <FavoriteBorderRoundedIcon color='secondary' />
+                    {liked ? (
+                      <FavoriteRoundedIcon color='secondary' />
+                    ) : (
+                      <FavoriteBorderRoundedIcon color='secondary' />
+                    )}
+                    {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                   </IconButton>
                   <span style={{ marginLeft: isMobile ? '7px' : '5px', fontWeight: 600, fontSize: '13px' }}>
                     {post.numLikes}

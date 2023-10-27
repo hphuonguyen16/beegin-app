@@ -55,19 +55,24 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post }: PostCardProps) => {
-  console.log(post)
   const [liked, setLiked] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
-  const handleLike = () => {
-    setLiked(!liked)
-  }
-  const getUsers = async () => {
+  const handleLike = async () => {
     try {
-      const response = await axiosPrivate.get(`${UrlConfig.me.getMe}`)
+      if (!liked) {
+        await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
+        setLiked(true)
+        post.numLikes++
+      } else {
+        await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
+        setLiked(false)
+        post.numLikes--
+      }
     } catch (err) {}
   }
+
   const openPostDetail = () => {
     setOpen(true)
   }
@@ -76,21 +81,26 @@ const PostCard = ({ post }: PostCardProps) => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const checkLiked = async () => {
       try {
-        await getUsers()
-        // You can do other things after fetching data if needed
-      } catch (error) {
-        // Handle errors here
-      }
+        const response = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
+        setLiked(response.data.data)
+      } catch (err) {}
     }
-
-    fetchData() // Call the async function immediately
+    checkLiked()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Add dependencies as needed
+  }, [])
+
   return (
     <Box>
-      <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} />
+      <PostDetail
+        key={post._id}
+        post={post}
+        open={open}
+        liked={liked}
+        setLiked={setLiked}
+        handleClose={closePostDetail}
+      />
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>
         <Avatar
           sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
@@ -98,7 +108,7 @@ const PostCard = ({ post }: PostCardProps) => {
         ></Avatar>
         <Stack sx={{ minWidth: '100%' }}>
           <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
-            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize:'16px' }}>
+            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
               {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
             </Typography>
             {/* <Typography

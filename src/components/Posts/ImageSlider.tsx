@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react'
 import Image from 'next/image'
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded'
@@ -40,7 +41,14 @@ const Slider = ({ images }: SliderProps) => {
       {images.length > 1 && (
         <IconButton
           onClick={prevSlide}
-          sx={{ position: 'abosolute', top: '-50%', left: '10px', transform: 'translateY(-50%)', zIndex: 999 }}
+          sx={{
+            position: 'abosolute',
+            top: '-50%',
+            left: '20px',
+            transform: 'translateY(-50%)',
+            zIndex: 999,
+            color: '#ffffff'
+          }}
         >
           <ArrowBackIosNewRoundedIcon fontSize='small' />
         </IconButton>
@@ -48,7 +56,14 @@ const Slider = ({ images }: SliderProps) => {
       {images.length > 1 && (
         <IconButton
           onClick={nextSlide}
-          sx={{ position: 'abosolute', top: '-50%', left: '85%', transform: 'translateY(-50%)', zIndex: 999 }}
+          sx={{
+            position: 'abosolute',
+            top: '-50%',
+            left: '87%',
+            transform: 'translateY(-50%)',
+            zIndex: 999,
+            color: '#ffffff'
+          }}
         >
           <ArrowForwardIosIcon fontSize='small' />
         </IconButton>
