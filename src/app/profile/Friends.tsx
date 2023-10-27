@@ -1,34 +1,52 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Grid, Paper, Typography, Box, Stack, styled } from '@mui/material'
-import Image from 'next/image'
-import background from '@/assets/background1.jpg'
-import avatar from '@/assets/tom.jpg'
-import PeopleIcon from '@mui/icons-material/People'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
-import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
-import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
 import SuggestFollowCard from '@/components/SuggestFollow/SuggestFollowCard'
-const suggested_follow_list = [
-  {
-    name: 'Arthur Shelby',
-    username: 'arthurshelby1',
-    avatar: 'https://pbs.twimg.com/profile_images/1498070100393754625/C2V-fbll_400x400.jpg'
-  },
-  {
-    name: 'Donald J. Trump',
-    username: 'realDonaldTrump',
-    avatar: 'https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg'
-  },
-  {
-    name: 'Eva Fox',
-    username: 'EvaFoxU',
-    avatar: 'https://pbs.twimg.com/profile_images/1699898466959347712/WS3HVOtW_400x400.jpg'
-  }
-]
-function Friends() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import UrlConfig from '@/config/urlConfig'
+
+function Friends({ userId }: { userId: string }) {
+  console.log(userId)
+  const axiosPrivate = useAxiosPrivate()
+  const [listFollowing, setFollowing] = useState([])
+  const [listFollower, setFollower] = useState([])
   const [buttonFollow, setButtonFollow] = useState(true)
+  const getListFollowing = async (userId: any) => {
+    try {
+      let response
+      if (userId === 'me') {
+        response = await axiosPrivate.get(`${UrlConfig.me.getMyFollowingList}`)
+      } else {
+        const url = UrlConfig.otherUsers.getMyFollowingList.replace(':id', userId)
+        response = await axiosPrivate.get(url)
+      }
+      setFollowing(response.data.data)
+    } catch (err) {}
+  }
+  const getListFollower = async (userId: any) => {
+    try {
+      let response
+      if (userId === 'me') {
+        response = await axiosPrivate.get(`${UrlConfig.me.getMyFollowerList}`)
+      } else {
+        const url = UrlConfig.otherUsers.getMyFollowerList.replace(':id', userId)
+        response = await axiosPrivate.get(url)
+      }
+      setFollower(response.data.data)
+    } catch (err) {}
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getListFollower(userId)
+        await getListFollowing(userId)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData()
+  }, [])
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -80,8 +98,16 @@ function Friends() {
       </Grid>
       <Box>
         {buttonFollow === true
-          ? suggested_follow_list.map((user, index) => <SuggestFollowCard key={index} user={user} />)
-          : suggested_follow_list.map((user, index) => <SuggestFollowCard key={index} user={user} />)}
+          ? listFollowing.map((subArray: Array<any>, index) =>
+              subArray.map((user: any, userIndex: any) => (
+                <SuggestFollowCard key={userIndex} user={user} isFollowing={true} />
+              ))
+            )
+          : listFollower.map((subArray: Array<any>, index) =>
+              subArray.map((user: any, userIndex: any) => (
+                <SuggestFollowCard key={userIndex} user={user} isFollowing={false} />
+              ))
+            )}
       </Box>
     </Stack>
   )

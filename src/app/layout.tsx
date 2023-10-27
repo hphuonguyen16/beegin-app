@@ -7,6 +7,9 @@ import Layout from '@/layouts'
 import { usePathname } from 'next/navigation'
 import Head from 'next/head'
 import { SessionProvider } from 'next-auth/react'
+import { AuthProvider } from '@/context/AuthContext'
+import { Snackbar } from '@mui/material'
+import { SnackbarContextProvider } from '@/context/snackbarContext'
 
 const poppins = Poppins({
   weight: '400',
@@ -22,7 +25,7 @@ const poppins = Poppins({
 
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/login' || pathname === '/register' || pathname.startsWith('/verify')) {
     return (
       <html lang='en'>
         <Head>
@@ -32,9 +35,13 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
         <body className={poppins.className}>
-          <SessionProvider session={session}>
-            <ThemeProvider>{children}</ThemeProvider>
-          </SessionProvider>
+          <AuthProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <ThemeProvider>{children}</ThemeProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
+          </AuthProvider>
         </body>
       </html>
     )
@@ -48,11 +55,15 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
         <body className={poppins.className}>
-          <SessionProvider session={session}>
-            <ThemeProvider>
-              <Layout>{children}</Layout>
-            </ThemeProvider>
-          </SessionProvider>
+          <AuthProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <ThemeProvider>
+                  <Layout>{children}</Layout>
+                </ThemeProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
+          </AuthProvider>
         </body>
       </html>
     )

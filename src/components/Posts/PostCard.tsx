@@ -2,12 +2,14 @@
 import { Avatar, Box, Stack, Typography, Button } from '@mui/material'
 import Image from 'next/image'
 import { styled } from '@mui/material/styles'
-import React from 'react'
+import React, { useEffect } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import ShareIcon from '@mui/icons-material/Share'
 import useResponsive from '@/hooks/useResponsive'
+import UrlConfig from '@/config/urlConfig'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: 'grid',
@@ -54,10 +56,29 @@ const images = [
 
 const PostCard = () => {
   const [liked, setLiked] = React.useState(false)
+  const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const handleLike = () => {
     setLiked(!liked)
   }
+  const getUsers = async () => {
+    try {
+      const response = await axiosPrivate.get(`${UrlConfig.me.getMe}`)
+    } catch (err) {}
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getUsers()
+        // You can do other things after fetching data if needed
+      } catch (error) {
+        // Handle errors here
+      }
+    }
+
+    fetchData() // Call the async function immediately
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Add dependencies as needed
   return (
     <Box>
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>
@@ -101,7 +122,7 @@ const PostCard = () => {
               5 mins ago
             </Typography>
           </Stack>
-          <Box sx={{ width: '50%', minWidth: !isMobile ? '700px' : '100%' }}>
+          <Box sx={{ width: '50%', minWidth: !isMobile ? '80%' : '100%' }}>
             <Box
               sx={{
                 margin: isMobile ? '5px 0' : '10px 0',

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
 import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar } from '@mui/material'
@@ -8,17 +6,17 @@ import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
-import Friends from './Friends'
-import EditProfile from './EditProfile'
-import Post from '../../components/Posts/PostCard'
+import Friends from '../Friends'
+import EditProfile from '../EditProfile'
+import Post from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { Link } from 'react-router-dom'
-// hooks
 
-import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-//component-style
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
@@ -47,20 +45,25 @@ const ButtonCustom = styled('div')(({ theme }) => ({
   border: '1px solid #D9D9D9',
   cursor: 'pointer'
 }))
-function page() {
+
+export default function page() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const segments = pathname.split('/')
+  const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState([])
   const [number, setNumber] = useState([])
-  const getUsers = async () => {
+  const getUsers = async (id: any) => {
     try {
-      const url = UrlConfig.me.getMe
+      const url = UrlConfig.otherUsers.getProfileByID.replace(':id', id)
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
     } catch (err) {}
   }
-  const getNumberOfFollow = async () => {
+  const getNumberOfFollow = async (id: any) => {
     try {
-      const url = UrlConfig.me.getMyNumberOfFollows
+      const url = UrlConfig.otherUsers.getMyNumberOfFollows.replace(':id', id)
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
     } catch (err) {}
@@ -68,8 +71,8 @@ function page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getUsers()
-        await getNumberOfFollow()
+        await getUsers(userId)
+        await getNumberOfFollow(userId)
       } catch (error) {
         console.log(error)
       }
@@ -79,32 +82,10 @@ function page() {
   const [action, setAction] = useState(true)
   const [open, setOpen] = useState(false)
 
-  const handleOpen = () => {
-    setOpen(true)
-  }
-  const handleClose = () => {
-    setOpen(false)
-  }
   return (
     <StyledProfile>
       <Box>
         <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
-        <Button
-          variant={'outlined'}
-          sx={{
-            padding: '10px 20px',
-            width: '130px',
-            borderRadius: '18px',
-            top: '18%',
-            position: 'absolute',
-            right: '100px',
-            backgroundColor: 'white !important'
-          }}
-          onClick={handleOpen}
-        >
-          Edit profile
-        </Button>
-        <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
       </Box>
 
       <Grid container spacing={2}>
@@ -263,7 +244,7 @@ function page() {
                   <Post></Post>
                 </Box>
               ) : (
-                <Friends userId = "me"></Friends>
+                <Friends userId={userId}></Friends>
               )}
             </Posts>
           </Paper>
@@ -272,5 +253,3 @@ function page() {
     </StyledProfile>
   )
 }
-
-export default page
