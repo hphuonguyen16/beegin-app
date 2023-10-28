@@ -33,9 +33,10 @@ interface PostDetailProps {
   open: boolean
   liked: boolean
   setLiked: (like: boolean) => void
+  handleLike: () => void
   handleClose: () => void
 }
-const PostDetail = ({ post, open, liked, setLiked, handleClose }: PostDetailProps) => {
+const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
@@ -44,19 +45,19 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose }: PostDetailProp
     const response = await axiosPrivate.get(urlConfig.posts.getComments(post._id))
     setComments(response.data.data)
   }
-  const handleLike = async () => {
-    try {
-      if (!liked) {
-        await axiosPrivate.post(urlConfig.posts.likePost(post._id))
-        setLiked(true)
-        post.numLikes++
-      } else {
-        await axiosPrivate.delete(urlConfig.posts.unlikePost(post._id))
-        setLiked(false)
-        post.numLikes--
-      }
-    } catch (err) {}
-  }
+  // const handleLike = async () => {
+  //   try {
+  //     if (!liked) {
+  //       await axiosPrivate.post(urlConfig.posts.likePost(post._id))
+  //       setLiked(true)
+  //       post.numLikes++
+  //     } else {
+  //       await axiosPrivate.delete(urlConfig.posts.unlikePost(post._id))
+  //       setLiked(false)
+  //       post.numLikes--
+  //     }
+  //   } catch (err) {}
+  // }
   React.useEffect(() => {
     const fetchData = async () => {
       try {

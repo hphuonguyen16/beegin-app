@@ -19,13 +19,13 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   const handleLike = async () => {
     try {
       if (!liked) {
-        await axiosPrivate.post(UrlConfig.comments.likeComment(comment._id))
         setLiked(true)
         comment.numLikes++
+        await axiosPrivate.post(UrlConfig.comments.likeComment(comment._id))
       } else {
-        await axiosPrivate.delete(UrlConfig.comments.unlikeComment(comment._id))
         setLiked(false)
         comment.numLikes--
+        await axiosPrivate.delete(UrlConfig.comments.unlikeComment(comment._id))
       }
     } catch (err) {}
   }

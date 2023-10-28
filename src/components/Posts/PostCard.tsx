@@ -62,13 +62,13 @@ const PostCard = ({ post }: PostCardProps) => {
   const handleLike = async () => {
     try {
       if (!liked) {
-        await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
         setLiked(true)
         post.numLikes++
+        await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
-        await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
         setLiked(false)
         post.numLikes--
+        await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
     } catch (err) {}
   }
@@ -100,6 +100,7 @@ const PostCard = ({ post }: PostCardProps) => {
         liked={liked}
         setLiked={setLiked}
         handleClose={closePostDetail}
+        handleLike={handleLike}
       />
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>
         <Avatar
