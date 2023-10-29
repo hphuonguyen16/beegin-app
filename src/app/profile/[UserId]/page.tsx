@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
 import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar } from '@mui/material'
@@ -7,7 +8,6 @@ import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from '../Friends'
-import EditProfile from '../EditProfile'
 import Post from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import React from 'react'
 
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
@@ -54,6 +55,7 @@ export default function page() {
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState([])
   const [number, setNumber] = useState([])
+  const [follow, setFollow] = useState(true)
   const getUsers = async (id: any) => {
     try {
       const url = UrlConfig.otherUsers.getProfileByID.replace(':id', id)
@@ -68,11 +70,31 @@ export default function page() {
       setNumber(response.data.data)
     } catch (err) {}
   }
+  const isFollowing = async (id: any) => {
+    try {
+      const url = UrlConfig.me.isFollowing.replace(':id', id)
+      const response = await axiosPrivate.get(url)
+      setFollow(response.data.data)
+    } catch (err) {}
+  }
+  const followingOtherUser = async (id: any) => {
+    try {
+      const url = UrlConfig.me.followingOtherUser
+      await axiosPrivate.post(url, { id: id })
+    } catch (err) {}
+  }
+  const unfollow = async (id: any) => {
+    try {
+      const url = UrlConfig.me.unfollow.replace(':id', id)
+      await axiosPrivate.delete(url)
+    } catch (err) {}
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getUsers(userId)
         await getNumberOfFollow(userId)
+        await isFollowing(userId)
       } catch (error) {
         console.log(error)
       }
@@ -81,11 +103,34 @@ export default function page() {
   }, [])
   const [action, setAction] = useState(true)
   const [open, setOpen] = useState(false)
-
+  const handleFollow = () => {
+    if (follow === true) {
+      unfollow(userId)
+    } else {
+      followingOtherUser(userId)
+    }
+    setFollow((prev: boolean) => !prev)
+  }
+  console.log(data)
   return (
     <StyledProfile>
       <Box>
         <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
+        <Button
+          variant={follow ? 'outlined' : 'contained'}
+          sx={{
+            padding: '10px 20px',
+            width: '100px',
+            borderRadius: '18px',
+            position: 'absolute',
+            right: '100px',
+            top: '18%',
+            backgroundColor: follow ? 'white !important' : 'initial'
+          }}
+          onClick={handleFollow}
+        >
+          {follow ? 'Following' : 'Follow'}
+        </Button>
       </Box>
 
       <Grid container spacing={2}>
@@ -102,7 +147,7 @@ export default function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
-                      <LocationOnIcon fontSize='medium' /> United Kingdom
+                      <LocationOnIcon fontSize='medium' /> {data.address}
                     </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
