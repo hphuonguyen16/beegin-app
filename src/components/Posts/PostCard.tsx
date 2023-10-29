@@ -10,9 +10,12 @@ import ShareIcon from '@mui/icons-material/Share'
 import useResponsive from '@/hooks/useResponsive'
 import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { Post } from '@/types/post'
+import { timeSince } from '@/utils/changeDate'
+import PostDetail from './PostDetail'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
-  display: 'grid',
+  display: props.number === 0 ? 'none' : 'grid',
   gridGap: '5px',
   width: '100%',
   height: 'auto',
@@ -47,51 +50,69 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   }
 }))
 
-const images = [
-  // 'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-]
+interface PostCardProps {
+  post: Post
+}
 
-const PostCard = () => {
+const PostCard = ({ post }: PostCardProps) => {
   const [liked, setLiked] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
-  const handleLike = () => {
-    setLiked(!liked)
-  }
-  const getUsers = async () => {
+  const [open, setOpen] = React.useState(false)
+  const handleLike = async () => {
     try {
-      const response = await axiosPrivate.get(`${UrlConfig.me.getMe}`)
+      if (!liked) {
+        setLiked(true)
+        post.numLikes++
+        await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
+      } else {
+        setLiked(false)
+        post.numLikes--
+        await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
+      }
     } catch (err) {}
   }
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getUsers()
-        // You can do other things after fetching data if needed
-      } catch (error) {
-        // Handle errors here
-      }
-    }
 
-    fetchData() // Call the async function immediately
+  const openPostDetail = () => {
+    setOpen(true)
+  }
+  const closePostDetail = () => {
+    setOpen(false)
+  }
+
+  useEffect(() => {
+    const checkLiked = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
+        setLiked(response.data.data)
+      } catch (err) {}
+    }
+    checkLiked()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Add dependencies as needed
+  }, [])
+
   return (
     <Box>
+      <PostDetail
+        key={post._id}
+        post={post}
+        open={open}
+        liked={liked}
+        setLiked={setLiked}
+        handleClose={closePostDetail}
+        handleLike={handleLike}
+      />
       <Stack direction={'row'} gap={isMobile ? 1 : 3}>
         <Avatar
           sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
-          src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwXgjGKE09VrSaXebUnIUdPwDUvD003fJ-6zfbJIlPE4-it8WwGpaAzWTdUZOz1iiMT4g&usqp=CAU'
+          src={post.user.profile?.avatar}
         ></Avatar>
-        <Stack>
+        <Stack sx={{ minWidth: '100%' }}>
           <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
-            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold' }}>
-              Bear
+            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
+              {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
             </Typography>
-            <Typography
+            {/* <Typography
               sx={{
                 color: 'rgba(0, 0, 0, 0.50)',
                 fontSize: isMobile ? '10px' : '12px',
@@ -100,7 +121,7 @@ const PostCard = () => {
               }}
             >
               @real_bear
-            </Typography>
+            </Typography> */}
             <Box
               sx={{
                 width: '6px',
@@ -113,16 +134,16 @@ const PostCard = () => {
             <Typography
               sx={{
                 color: 'rgba(0, 0, 0, 0.50)',
-                fontSize: isMobile ? '13px' : '15px',
+                fontSize: isMobile ? '13px' : '13px',
                 fontWeight: 400,
                 wordWrap: 'break-word',
                 marginLeft: '15px'
               }}
             >
-              5 mins ago
+              {timeSince(new Date(post.createdAt))}
             </Typography>
           </Stack>
-          <Box sx={{ width: '50%', minWidth: !isMobile ? '80%' : '100%' }}>
+          <Box sx={{ width: '70%', minWidth: !isMobile ? '72%' : '100%' }}>
             <Box
               sx={{
                 margin: isMobile ? '5px 0' : '10px 0',
@@ -133,10 +154,10 @@ const PostCard = () => {
                 textOverflow: 'ellipsis'
               }}
             >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non ante nec nunc hendrerit laoreet.
+              {post.content}
             </Box>
-            <ImageContainerStyled number={images.length}>
-              {images.map((src, index) => (
+            <ImageContainerStyled number={post.images ? post.images.length : 0}>
+              {post.images?.map((src, index) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
               ))}
@@ -155,11 +176,15 @@ const PostCard = () => {
                 }}
               >
                 {liked ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
-                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>200.8k</span>
+                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
               </Button>
-              <Button>
+              <Button
+                onClick={() => {
+                  openPostDetail()
+                }}
+              >
                 <ChatBubbleOutlineIcon color='secondary' />{' '}
-                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>1.6k</span>
+                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
               </Button>
               <Button>
                 <ShareIcon color='secondary' />

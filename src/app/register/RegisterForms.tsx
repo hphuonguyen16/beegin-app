@@ -1,8 +1,10 @@
 'use client'
 
-import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import { useState } from 'react'
+import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem, IconButton } from '@mui/material'
+import { Edit, Delete } from '@mui/icons-material'
+import { useState, ChangeEvent } from 'react'
 import { Register } from '@/types/register'
+import ImageCropper from '@/components/common/ImageCropper'
 
 interface RegisterFormsProps {
   step: number
@@ -13,6 +15,16 @@ interface RegisterFormsProps {
 }
 
 const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErrors }: RegisterFormsProps) => {
+
+  const [editMode, setEditMode] = useState(false);
+  const [newAvatarUrl, setNewAvatarUrl] = useState("");
+  const getNewAvatarUrl = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setEditMode(true);
+      setNewAvatarUrl(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
   const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
     setFormValues({
@@ -26,7 +38,7 @@ const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErr
   }
 
   return (
-    <form>
+    <form className="w-full">
       <FormGroup sx={{ display: step === 0 ? '' : 'none' }}>
         <Stack spacing={3} className='w-full px-5'>
           <TextField
@@ -117,7 +129,47 @@ const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErr
           />
         </Stack>
       </FormGroup>
-      <FormGroup sx={{ display: step === 2 ? '' : 'none' }}></FormGroup>
+      <FormGroup sx={{ display: step === 2 ? '' : 'none' }}>
+        <Stack direction={"row"} alignItems={"center"} justifyContent={"center"}>
+          {editMode ? (<ImageCropper
+            cancelEdit={() => setEditMode(false)}
+            avatarUrl={newAvatarUrl}
+          />)
+            : (
+              // <input
+              //   type="file"
+              //   accept="image/png, image/jpeg, image/jpg"
+              //   onChange={getNewAvatarUrl}
+              //   className="mt-2 border border-solid border-black py-2 px-4 rounded cursor-pointer h-[300px] w-[300px] before:content-['Upload image']"
+              // />
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-[300px] h-[300px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-white hover:bg-white dark:border-gray-200 dark:hover:border-gray-100 dark:hover:bg-gray-100">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-8 h-8 mb-4 text-violet-800 dark:text-violet-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                    </svg>
+                    <p className="mb-2 text-sm text-violet-800 dark:text-violet-600"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                    <p className="text-xs text-violet-800 dark:text-violet-600">SVG, PNG, JPG or GIF</p>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    onChange={getNewAvatarUrl}
+                    className="hidden"
+                  />
+                  {/* <input id="dropzone-file" type="file" class="hidden" /> */}
+                </label>
+              </div>
+            )}
+          {
+            editMode && (<Stack direction={"column"} sx={{ ml: 2 }} spacing={1}>
+              {/* <IconButton><Edit /></IconButton> */}
+              <IconButton onClick={()=>setEditMode(false)}><Delete /></IconButton>
+            </Stack>)
+          }
+        </Stack>
+      </FormGroup>
     </form>
   )
 }

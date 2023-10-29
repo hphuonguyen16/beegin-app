@@ -18,6 +18,18 @@ const UrlConfig = {
     getMyNumberOfFollows: `/api/v1/follows/getNumberOfFollows/:id`,
     getMyFollowerList: `/api/v1/follows/getAllFollowers/:id`,
     getMyFollowingList: `/api/v1/follows/getAllFollowings/:id`
+  },
+  posts: {
+    getPosts: `/api/v1/posts`,
+    getComments: (postId: string) => `/api/v1/posts/${postId}/comments`,
+    getMyPosts: `/api/v1/posts/me`,
+    likePost: (postId: string) => `/api/v1/posts/${postId}/like`,
+    unlikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
+    checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`
+  },
+  comments: {
+    likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
+    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
   }
 }
 

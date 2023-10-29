@@ -22,6 +22,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
+import ProfilePopover from './ProfilePopover'
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ const HeaderBar = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   marginRight: '25px',
   alignItems: 'center',
-  padding: theme.spacing(2),
+  padding: theme.spacing(3),
 
   [theme.breakpoints.down('sm')]: {
     // Media query for screens with a width of 600px or less (mobile)
@@ -80,8 +81,8 @@ const HeaderBar = styled('div')(({ theme }) => ({
 }))
 
 const StyledIconBox = styled('div')(({ theme }) => ({
-  width: '60px',
-  height: '60px',
+  width: '55px',
+  height: '55px',
   borderRadius: '50%',
   backgroundColor: theme.palette.primary.light,
   display: 'flex',
@@ -89,24 +90,24 @@ const StyledIconBox = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   cursor: 'pointer',
   '& svg': {
-    fontSize: '28px',
+    fontSize: '24px',
     color: 'white'
   },
   boxShadow: '-7px 10px 21px 1px rgba(204.44, 128.17, 240.32, 0.30)'
 }))
 
 const StyledIconNotifBox = styled('div')(({ theme }) => ({
-  width: '60px',
-  height: '60px',
+  width: '55px',
+  height: '55px',
   borderRadius: '50%',
-  backgroundColor: 'white',
+  backgroundColor: 'transparent',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
   border: `1px solid ${theme.palette.primary.light}`,
   '& svg': {
-    fontSize: '28px',
+    fontSize: '24px',
     color: theme.palette.primary.light
   }
 }))
@@ -123,6 +124,13 @@ const Layout = ({ children }: PropsWithChildren) => {
   const isMobile = useResponsive('down', 'sm')
   const [isLoading, setIsLoading] = React.useState(true)
   const pathname = usePathname() // Get the current route from the router
+  
+	const logOut = async () => {
+		// deleteCookie("access_token", { path: "/" , domain: "localhost"});
+		// deleteCookie("userId", { path: "/" , domain: "localhost"})
+		// await signOut({ redirect: false });
+		window.location.href = "/login";
+	};
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -146,7 +154,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       <Main className={poppins.className}>
         {!isMobile ? (
           <HeaderBar>
-            <FormControl sx={{ width: '700px' }}>
+            <FormControl sx={{ width: '700px', justifyContent: 'center' }}>
               <TextField
                 size='small'
                 variant='outlined'
@@ -158,7 +166,7 @@ const Layout = ({ children }: PropsWithChildren) => {
                   },
                   background: 'white',
                   borderRadius: '10px',
-                  marginBottom: '15px'
+                  // marginBottom: '15px'
                 }}
                 //   onChange={handleChange}
                 InputProps={{
@@ -176,11 +184,7 @@ const Layout = ({ children }: PropsWithChildren) => {
                   <NotificationsRoundedIcon />
                 </StyledIconNotifBox>
               </Button>
-              <Button sx={{ borderRadius: '50%' }}>
-                <StyledIconBox>
-                  <Person2RoundedIcon />
-                </StyledIconBox>
-              </Button>
+              <ProfilePopover signOutFn={() => logOut()}></ProfilePopover>
             </Stack>
           </HeaderBar>
         ) : (

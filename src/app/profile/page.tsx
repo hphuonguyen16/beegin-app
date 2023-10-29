@@ -10,7 +10,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from './Friends'
 import EditProfile from './EditProfile'
-import Post from '../../components/Posts/PostCard'
+import PostCard from '../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 // hooks
@@ -50,6 +50,7 @@ const ButtonCustom = styled('div')(({ theme }) => ({
 function page() {
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState([])
+  const [postsData, setPostsData] = useState<Post[]>([])
   const [number, setNumber] = useState([])
   const getUsers = async () => {
     try {
@@ -65,6 +66,16 @@ function page() {
       setNumber(response.data.data)
     } catch (err) {}
   }
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
+        setPostsData(response.data.data)
+      } catch (error) {}
+    }
+    fetchPosts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [1])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -260,7 +271,10 @@ function page() {
             <Posts>
               {action === true ? (
                 <Box padding={3}>
-                  <Post></Post>
+                  {' '}
+                  {postsData.map((post, index) => (
+                    <PostCard key={index} post={post} />
+                  ))}
                 </Box>
               ) : (
                 <Friends userId='me'></Friends>

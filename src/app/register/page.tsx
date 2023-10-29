@@ -37,7 +37,7 @@ import Image from 'next/image'
 import RegisterForms from './RegisterForms'
 
 // assets
-import LoginBanner from '@/assets/login_banner.jpg'
+import SignupBanner from '@/assets/signup_banner.jpg'
 import CustomSnackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
 import { sassFalse } from 'sass'
@@ -64,49 +64,51 @@ const StyledRoot = styled('div')(({ theme }) => ({
   }
 }))
 
-const StyledBanner = styled('div')(({ theme }) => ({
-  width: '30%',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  margin: '12px',
+const StyledBanner = styled("div")(({ theme }) => ({
+  width: "42%",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  margin: "12px",
   borderTopLeftRadius: BORDER_RADIUS,
-  borderBottomLeftRadius: BORDER_RADIUS
-}))
+  borderBottomLeftRadius: BORDER_RADIUS,
+}));
 
 const StyledForm = styled(Container)(({ theme }) => ({
   margin: 0,
-  minWidth: '70%',
-  width: 'auto',
-  height: '100%',
+  minWidth: "58%",
+  width: "auto",
+  height: "100%",
   zIndex: 10,
   borderRadius: BORDER_RADIUS,
-  display: 'flex',
-  justifyContent: 'center'
-}))
+  display: "flex",
+  justifyContent: "center",
+}));
 
-const StyledContent = styled('div')(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    width: '80%',
-    maxWidth: 420,
-    margin: 'auto',
-    display: 'flex',
-    height: '100%',
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    padding: theme.spacing(8, 0)
+
+const StyledContent = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up("md")]: {
+    width: "80%",
+    maxWidth: 480,
+    margin: "auto",
+    display: "flex",
+    height: "100%",
+    justifyContent: "space-between",
+    flexDirection: "column",
+    padding: theme.spacing(6, 0),
   },
-  [theme.breakpoints.down('md')]: {
-    width: '85%',
-    maxWidth: 420,
-    margin: 'auto',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
+  [theme.breakpoints.down("md")]: {
+    width: "95%",
+    maxWidth: 480,
+    margin: "auto",
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "column",
     padding: theme.spacing(10, 0),
-    alignItems: 'center'
-  }
-}))
+    alignItems: "center",
+    height: "100%",
+  },
+}));
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -220,10 +222,10 @@ export default function Register() {
   const handleSubmit = () => {
     axios
       .post(UrlConfig.user.signup, formValues)
-      .then((res) => {
+      .then((res: any) => {
         setSuccess(true)
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setSnack({
           open: true,
           message: err.response.data.message,
@@ -233,7 +235,7 @@ export default function Register() {
   }
   const mdUp = useResponsive('up', 'md')
 
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(2)
   const isLastStep = activeStep === steps.length - 1
 
   function _sleep(ms: number) {
@@ -275,7 +277,7 @@ export default function Register() {
     return (
       <>
         <CustomSnackbar />
-        <title> Login | Beegin </title>
+        <title> Signup | Beegin </title>
         {!success ? (
           <StyledRoot>
             <StyledForm>
@@ -303,7 +305,7 @@ export default function Register() {
                   setFormErrors={setFormErrors}
                 />
 
-                <Stack direction={'row'} justifyContent={'space-between'}>
+                <Stack direction={'row'} justifyContent={'space-between'} className="w-full">
                   {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
                   <div>
                     <Button type='submit' variant='contained' color='primary' onClick={_handleSubmit}>
@@ -323,24 +325,22 @@ export default function Register() {
               <StyledBanner>
                 <Box
                   sx={{
-                    width: '100%',
-                    height: '100%',
-                    position: 'relative'
-                  }}
-                >
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}>
                   <Image
-                    style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
+                    style={{ objectFit: "cover", borderRadius: BORDER_RADIUS, }}
                     fill
-                    src={LoginBanner}
-                    alt='login'
+                    src={SignupBanner}
+                    alt="signup"
                   />
                 </Box>
               </StyledBanner>
             )}
-          </StyledRoot>
-        ) : (
+          </StyledRoot>) : (
           <RegistrationComplete />
         )}
       </>
-    )
+    );
 }
