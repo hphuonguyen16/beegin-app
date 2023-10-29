@@ -9,19 +9,20 @@ import ImageCropper from '@/components/common/ImageCropper'
 interface RegisterFormsProps {
   step: number
   formValues: Register
-  formErrors: Register
+  formErrors: Register,
   setFormValues: (formValues: Register) => void
+  setCropper: any,
   setFormErrors: (formErrors: Register) => void
 }
 
-const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErrors }: RegisterFormsProps) => {
+const RegisterForms = ({ step, formValues, setFormValues, setCropper, formErrors, setFormErrors }: RegisterFormsProps) => {
 
   const [editMode, setEditMode] = useState(false);
-  const [newAvatarUrl, setNewAvatarUrl] = useState("");
-  const getNewAvatarUrl = (e: ChangeEvent<HTMLInputElement>) => {
+  const [newAvatar, setNewAvatar] = useState("");
+  const getNewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setEditMode(true);
-      setNewAvatarUrl(URL.createObjectURL(e.target.files[0]));
+      setNewAvatar(URL.createObjectURL(e.target.files[0]));
     }
   };
 
@@ -133,7 +134,8 @@ const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErr
         <Stack direction={"row"} alignItems={"center"} justifyContent={"center"}>
           {editMode ? (<ImageCropper
             cancelEdit={() => setEditMode(false)}
-            avatarUrl={newAvatarUrl}
+            avatarUrl={newAvatar}
+            setCropper={setCropper}
           />)
             : (
               // <input
@@ -155,7 +157,7 @@ const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErr
                     id="dropzone-file"
                     type="file"
                     accept="image/png, image/jpeg, image/jpg"
-                    onChange={getNewAvatarUrl}
+                    onChange={getNewAvatar}
                     className="hidden"
                   />
                   {/* <input id="dropzone-file" type="file" class="hidden" /> */}
@@ -165,7 +167,7 @@ const RegisterForms = ({ step, formValues, setFormValues, formErrors, setFormErr
           {
             editMode && (<Stack direction={"column"} sx={{ ml: 2 }} spacing={1}>
               {/* <IconButton><Edit /></IconButton> */}
-              <IconButton onClick={()=>setEditMode(false)}><Delete /></IconButton>
+              <IconButton onClick={() => setEditMode(false)}><Delete /></IconButton>
             </Stack>)
           }
         </Stack>

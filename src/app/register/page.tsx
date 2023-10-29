@@ -175,6 +175,34 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture']
 
 export default function Register() {
   let redirectUrl = ''
+  const [cropper, setCropper] = useState<any>();
+  const getCropData = async () => {
+    if (cropper) {
+      const file = await fetch(cropper.getCroppedCanvas().toDataURL())
+        .then((res) => res.blob())
+        .then((blob) => {
+          return new File([blob], "avatar.png", { type: "image/png" });
+        });
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        // formData.append('public_id', 'testttt@gmail.com1');
+        formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`);
+        return await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => response.json())
+          .then((data) => {
+            if (data.secure_url !== '') {
+              const uploadedFileUrl = data.secure_url;
+              return uploadedFileUrl
+            }
+          })
+          .catch(err => console.error(err));
+      }
+    }
+  }
   const [formValues, setFormValues] = useState<Register>({
     email: '',
     password: '',
@@ -219,9 +247,10 @@ export default function Register() {
     return hasError
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    var avatar = await getCropData()
     axios
-      .post(UrlConfig.user.signup, formValues)
+      .post(UrlConfig.user.signup, {...formValues, avatar: avatar})
       .then((res: any) => {
         setSuccess(true)
       })
@@ -235,7 +264,7 @@ export default function Register() {
   }
   const mdUp = useResponsive('up', 'md')
 
-  const [activeStep, setActiveStep] = useState(2)
+  const [activeStep, setActiveStep] = useState(0)
   const isLastStep = activeStep === steps.length - 1
 
   function _sleep(ms: number) {
@@ -253,6 +282,7 @@ export default function Register() {
   function _handleSubmit() {
     if (isLastStep) {
       // _submitForm(values, actions);
+      // var avatar = ;
       handleSubmit()
     } else if (activeStep === 0) {
       const hasError = checkFormValues(['email', 'password', 'passwordConfirm'])
@@ -301,6 +331,7 @@ export default function Register() {
                   step={activeStep}
                   formValues={formValues}
                   setFormValues={setFormValues}
+                  setCropper={setCropper}
                   formErrors={formErrors}
                   setFormErrors={setFormErrors}
                 />
