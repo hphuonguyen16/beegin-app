@@ -7,4 +7,5 @@ export interface Register {
   gender: boolean | string
   address?: string | boolean
   bio?: string | boolean
+  avatar?: string | boolean
 }
