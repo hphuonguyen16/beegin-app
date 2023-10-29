@@ -8,7 +8,10 @@ const UrlConfig = {
     getMe: `/api/v1/users/me`,
     getMyNumberOfFollows: `/api/v1/follows/getMyNumberOfFollows`,
     getMyFollowerList: `/api/v1/follows/getMyFollowerList`,
-    getMyFollowingList: `/api/v1/follows/getMyFollowingList`
+    getMyFollowingList: `/api/v1/follows/getMyFollowingList`,
+    isFollowing: `/api/v1/follows/isFollowing/:id`,
+    unfollow: `/api/v1/follows/unfollow/:id`,
+    followingOtherUser: `/api/v1/follows/followingOtherUser`
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,

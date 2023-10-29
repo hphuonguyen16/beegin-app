@@ -13,7 +13,6 @@ import EditProfile from './EditProfile'
 import PostCard from '../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
-import { Post } from '@/types/post'
 // hooks
 
 import React, { useEffect, useState } from 'react'
@@ -31,7 +30,8 @@ const Information = styled('div')(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)'
+  transform: 'translateY(-40px)',
+  minWidth: '200px'
 }))
 const Posts = styled('div')(({ theme }) => ({
   height: '730px',
@@ -132,7 +132,7 @@ function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
-                      <LocationOnIcon fontSize='medium' /> United Kingdom
+                      <LocationOnIcon fontSize='medium' /> {data.address}
                     </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
