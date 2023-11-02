@@ -1,16 +1,16 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Grid, Paper, Typography, Box, Stack, styled } from '@mui/material'
-import SuggestFollowCard from '@/components/SuggestFollow/SuggestFollowCard'
+import CardUser from './UserCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 
 function Friends({ userId }: { userId: string }) {
-  console.log(userId)
   const axiosPrivate = useAxiosPrivate()
   const [listFollowing, setFollowing] = useState([])
   const [listFollower, setFollower] = useState([])
   const [buttonFollow, setButtonFollow] = useState(true)
+
   const getListFollowing = async (userId: any) => {
     try {
       let response
@@ -66,7 +66,12 @@ function Friends({ userId }: { userId: string }) {
               fontWeight: '200',
               textAlign: 'center',
               fontSize: '16px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+
+              '&:hover': {
+                color: '#9747FF',
+                fontWeight: 'bold'
+              }
             }}
             onClick={() => setButtonFollow(true)}
           >
@@ -88,7 +93,11 @@ function Friends({ userId }: { userId: string }) {
               fontWeight: '200',
               textAlign: 'center',
               fontSize: '16px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#9747FF',
+                fontWeight: 'bold'
+              }
             }}
             onClick={() => setButtonFollow(false)}
           >
@@ -98,16 +107,12 @@ function Friends({ userId }: { userId: string }) {
       </Grid>
       <Box>
         {buttonFollow === true
-          ? listFollowing.map((subArray: Array<any>, index) =>
-              subArray.map((user: any, userIndex: any) => (
-                <SuggestFollowCard key={userIndex} user={user} isFollowing={true} />
-              ))
-            )
-          : listFollower.map((subArray: Array<any>, index) =>
-              subArray.map((user: any, userIndex: any) => (
-                <SuggestFollowCard key={userIndex} user={user} isFollowing={false} />
-              ))
-            )}
+          ? listFollowing.map((user: any, index) => (
+              <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
+            ))
+          : listFollower.map((user: any, index) => (
+              <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
+            ))}
       </Box>
     </Stack>
   )

@@ -25,11 +25,12 @@ const UrlConfig = {
     getMyPosts: `/api/v1/posts/me`,
     likePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     unlikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
-    checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`
+    checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
+    getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`
   },
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
-    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
+    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
   }
 }
 
