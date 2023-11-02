@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card } from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
@@ -16,6 +16,7 @@ import UrlConfig from '@/config/urlConfig'
 // hooks
 
 import React, { useEffect, useState } from 'react'
+import { Post } from '@/types/post'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -26,32 +27,56 @@ const StyledProfile = styled('div')(({ theme }) => ({
   position: 'relative'
 }))
 
-const Information = styled('div')(({ theme }) => ({
+const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
   transform: 'translateY(-40px)',
-  minWidth: '200px'
+  minWidth: '300px'
 }))
-const Posts = styled('div')(({ theme }) => ({
-  height: '730px',
+const Posts = styled(Card)(({ theme }) => ({
+  height: '100%',
+  minHeight: '730px',
   borderRadius: '15px',
   backgroundColor: 'white',
   transform: 'translateY(-40px)'
 }))
-const ButtonCustom = styled('div')(({ theme }) => ({
+const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
   height: '80px',
   borderRadius: '15px',
   backgroundColor: '#FEFAFA',
-  border: '1px solid #D9D9D9',
-  cursor: 'pointer'
+  border: '1px solid #D9D9D9'
 }))
 function page() {
   const axiosPrivate = useAxiosPrivate()
-  const [data, setData] = useState([])
+  const [action, setAction] = useState(true)
+  const [open, setOpen] = useState(false)
+  const [data, setData] = useState<{
+    firstname: string
+    lastname: string
+    avatar: string
+    birthday: Date
+    background: string
+    address: string
+    bio: string
+    gender: boolean
+  }>({
+    firstname: '',
+    lastname: '',
+    avatar: '',
+    birthday: new Date(),
+    background: '',
+    address: '',
+    bio: '',
+    gender: true
+  })
   const [postsData, setPostsData] = useState<Post[]>([])
-  const [number, setNumber] = useState([])
+  const [numberPost, setNumberPost] = useState(0)
+  const [number, setNumber] = useState<{ NumberOfFollowing: string; NumberOfFollower: string }>({
+    NumberOfFollowing: '',
+    NumberOfFollower: ''
+  })
   const getUsers = async () => {
     try {
       const url = UrlConfig.me.getMe
@@ -71,7 +96,11 @@ function page() {
       try {
         const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
         setPostsData(response.data.data)
-      } catch (error) {}
+        setNumberPost(response.data.results)
+        console.log(response.data.data)
+      } catch (error) {
+        console.log(error)
+      }
     }
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,9 +115,7 @@ function page() {
       }
     }
     fetchData()
-  }, [])
-  const [action, setAction] = useState(true)
-  const [open, setOpen] = useState(false)
+  }, [1])
 
   const handleOpen = () => {
     setOpen(true)
@@ -96,6 +123,7 @@ function page() {
   const handleClose = () => {
     setOpen(false)
   }
+  console.log(numberPost, postsData)
   return (
     <StyledProfile>
       <Box>
@@ -169,7 +197,7 @@ function page() {
                               marginTop: '6px !important'
                             }}
                           >
-                            1.2K
+                            {numberPost}
                           </Typography>
                         </Stack>
                       </Grid>
@@ -272,6 +300,17 @@ function page() {
               {action === true ? (
                 <Box padding={3}>
                   {' '}
+                  <Typography
+                    variant='h3'
+                    sx={{
+                      fontWeight: 'medium',
+                      fontSize: '25px',
+                      fontFamily: 'Inter',
+                      marginBottom: '15px !important'
+                    }}
+                  >
+                    Posts
+                  </Typography>
                   {postsData.map((post, index) => (
                     <PostCard key={index} post={post} />
                   ))}

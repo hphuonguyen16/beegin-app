@@ -1,22 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card } from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from '../Friends'
-import Post from '../../../components/Posts/PostCard'
+import PostCard from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { Link } from 'react-router-dom'
-
+import ButtonFollow from '../../../components/ButtonFollow/ButtonFollow'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
+import { Post } from '@/types/post'
 
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
@@ -26,25 +28,26 @@ const StyledProfile = styled('div')(({ theme }) => ({
   position: 'relative'
 }))
 
-const Information = styled('div')(({ theme }) => ({
+const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)'
+  transform: 'translateY(-40px)',
+  minWidth: '300px'
 }))
-const Posts = styled('div')(({ theme }) => ({
-  height: '730px',
+const Posts = styled(Card)(({ theme }) => ({
+  height: '100%',
+  minHeight: '730px',
   borderRadius: '15px',
   backgroundColor: 'white',
   transform: 'translateY(-40px)'
 }))
-const ButtonCustom = styled('div')(({ theme }) => ({
+const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
   height: '80px',
   borderRadius: '15px',
   backgroundColor: '#FEFAFA',
-  border: '1px solid #D9D9D9',
-  cursor: 'pointer'
+  border: '1px solid #D9D9D9'
 }))
 
 export default function page() {
@@ -53,8 +56,31 @@ export default function page() {
   const segments = pathname.split('/')
   const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
-  const [data, setData] = useState([])
-  const [number, setNumber] = useState([])
+  const [data, setData] = useState<{
+    firstname: string
+    lastname: string
+    avatar: string
+    birthday: Date
+    background: string
+    address: string
+    bio: string
+    gender: boolean
+  }>({
+    firstname: '',
+    lastname: '',
+    avatar: '',
+    birthday: new Date(),
+    background: '',
+    address: '',
+    bio: '',
+    gender: true
+  })
+  const [postsData, setPostsData] = useState<Post[]>([])
+  const [numberPost, setNumberPost] = useState(0)
+  const [number, setNumber] = useState<{ NumberOfFollowing: string; NumberOfFollower: string }>({
+    NumberOfFollowing: '',
+    NumberOfFollower: ''
+  })
   const [follow, setFollow] = useState(true)
   const getUsers = async (id: any) => {
     try {
@@ -90,6 +116,19 @@ export default function page() {
     } catch (err) {}
   }
   useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
+        setPostsData(response.data.data)
+        setNumberPost(response.data.results)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchPosts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [1])
+  useEffect(() => {
     const fetchData = async () => {
       try {
         await getUsers(userId)
@@ -116,21 +155,7 @@ export default function page() {
     <StyledProfile>
       <Box>
         <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
-        <Button
-          variant={follow ? 'outlined' : 'contained'}
-          sx={{
-            padding: '10px 20px',
-            width: '100px',
-            borderRadius: '18px',
-            position: 'absolute',
-            right: '100px',
-            top: '18%',
-            backgroundColor: follow ? 'white !important' : 'initial'
-          }}
-          onClick={handleFollow}
-        >
-          {follow ? 'Following' : 'Follow'}
-        </Button>
+        <ButtonFollow userId={userId}></ButtonFollow>
       </Box>
 
       <Grid container spacing={2}>
@@ -184,7 +209,7 @@ export default function page() {
                               marginTop: '6px !important'
                             }}
                           >
-                            1.2K
+                            {numberPost}
                           </Typography>
                         </Stack>
                       </Grid>
@@ -286,7 +311,21 @@ export default function page() {
             <Posts>
               {action === true ? (
                 <Box padding={3}>
-                  <Post></Post>
+                  {' '}
+                  <Typography
+                    variant='h3'
+                    sx={{
+                      fontWeight: 'medium',
+                      fontSize: '25px',
+                      fontFamily: 'Inter',
+                      marginBottom:'15px !important'
+                    }}
+                  >
+                    Posts
+                  </Typography>
+                  {postsData.map((post, index) => (
+                    <PostCard key={index} post={post} />
+                  ))}
                 </Box>
               ) : (
                 <Friends userId={userId}></Friends>

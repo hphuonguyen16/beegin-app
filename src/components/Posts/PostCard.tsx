@@ -13,6 +13,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { Post } from '@/types/post'
 import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
+import { useRouter } from 'next/navigation'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -56,9 +57,11 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [liked, setLiked] = React.useState(false)
+  console.log(post.user)
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
+  const router = useRouter()
   const handleLike = async () => {
     try {
       if (!liked) {
@@ -79,7 +82,9 @@ const PostCard = ({ post }: PostCardProps) => {
   const closePostDetail = () => {
     setOpen(false)
   }
-
+  const redirectToProfile = (id: string) => {
+    router.push(`/profile/${id}`)
+  }
   useEffect(() => {
     const checkLiked = async () => {
       try {
@@ -108,7 +113,11 @@ const PostCard = ({ post }: PostCardProps) => {
           src={post.user.profile?.avatar}
         ></Avatar>
         <Stack sx={{ minWidth: '100%' }}>
-          <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
+          <Stack
+            direction={'row'}
+            sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
+            onClick={() => redirectToProfile(post.user._id)}
+          >
             <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
               {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
             </Typography>

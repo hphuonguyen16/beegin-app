@@ -30,7 +30,16 @@ const style = {
 interface ModalProps {
   open: boolean
   onClose: () => void
-  data: Object
+  data: {
+    firstname: string
+    lastname: string
+    avatar: string
+    birthday: Date
+    background: string
+    address: string
+    bio: string
+    gender: boolean
+  }
 }
 
 const ModalComponent = (props: ModalProps) => {
@@ -42,8 +51,8 @@ const ModalComponent = (props: ModalProps) => {
     bio: '',
     background: '',
     avatar: '',
-    gender: '',
-    birthday: ''
+    gender: false,
+    birthday: new Date()
   })
   useEffect(() => {
     if (data) {
@@ -63,12 +72,13 @@ const ModalComponent = (props: ModalProps) => {
   // const handleChange = (event: any) => {
   //   setGender(event.target.value)
   // }
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: any) => {
     const { name, value } = event.target
     setFormValues({
       ...formValues,
       [name]: value
     })
+    console.log(formValues)
   }
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-title' aria-describedby='modal-description'>
@@ -77,7 +87,7 @@ const ModalComponent = (props: ModalProps) => {
           <FileInput></FileInput>
         </Box>
         <Avatar
-          src={data.avatar}
+          src={formValues.avatar}
           sx={{ width: '100px', height: '100px', marginLeft: '25px', transform: 'translateY(-40px)' }}
         >
           <FileInput></FileInput>
