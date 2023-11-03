@@ -3,10 +3,15 @@ import Link from 'next/link'
 
 interface HashtagWrapperProps {
   text: string
-  className: string
+  length?: number | undefined
 }
 
-const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, className }) => {
+const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, length }) => {
+  let isOverLength = false
+  if (length && text.length > length) {
+    text = text.slice(0, length)
+    isOverLength = true
+  }
   const regex = /#(\w+)/g
   const matches: { hashtag: string; index: number }[] = []
   let match
@@ -22,15 +27,11 @@ const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, className }) => {
     const { hashtag, index } = match
 
     // Add the text segment before the hashtag
-    segments.push(
-      <span key={lastIndex} className={className}>
-        {text.slice(lastIndex, index)}
-      </span>
-    )
+    segments.push(<span key={lastIndex}>{text.slice(lastIndex, index)}</span>)
 
     // Add the hashtag
     segments.push(
-      <Link key={index} href={''} className={className} style={{ color: 'blue' }}>
+      <Link key={index} href={''} style={{ color: 'blue' }}>
         {hashtag}
       </Link>
     )
@@ -39,12 +40,16 @@ const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, className }) => {
   }
 
   // Add the remaining text
-  segments.push(
-    <span key={lastIndex} className={className}>
-      {text.slice(lastIndex)}
-    </span>
-  )
+  segments.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>)
 
+  if (isOverLength) {
+    segments.push(
+      <span key={lastIndex + 1} style={{ fontWeight: '600' }}>
+        {' ...'}
+      </span>
+    )
+    return <>{segments}</>
+  }
   return <>{segments}</>
 }
 

@@ -20,6 +20,7 @@ const UrlConfig = {
     getMyFollowingList: `/api/v1/follows/getAllFollowings/:id`
   },
   posts: {
+    createPost: `/api/v1/posts`,
     getPosts: `/api/v1/posts`,
     getComments: (postId: string) => `/api/v1/posts/${postId}/comments`,
     getMyPosts: `/api/v1/posts/me`,
