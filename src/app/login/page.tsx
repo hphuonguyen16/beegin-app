@@ -230,8 +230,8 @@ export default function LoginPage() {
               Login
             </Button>
             <Typography variant='body2' sx={{ mt: 1, mb: 8, width: '100%' }} textAlign={'right'}>
-              Don’t have an account?
-              <Link variant='subtitle2'>Get started</Link>
+              Don’t have an account yet? 
+             {' '} <Link variant='body2' href="/register">Get started</Link>
             </Typography>
           </StyledContent>
         </Container>

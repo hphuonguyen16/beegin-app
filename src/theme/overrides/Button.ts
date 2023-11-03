@@ -50,6 +50,16 @@ export default function Button(theme: CustomTheme) {
           }
         }
       }
+    },
+    MuiIconButton:{
+      styleOverrides: {
+        root: {
+          color: theme.palette.primary.main,
+          '&:hover': {
+            boxShadow: 'none'
+          }
+        },
+      }
     }
   }
 }

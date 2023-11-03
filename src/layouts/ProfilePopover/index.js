@@ -20,7 +20,7 @@ import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
 // hooks
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-// import useTranslation from "next-translate/useTranslation";
+import useTranslation from "next-translate/useTranslation";
 
 // utils
 import { bgBlur } from "@/utils/cssStyles";
@@ -54,9 +54,10 @@ const StyledIconBox = styled('div')(({ theme }) => ({
 
 //----------------------------------------------------------------  
 
-const ProfilePopover = ({ signOutFn }) => {
-	// const { t } = useTranslation();
+const ProfilePopover = () => {
+	const { t } = useTranslation();
 	const { data: session } = useSession();
+	const router = useRouter()
 	const [profileImage, setProfileImage] = useState(null);
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -86,6 +87,13 @@ const ProfilePopover = ({ signOutFn }) => {
 	// 		setProfileImage(data);
 	// 	});
 	// }, []);
+
+	const signOutFn = () => {
+		console.log("sign out")
+		localStorage.clear();
+		router.push('/login')
+	}
+
 	return (
 		<div>
 			<Button sx={{
@@ -119,7 +127,7 @@ const ProfilePopover = ({ signOutFn }) => {
 							<ListItemIcon sx={{ alignItems: "center" }}>
 								<PersonOutline fontSize="small" />
 							</ListItemIcon>
-							{/* <ListItemText>{t("common:ManageProfile")}</ListItemText> */}
+							<ListItemText>{t("common:ManageProfile")}</ListItemText>
 						</MenuItem>
 					</Link>
 					<Link href="/">
@@ -147,7 +155,7 @@ const ProfilePopover = ({ signOutFn }) => {
 						<ListItemIcon sx={{ color: "#FF4842" }}>
 							<Logout fontSize="small" />
 						</ListItemIcon>
-						{/* <ListItemText sx={{ "& span": { color: "#FF4842 !important" } }}>{t("common:SignOut")}</ListItemText> */}
+						<ListItemText sx={{ "& span": { color: "#FF4842 !important" } }}>{t("common:SignOut")}</ListItemText>
 					</MenuItem>
 				</Stack>
 			</Popover>
