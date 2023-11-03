@@ -13,7 +13,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { Post } from '@/types/post'
 import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
-import { useRouter } from 'next/navigation'
+import HashtagWrapper from '@/components/common/HashtagWrapper'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -61,7 +61,17 @@ const PostCard = ({ post }: PostCardProps) => {
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
-  const router = useRouter()
+
+  const wrapTags = (text: string, regexY: RegExp, className?: string) => {
+    const regex = /#(\w+)/g
+    const matches: any = {}
+    let match
+
+    while ((match = regex.exec(text))) {
+      matches[match.index] = match[0]
+    }
+  }
+
   const handleLike = async () => {
     try {
       if (!liked) {
@@ -163,7 +173,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 textOverflow: 'ellipsis'
               }}
             >
-              {post.content}
+              <HashtagWrapper text={post.content} className='hashtag' />
             </Box>
             <ImageContainerStyled number={post.images ? post.images.length : 0}>
               {post.images?.map((src, index) => (

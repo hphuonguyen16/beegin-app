@@ -1,12 +1,14 @@
 'use client'
 import PostCard from '@/components/Posts/PostCard'
-import { Box, Typography, Stack, FormControl, TextField, Avatar, Grid } from '@mui/material'
+import { Box, Typography, Stack, FormControl, TextField, Avatar, Grid, Modal } from '@mui/material'
 import PostLayout from '@/layouts/PostLayout'
 import useResponsive from '@/hooks/useResponsive'
 import { Post } from '@/types/post'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { useState, useEffect } from 'react'
 import urlConfig from '@/config/urlConfig'
+import RootModal from '@/components/common/modals/RootModal'
+import CreatePost from '@/components/Posts/CreatePost'
 
 // const postData: Post[] = [
 //   {
@@ -80,6 +82,26 @@ export default function Home() {
   return (
     <PostLayout>
       <Box>
+        <Modal open={true}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              //   width: isMobile ? '80vw' : width ? width : '100vw',
+              width: isMobile ? '80vw' : '40vw',
+              height: isMobile ? '80vh' : '60vh',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              borderRadius: 2,
+              padding: isMobile ? 3 : '20px'
+            }}
+          >
+            <CreatePost />
+          </Box>
+        </Modal>
+
         <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }}>
           Feeds
         </Typography>
