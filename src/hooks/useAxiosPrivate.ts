@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken()
-  const { accessToken, setAccessToken } = useAuth()
+  const { accessToken, setAccessToken, setUser } = useAuth()
   const router = useRouter()
 
   useEffect(() => {

@@ -64,51 +64,50 @@ const StyledRoot = styled('div')(({ theme }) => ({
   }
 }))
 
-const StyledBanner = styled("div")(({ theme }) => ({
-  width: "42%",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  margin: "12px",
+const StyledBanner = styled('div')(({ theme }) => ({
+  width: '42%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  margin: '12px',
   borderTopLeftRadius: BORDER_RADIUS,
-  borderBottomLeftRadius: BORDER_RADIUS,
-}));
+  borderBottomLeftRadius: BORDER_RADIUS
+}))
 
 const StyledForm = styled(Container)(({ theme }) => ({
   margin: 0,
-  minWidth: "58%",
-  width: "auto",
-  height: "100%",
+  minWidth: '58%',
+  width: 'auto',
+  height: '100%',
   zIndex: 10,
   borderRadius: BORDER_RADIUS,
-  display: "flex",
-  justifyContent: "center",
-}));
+  display: 'flex',
+  justifyContent: 'center'
+}))
 
-
-const StyledContent = styled("div")(({ theme }) => ({
-  [theme.breakpoints.up("md")]: {
-    width: "80%",
+const StyledContent = styled('div')(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    width: '80%',
     maxWidth: 480,
-    margin: "auto",
-    display: "flex",
-    height: "100%",
-    justifyContent: "space-between",
-    flexDirection: "column",
-    padding: theme.spacing(6, 0),
+    margin: 'auto',
+    display: 'flex',
+    height: '100%',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    padding: theme.spacing(6, 0)
   },
-  [theme.breakpoints.down("md")]: {
-    width: "95%",
+  [theme.breakpoints.down('md')]: {
+    width: '95%',
     maxWidth: 480,
-    margin: "auto",
-    display: "flex",
-    justifyContent: "space-between",
-    flexDirection: "column",
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
     padding: theme.spacing(10, 0),
-    alignItems: "center",
-    height: "100%",
-  },
-}));
+    alignItems: 'center',
+    height: '100%'
+  }
+}))
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -175,31 +174,34 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture']
 
 export default function Register() {
   let redirectUrl = ''
-  const [cropper, setCropper] = useState<any>();
+  const [cropper, setCropper] = useState<any>()
   const getCropData = async () => {
     if (cropper) {
       const file = await fetch(cropper.getCroppedCanvas().toDataURL())
         .then((res) => res.blob())
         .then((blob) => {
-          return new File([blob], "avatar.png", { type: "image/png" });
-        });
-      if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        // formData.append('public_id', 'testttt@gmail.com1');
-        formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`);
-        return await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-          method: 'POST',
-          body: formData,
+          return new File([blob], 'avatar.png', { type: 'image/png' })
         })
-          .then(response => response.json())
+      if (file) {
+        const formData = new FormData()
+        formData.append('file', file)
+        // formData.append('public_id', 'testttt@gmail.com1');
+        formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
+        return await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: 'POST',
+            body: formData
+          }
+        )
+          .then((response) => response.json())
           .then((data) => {
             if (data.secure_url !== '') {
-              const uploadedFileUrl = data.secure_url;
+              const uploadedFileUrl = data.secure_url
               return uploadedFileUrl
             }
           })
-          .catch(err => console.error(err));
+          .catch((err) => console.error(err))
       }
     }
   }
@@ -250,7 +252,7 @@ export default function Register() {
   const handleSubmit = async () => {
     var avatar = await getCropData()
     axios
-      .post(UrlConfig.user.signup, {...formValues, avatar: avatar})
+      .post(UrlConfig.user.signup, { ...formValues, avatar: avatar })
       .then((res: any) => {
         setSuccess(true)
       })
@@ -336,7 +338,7 @@ export default function Register() {
                   setFormErrors={setFormErrors}
                 />
 
-                <Stack direction={'row'} justifyContent={'space-between'} className="w-full">
+                <Stack direction={'row'} justifyContent={'space-between'} className='w-full'>
                   {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
                   <div>
                     <Button type='submit' variant='contained' color='primary' onClick={_handleSubmit}>
@@ -356,22 +358,24 @@ export default function Register() {
               <StyledBanner>
                 <Box
                   sx={{
-                    width: "100%",
-                    height: "100%",
-                    position: "relative",
-                  }}>
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative'
+                  }}
+                >
                   <Image
-                    style={{ objectFit: "cover", borderRadius: BORDER_RADIUS, }}
+                    style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
                     fill
                     src={SignupBanner}
-                    alt="signup"
+                    alt='signup'
                   />
                 </Box>
               </StyledBanner>
             )}
-          </StyledRoot>) : (
+          </StyledRoot>
+        ) : (
           <RegistrationComplete />
         )}
       </>
-    );
+    )
 }
