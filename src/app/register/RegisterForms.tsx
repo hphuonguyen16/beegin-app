@@ -203,6 +203,39 @@ const RegisterForms = ({
           )}
         </Stack>
       </FormGroup>
+      <FormGroup sx={{ display: step === 3 ? '' : 'none' }}>
+        <Stack spacing={3} className='w-full px-5'>
+          <TextField
+            error={!formErrors.email}
+            id='email'
+            name='email'
+            label='Email'
+            value={formValues.email}
+            helperText={!formErrors.email && 'Please fill in your email'}
+            onChange={handleTextFieldChange}
+          />
+          <TextField
+            error={!formErrors.password}
+            id='password'
+            name='password'
+            type='password'
+            label='Password'
+            value={formValues.password}
+            helperText={!formErrors.password && 'Please fill in your password'}
+            onChange={handleTextFieldChange}
+          />
+          <TextField
+            error={!formErrors.passwordConfirm}
+            id='password'
+            name='passwordConfirm'
+            type='password'
+            label='Confirm Password'
+            value={formValues.passwordConfirm}
+            helperText={!formErrors.passwordConfirm && 'Please confirm your password'}
+            onChange={handleTextFieldChange}
+          />
+        </Stack>
+      </FormGroup>
     </form>
   )
 }

@@ -14,10 +14,11 @@ import {
   StepIcon,
   Box,
   Stepper,
-  CircularProgress
+  CircularProgress,
+  IconButton
 } from '@mui/material'
-import { LogoDev } from '@mui/icons-material'
-import { LockPerson, PersonSearch, AddAPhoto, Check } from '@mui/icons-material'
+import { ArrowBack, LogoDev } from '@mui/icons-material'
+import { LockPerson, PersonSearch, AddAPhoto, Check, Favorite } from '@mui/icons-material'
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector'
 import { StepIconProps } from '@mui/material/StepIcon'
 import { Register } from '@/types/register'
@@ -41,6 +42,7 @@ import SignupBanner from '@/assets/signup_banner.jpg'
 import CustomSnackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
 import { sassFalse } from 'sass'
+import Link from 'next/link'
 
 //----------------------------------------------------------------
 
@@ -57,7 +59,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
     transform: 'translate(-50%, -50%)',
     boxShadow: theme.shadows[18],
     borderRadius: BORDER_RADIUS,
-    background: theme.palette.background.paper
+    background: theme.palette.background.paper,
   },
   [theme.breakpoints.down('md')]: {
     height: '100vh'
@@ -158,7 +160,8 @@ function ColorlibStepIcon(props: StepIconProps) {
   const icons: { [index: string]: React.ReactElement } = {
     1: <LockPerson />,
     2: <PersonSearch />,
-    3: <AddAPhoto />
+    3: <AddAPhoto />,
+    4: <Favorite />
   }
 
   return (
@@ -168,7 +171,7 @@ function ColorlibStepIcon(props: StepIconProps) {
   )
 }
 
-const steps = ['Account credentials', 'Profile info', 'Profile picture']
+const steps = ['Account credentials', 'Profile info', 'Profile picture', 'Preferred topics']
 
 //----------------------------------------------------------------
 
@@ -298,6 +301,8 @@ export default function Register() {
       if (!hasError) {
         setActiveStep(activeStep + 1)
       }
+    } else {
+      setActiveStep(activeStep + 1)
     }
   }
 
@@ -315,6 +320,11 @@ export default function Register() {
         {!success ? (
           <StyledRoot>
             <StyledForm>
+              <Link href="/login">
+                <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
+                  <ArrowBack></ArrowBack>
+                </IconButton>
+              </Link>
               <StyledContent>
                 <Box>
                   <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
