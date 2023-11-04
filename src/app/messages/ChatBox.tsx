@@ -14,12 +14,16 @@ import { useAuth } from '@/context/AuthContext'
 import Image from 'next/image'
 import newConversationBanner from '@/assets/new_conversation_banner.png'
 import Picker from 'emoji-picker-react';
+import { io } from 'socket.io-client'
 
 const INFO_PANE_WIDTH = "30%";
 
 const ChatBox = ({ friend }: { friend: any }) => {
     const axiosPrivate = useAxiosPrivate()
     const { user } = useAuth();
+    const id = user?._id;
+    const socket = useRef();
+    const [arrivalMessage, setArrivalMessage] = useState<Message>(null);
 
     const [isInfoOpened, setIsInfoOpened] = useState(false);
     const [messages, setMessages] = useState<Message[]>([])
@@ -47,6 +51,14 @@ const ChatBox = ({ friend }: { friend: any }) => {
             setMessages(response.data.data)
         } catch (err) { }
     }
+
+    useEffect(() => {
+        if (user) {
+            socket.current = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`)
+            socket.current.emit('add-user', user._id)
+        }
+    }, [user])
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -66,12 +78,28 @@ const ChatBox = ({ friend }: { friend: any }) => {
 
     const sendMessage = async () => {
         try {
-            console.log("okookoo")
+            socket.current.emit('send-msg', {
+                sender: user?._id,
+                receiver: friend.user,
+                content: inputMessage
+            })
             const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { content: inputMessage });
-            setMessages([...messages, res.data.data])
+            setMessages([...messages, { fromSelf: true, content: inputMessage }])
             setInputMessage("")
         } catch (err) { }
     }
+
+    useEffect(() => {
+        if (socket.current) {
+            socket.current.on("msg-recieve", (content: string) => {
+                setArrivalMessage({ fromSelf: false, content: content });
+            });
+        }
+    });
+
+    useEffect(() => {
+        arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+    }, [arrivalMessage]);
 
     return <>
         <Box sx={{
@@ -96,8 +124,8 @@ const ChatBox = ({ friend }: { friend: any }) => {
                     }
                     {
                         messages.map((message, index) => {
-                            var isMyText = message.sender === user?._id;
-                            var isTopText = index == 0 || messages[index - 1].sender === user?._id;
+                            var isMyText = message.fromSelf;
+                            var isTopText = index == 0 || messages[index - 1].fromSelf;
                             return (
                                 <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
                                     {!isMyText && <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
@@ -174,7 +202,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
             anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'center',
-            }} 
+            }}
             transformOrigin={{
                 vertical: 'bottom',
                 horizontal: 'center',
