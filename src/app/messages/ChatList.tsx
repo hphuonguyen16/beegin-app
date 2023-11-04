@@ -21,8 +21,10 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
         index: number,
         friend: Profile,
     ) => {
-        setSelectedIndex(index);
-        setSelectedFriend(friend);
+        if (index != selectedIndex) {
+            setSelectedIndex(index);
+            setSelectedFriend(friend);
+        }
     };
 
 
@@ -30,8 +32,8 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
         try {
             let response = await axiosPrivate.get(`${UrlConfig.messages.getFriends}`)
             setFriends(response.data.data)
-            console.log(friends[0])
-            setSelectedFriend(friends[0])
+            setSelectedFriend(response.data.data[0])
+            setSelectedIndex(0);
         } catch (err) { }
     }
     useEffect(() => {
@@ -71,7 +73,7 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                         {/* <Box sx={{ display: 'flex', flexDirection: 'column' }}> */}
                         <CardContent sx={{ display: 'flex', flexDirection: 'column', padding: '5px !important', width: '100%', justifyContent: 'center' }}>
                             <Typography component="div" variant="h5">
-                                {friend.fullname}
+                                {friend.firstname + " " + friend.lastname}
                             </Typography>
                             <Typography variant="subtitle1" color="text.secondary" component="div">
                                 Mac Miller

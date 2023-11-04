@@ -35,7 +35,8 @@ const UrlConfig = {
   },
   messages: {
     getFriends: `/api/v1/follows/get-friends`,
-    getFriendMessages: `/api/v1/messages`
+    getFriendMessages: `/api/v1/messages`,
+    sendMessage: `/api/v1/messages`,
   }
 }
 
