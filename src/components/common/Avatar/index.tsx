@@ -19,7 +19,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
     },
 }));
 
-const CustomAvatar = ({ status }: { status: number }) => {
+const CustomAvatar = ({ img, status }: { img: string, status: number }) => {
     const isMobile = useResponsive('down', 'sm')
 
     return <Badge
@@ -36,9 +36,10 @@ const CustomAvatar = ({ status }: { status: number }) => {
         }
     > <Avatar
         sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px', borderRadius: "50%" }}
-        src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwXgjGKE09VrSaXebUnIUdPwDUvD003fJ-6zfbJIlPE4-it8WwGpaAzWTdUZOz1iiMT4g&usqp=CAU'
+        src={img}
     >
-        </Avatar> </Badge >
+        </Avatar>
+    </Badge >
 }
 
 export default CustomAvatar;
