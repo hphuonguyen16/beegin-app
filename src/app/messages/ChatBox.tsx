@@ -5,36 +5,39 @@ import { Grid, Box, Stack, Typography, styled, Card, CardMedia, CardContent, Fil
 import { Send, InfoRounded, AddReaction, Delete } from '@mui/icons-material'
 import ExtendedUserInfo from './ExtendedUserInfo'
 import AvatarCard from '@/components/common/AvatarCard'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import UrlConfig from '@/config/urlConfig'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import Message from '@/types/message'
+import Profile from '@/types/profile'
+import { useAuth } from '@/context/AuthContext'
 
 const INFO_PANE_WIDTH = "30%";
 
-const ChatBox = () => {
+const ChatBox = ({ friend }: { friend: any }) => {
     const [isInfoOpened, setIsInfoOpened] = useState(false);
+    const { user } = useAuth();
+    const [messages, setMessages] = useState<Message[]>([])
+    const axiosPrivate = useAxiosPrivate()
+    console.log(user)
+    const getMessages = async () => {
+        try {
+            let response = await axiosPrivate.get(`${UrlConfig.messages.getFriendMessages}/${friend.user}`)
+            setMessages(response.data.data)
+        } catch (err) { }
+    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getMessages();
+                console.log(messages)
+            } catch (error) {
+                console.log(error)
+            }
+        }
 
-    const chats = [
-        { message: "ok", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-        { message: "ok", sender: "me", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok", sender: "me", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi", sender: "me", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok", sender: "me", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok", sender: "me", timestamp: "" },
-        { message: "ok ijojf oj idf ", sender: "", timestamp: "" },
-        { message: "ok", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-        { message: "ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j ok ijojf oj idf odoi j", sender: "", timestamp: "" },
-    ]
+        fetchData()
+    }, [friend])
 
     return <>
         <Box sx={{
@@ -54,10 +57,10 @@ const ChatBox = () => {
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 40px' }}>
 
                 {/* TEXTS */}
-                <Box sx={{ maxHeight: "100%", overflowX: "hidden", overflowY: "scroll" }}>
-                    {chats.map((chat, index) => {
-                        var isMyText = chat.sender === "me";
-                        var isTopText = index == 0 || chats[index - 1].sender === "me";
+                <Box sx={{ minHeight: "90%", overflowX: "hidden", overflowY: "scroll" }}>
+                    {messages.map((message, index) => {
+                        var isMyText = message.sender === user?._id;
+                        var isTopText = index == 0 || messages[index - 1].sender === user?._id;
                         return (
                             <Stack sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
                                 {!isMyText && <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
@@ -74,18 +77,23 @@ const ChatBox = () => {
                                         backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
                                         color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
                                     }}>
-                                        <Typography>{chat.message}</Typography>
+                                        <Typography>{message.content}</Typography>
                                     </Paper>
                                     <Stack sx={{
                                         flexDirection: "row",
                                         position: "absolute",
                                         ...(isMyText ? { left: "0px" } : { right: "0px" }),
                                         bottom: "0px", transition: "all 0.3s ease-in-out"
-                                    }} className='icons'> <IconButton sx={{
-                                        padding: "3px",
-                                        color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
-                                    }} ><AddReaction sx={{ fontSize: '1.125rem' }} /></IconButton>
-                                        <IconButton sx={{ padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main }} ><Delete sx={{ fontSize: '1.125rem' }} /></IconButton>
+                                    }} className='icons'>
+                                        <IconButton sx={{
+                                            padding: "3px",
+                                            color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
+                                        }} >
+                                            <AddReaction sx={{ fontSize: '1.125rem' }} />
+                                        </IconButton>
+                                        <IconButton sx={{ padding: "3px", color: isMyText ? (theme) => '#fff' : (theme) => theme.palette.primary.main }} >
+                                            <Delete sx={{ fontSize: '1.125rem' }} />
+                                        </IconButton>
                                     </Stack>
                                 </Stack>
                             </Stack>
