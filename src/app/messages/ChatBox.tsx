@@ -129,7 +129,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
                             return (
                                 <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
                                     {!isMyText && <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
-                                        {isTopText && (<Avatar src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwXgjGKE09VrSaXebUnIUdPwDUvD003fJ-6zfbJIlPE4-it8WwGpaAzWTdUZOz1iiMT4g&usqp=CAU'></Avatar>)}
+                                        {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
                                     </Box>}
                                     <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
                                         {/* {(index == 0 || chats[index - 1].sender === "me") && <Typography>Bear, 5 minutes ago</Typography>} */}
