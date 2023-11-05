@@ -77,11 +77,23 @@ export default function page() {
   })
   const [postsData, setPostsData] = useState<Post[]>([])
   const [numberPost, setNumberPost] = useState(0)
-  const [number, setNumber] = useState<{ NumberOfFollowing: string; NumberOfFollower: string }>({
-    NumberOfFollowing: '',
-    NumberOfFollower: ''
+  const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
+    NumberOfFollowing: 0,
+    NumberOfFollower: 0
   })
-  const [follow, setFollow] = useState(true)
+  const handleDataFromChild = (data: string) => {
+    if (data === 'follow') {
+      setNumber({
+        ...number,
+        NumberOfFollower: number.NumberOfFollower + 1
+      })
+    } else {
+      setNumber({
+        ...number,
+        NumberOfFollower: number.NumberOfFollower - 1
+      })
+    }
+  }
   const getUsers = async (id: any) => {
     try {
       const url = UrlConfig.otherUsers.getProfileByID.replace(':id', id)
@@ -94,25 +106,6 @@ export default function page() {
       const url = UrlConfig.otherUsers.getMyNumberOfFollows.replace(':id', id)
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) {}
-  }
-  const isFollowing = async (id: any) => {
-    try {
-      const url = UrlConfig.me.isFollowing.replace(':id', id)
-      const response = await axiosPrivate.get(url)
-      setFollow(response.data.data)
-    } catch (err) {}
-  }
-  const followingOtherUser = async (id: any) => {
-    try {
-      const url = UrlConfig.me.followingOtherUser
-      await axiosPrivate.post(url, { id: id })
-    } catch (err) {}
-  }
-  const unfollow = async (id: any) => {
-    try {
-      const url = UrlConfig.me.unfollow.replace(':id', id)
-      await axiosPrivate.delete(url)
     } catch (err) {}
   }
   useEffect(() => {
@@ -133,7 +126,6 @@ export default function page() {
       try {
         await getUsers(userId)
         await getNumberOfFollow(userId)
-        await isFollowing(userId)
       } catch (error) {
         console.log(error)
       }
@@ -141,21 +133,11 @@ export default function page() {
     fetchData()
   }, [])
   const [action, setAction] = useState(true)
-  const [open, setOpen] = useState(false)
-  const handleFollow = () => {
-    if (follow === true) {
-      unfollow(userId)
-    } else {
-      followingOtherUser(userId)
-    }
-    setFollow((prev: boolean) => !prev)
-  }
-  console.log(data)
   return (
     <StyledProfile>
       <Box>
         <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
-        <ButtonFollow userId={userId}></ButtonFollow>
+        <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
       </Box>
 
       <Grid container spacing={2}>
@@ -318,7 +300,7 @@ export default function page() {
                       fontWeight: 'medium',
                       fontSize: '25px',
                       fontFamily: 'Inter',
-                      marginBottom:'15px !important'
+                      marginBottom: '15px !important'
                     }}
                   >
                     Posts

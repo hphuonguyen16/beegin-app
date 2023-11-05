@@ -57,7 +57,6 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [liked, setLiked] = React.useState(false)
-  console.log(post.user)
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)

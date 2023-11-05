@@ -73,10 +73,11 @@ function page() {
   })
   const [postsData, setPostsData] = useState<Post[]>([])
   const [numberPost, setNumberPost] = useState(0)
-  const [number, setNumber] = useState<{ NumberOfFollowing: string; NumberOfFollower: string }>({
-    NumberOfFollowing: '',
-    NumberOfFollower: ''
+  const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
+    NumberOfFollowing: 0,
+    NumberOfFollower: 0
   })
+  
   const getUsers = async () => {
     try {
       const url = UrlConfig.me.getMe

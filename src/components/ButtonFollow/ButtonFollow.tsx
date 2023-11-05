@@ -35,11 +35,17 @@ export default function ButtonFollow(props: any) {
     }
     fetchData()
   }, [])
+  const sendDataToParent = (data: string) => {
+    props.sendDataToParent(data)
+  }
   const handleFollow = () => {
     if (follow === true) {
       unfollow(userId)
+      sendDataToParent('unfollow')
     } else {
       followingOtherUser(userId)
+      sendDataToParent('follow')
+
     }
     setFollow((prev: boolean) => !prev)
   }

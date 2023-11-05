@@ -1,6 +1,10 @@
 import { Box, Typography, Stack } from '@mui/material'
 import SuggestFollowCard from './SuggestFollowCard'
 
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import UrlConfig from '@/config/urlConfig'
+import { useEffect, useState } from 'react'
+
 //temp data
 const suggested_follow_list = [
   {
@@ -20,6 +24,20 @@ const suggested_follow_list = [
   }
 ]
 function SuggestFollow() {
+  const axiosPrivate = useAxiosPrivate()
+  const [data, setData] = useState([])
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.me.suggestFollow)
+        setData(response.data.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchPosts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [1])
   return (
     <Box>
       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
@@ -39,7 +57,7 @@ function SuggestFollow() {
         </Typography>
       </Stack>
       <Box sx={{ marginLeft: '-13px' }}>
-        {suggested_follow_list.map((user, index) => (
+        {data.map((user, index) => (
           <SuggestFollowCard key={index} user={user} />
         ))}
       </Box>
