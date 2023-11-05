@@ -22,6 +22,7 @@ const UrlConfig = {
     getMyFollowingList: `/api/v1/follows/getAllFollowings/:id`
   },
   posts: {
+    createPost: `/api/v1/posts`,
     getPosts: `/api/v1/posts`,
     getComments: (postId: string) => `/api/v1/posts/${postId}/comments`,
     getMyPosts: `/api/v1/posts/me`,
@@ -33,6 +34,11 @@ const UrlConfig = {
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
+  },
+  messages: {
+    getFriends: `/api/v1/follows/get-friends`,
+    getFriendMessages: `/api/v1/messages`,
+    sendMessage: `/api/v1/messages`,
   }
 }
 

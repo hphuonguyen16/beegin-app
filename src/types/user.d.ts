@@ -7,4 +7,5 @@ export interface User {
   role: string
   preferences: any
   createdAt: string
+  profile: any
 }

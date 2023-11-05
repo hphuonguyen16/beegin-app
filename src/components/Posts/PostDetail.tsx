@@ -27,6 +27,7 @@ import { timeSince } from '@/utils/changeDate'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Comment } from '@/types/comment'
+import HashtagWrapper from '@/components/common/HashtagWrapper'
 
 interface PostDetailProps {
   post: Post
@@ -209,7 +210,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                         width: '90%'
                       }}
                     >
-                      {post.content}
+                      {post.content && <HashtagWrapper text={post.content} />}
                     </Box>
                   </Box>
                 </Stack>

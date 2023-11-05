@@ -23,9 +23,10 @@ type ModalProps = {
   title?: string
   closeOnly: boolean
   width?: number
+  height?: number
 }
 
-const RootModal = ({ title, variant, open, handleClose, handleOk, children, closeOnly, width }: ModalProps) => {
+const RootModal = ({ title, variant, open, handleClose, handleOk, children, closeOnly, width, height }: ModalProps) => {
   const isMobile = useResponsive('down', 'sm')
 
   const colors = {
@@ -48,8 +49,8 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
           left: '50%',
           transform: 'translate(-50%, -50%)',
           //   width: isMobile ? '80vw' : width ? width : '100vw',
-          width: isMobile ? '80vw' : '90vw',
-          height: isMobile ? '80vh' : '90vh',
+          width: isMobile ? '80vw' : width ? width : '50vw',
+          height: isMobile ? '80vh' : height ? height : '50vh',
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: 2,

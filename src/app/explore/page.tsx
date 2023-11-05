@@ -29,6 +29,7 @@ const trendingItems = [
   }
 ]
 export default function Page() {
+  console.log('render page')
   return (
     <PostLayout>
       <TrendingList />
