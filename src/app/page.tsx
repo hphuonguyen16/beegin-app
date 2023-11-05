@@ -16,7 +16,7 @@ export default function Home() {
   const [postsData, setPostsData] = useState<Post[]>([])
   const [open, setOpen] = useState(false)
   const axios = useAxiosPrivate()
-  const {user} = useAuth()
+  const { user } = useAuth()
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -54,10 +54,7 @@ export default function Home() {
             Feeds
           </Typography>
           <Stack direction={'row'} sx={{ marginTop: '25px' }} spacing={2}>
-            <Avatar
-              src={user?.profile?.avatar}
-              sx={{ width: 50, height: 50 }}
-            ></Avatar>
+            <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
             <TextField
               size='small'
               variant='outlined'

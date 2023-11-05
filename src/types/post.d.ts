@@ -1,7 +1,7 @@
 export interface Post {
   _id: string
   content: string
-  images?: string[] 
+  images?: string[]
   imageVideo?: string
   categories?: any
   hashtags?: string[]
