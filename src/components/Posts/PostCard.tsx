@@ -59,14 +59,10 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [liked, setLiked] = React.useState(false)
-<<<<<<< HEAD
-=======
   const router = useRouter()
->>>>>>> 2b9dd0655fd4c544dcbe7a8a6b3a3147a6efcfe3
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
-
   const wrapTags = (text: string, regexY: RegExp, className?: string) => {
     const regex = /#(\w+)/g
     const matches: any = {}
