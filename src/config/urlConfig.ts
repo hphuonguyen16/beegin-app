@@ -11,7 +11,9 @@ const UrlConfig = {
     getMyFollowingList: `/api/v1/follows/getMyFollowingList`,
     isFollowing: `/api/v1/follows/isFollowing/:id`,
     unfollow: `/api/v1/follows/unfollow/:id`,
-    followingOtherUser: `/api/v1/follows/followingOtherUser`
+    followingOtherUser: `/api/v1/follows/followingOtherUser`,
+    suggestFollow: `/api/v1/follows/suggestFollow`
+
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,

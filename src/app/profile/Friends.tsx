@@ -9,8 +9,8 @@ function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
   const [listFollowing, setFollowing] = useState([])
   const [listFollower, setFollower] = useState([])
+  const [data, setData] = useState([])
   const [buttonFollow, setButtonFollow] = useState(true)
-
   const getListFollowing = async (userId: any) => {
     try {
       let response
@@ -21,6 +21,7 @@ function Friends({ userId }: { userId: string }) {
         response = await axiosPrivate.get(url)
       }
       setFollowing(response.data.data)
+      setData(response.data.data)
     } catch (err) {}
   }
   const getListFollower = async (userId: any) => {
@@ -35,6 +36,16 @@ function Friends({ userId }: { userId: string }) {
       setFollower(response.data.data)
     } catch (err) {}
   }
+  const setButton = (status: string) => {
+      console.log (status)
+    if (status === 'following' || '') {
+      setData(listFollowing)
+      setButtonFollow(true)
+    } else {
+      setData(listFollower)
+      setButtonFollow(false)
+    }
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,6 +58,7 @@ function Friends({ userId }: { userId: string }) {
 
     fetchData()
   }, [])
+  console.log(data)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -73,7 +85,7 @@ function Friends({ userId }: { userId: string }) {
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButtonFollow(true)}
+            onClick={() => setButton('following')}
           >
             Following
           </Typography>
@@ -99,20 +111,23 @@ function Friends({ userId }: { userId: string }) {
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButtonFollow(false)}
+            onClick={() => setButton('follower')}
           >
             Follower
           </Typography>
         </Grid>
       </Grid>
       <Box>
-        {buttonFollow === true
+        {/* {buttonFollow === true
           ? listFollowing.map((user: any, index) => (
               <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
             ))
           : listFollower.map((user: any, index) => (
               <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
-            ))}
+            ))} */}
+        {data.map((user: any, index) => (
+          <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
+        ))}
       </Box>
     </Stack>
   )

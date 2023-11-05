@@ -63,7 +63,6 @@ const PostCard = ({ post }: PostCardProps) => {
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
-
   const wrapTags = (text: string, regexY: RegExp, className?: string) => {
     const regex = /#(\w+)/g
     const matches: any = {}
