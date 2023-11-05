@@ -35,6 +35,9 @@ const UrlConfig = {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
   },
+  categories: {
+    getCategories: `/api/v1/categories`
+  },
   messages: {
     getFriends: `/api/v1/follows/get-friends`,
     getFriendMessages: `/api/v1/messages`,
