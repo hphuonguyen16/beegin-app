@@ -32,6 +32,9 @@ const UrlConfig = {
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
+  },
+  categories: {
+    getCategories: `/api/v1/categories`
   }
 }
 

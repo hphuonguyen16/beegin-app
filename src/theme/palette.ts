@@ -99,7 +99,7 @@ const palette = {
   background: {
     paper: '#fff',
     default: GREY[100],
-    white: "#fff",
+    white: '#fff',
     neutral: GREY[300]
   },
   action: {
