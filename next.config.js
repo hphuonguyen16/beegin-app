@@ -5,7 +5,7 @@ const nextConfig = {
     NEXTAUTH_URL: 'http://localhost:3000'
   },
   images: {
-    domains: ['images.pexels.com']
+    domains: ['images.pexels.com', 'res.cloudinary.com']
   }
 }
 

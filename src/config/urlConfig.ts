@@ -39,9 +39,11 @@ const UrlConfig = {
     getCategories: `/api/v1/categories`
   },
   messages: {
-    getFriends: `/api/v1/follows/get-friends`,
+    getFriends: `/api/v1/messages/get-friends-and-recent-message`,
     getFriendMessages: `/api/v1/messages`,
-    sendMessage: `/api/v1/messages`
+    sendMessage: `/api/v1/messages`,
+    deleteMessage: `/api/v1/messages`,
+    getChatImages: `api/v1/messages/get-chat-images`,
   },
   trending: {
     getTrendingHashtags: `/api/v1/trending/hashtags`

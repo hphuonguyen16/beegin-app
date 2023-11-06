@@ -1,6 +1,7 @@
 export default interface Message {
-    _id?: string
+    id?: string
     fromSelf: boolean
+    type: string
     content: string
     createdAt?: Date
   }
