@@ -126,8 +126,15 @@ const ChatBox = ({ friend }: { friend: any }) => {
                     }
                 })
                 .catch((err) => console.error(err))
+            const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "image", content: image_url });
+            socket.current.emit('send-msg', {
+                id: res.data.data._id,
+                sender: user?._id,
+                receiver: friend.user,
+                type: "image",
+                content: image_url
+            })
             setMessages([...messages, { fromSelf: true, type: "image", content: image_url }])
-            await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "image", content: image_url });
         }
     }
 
