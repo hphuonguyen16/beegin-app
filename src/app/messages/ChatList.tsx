@@ -9,11 +9,16 @@ import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import Profile from '@/types/profile'
 import { theme } from '@/theme'
+import Message from '@/types/message'
+
+interface FriendAndMessage {
+    friend: Profile,
+    message: Message
+}
 
 const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
-
     const axiosPrivate = useAxiosPrivate()
-    const [friends, setFriends] = useState<Profile[]>([])
+    const [friends, setFriends] = useState<FriendAndMessage[]>([])
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const handleListItemClick = (
@@ -32,7 +37,7 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
         try {
             let response = await axiosPrivate.get(`${UrlConfig.messages.getFriends}`)
             setFriends(response.data.data)
-            setSelectedFriend(response.data.data[0])
+            setSelectedFriend(response.data.data[0].friend)
             setSelectedIndex(0);
         } catch (err) { }
     }
@@ -55,7 +60,7 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                 <Typography variant='h4'>Chats</Typography>
             </Stack>
             <Stack direction={"row"} spacing={2} sx={{ maxWidth: "100%", overflowX: "hidden", overflowY: "hidden", mb: '20px', px: '10px' }}>
-                {friends.map(friend => (<Avatar img={friend.avatar} status={5} />))}
+                {friends.map(friend => (<Avatar img={friend.friend.avatar} status={5} />))}
             </Stack>
             <Stack spacing={2}>
                 {friends.map((friend, index) => (
@@ -65,18 +70,18 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                         ":hover": { boxShadow: theme => theme.shadows[12] },
                         ...(selectedIndex === index && { background: theme => theme.palette.primary.lighter })
                     }}
-                        onClick={(event) => handleListItemClick(event, index, friend)}
+                        onClick={(event) => handleListItemClick(event, index, friend.friend)}
                     >
                         <CardMedia component="img"
-                            sx={{ height: 60, width: 60, borderRadius: "50%", mr: "10px" }} image={friend.avatar}
+                            sx={{ height: 60, width: 60, borderRadius: "50%", mr: "10px" }} image={friend.friend.avatar}
                         ></CardMedia>
                         {/* <Box sx={{ display: 'flex', flexDirection: 'column' }}> */}
                         <CardContent sx={{ display: 'flex', flexDirection: 'column', padding: '5px !important', width: '100%', justifyContent: 'center' }}>
                             <Typography component="div" variant="h5">
-                                {friend.firstname + " " + friend.lastname}
+                                {friend.friend.firstname + " " + friend.friend.lastname}
                             </Typography>
                             <Typography variant="subtitle1" color="text.secondary" component="div">
-                                Mac Miller
+                                {friend.message.fromSelf && "You: "} {friend.message.type === "text" ? friend.message.content : "Image"}
                             </Typography>
                         </CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
