@@ -22,8 +22,8 @@ type ModalProps = {
   children: ReactNode
   title?: string
   closeOnly: boolean
-  width?: number
-  height?: number
+  width?: string
+  height?: string
 }
 
 const RootModal = ({ title, variant, open, handleClose, handleOk, children, closeOnly, width, height }: ModalProps) => {
