@@ -94,6 +94,12 @@ const ChatBox = ({ friend }: { friend: any }) => {
         } catch (err) { }
     }
 
+    const enterListenHandler = async (e: any) => {
+        if (e.key === "Enter") {
+           await sendMessage();
+        }
+    };
+
     useEffect(() => {
         if (socket.current) {
             socket.current.on("msg-recieve", (msg: Message) => {
@@ -234,6 +240,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
                         value={inputMessage}
                         onChange={(event) => setInputMessage(event.target.value)}
                         sx={{ borderRadius: '20px', paddingLeft: "26px", backgroundColor: '#fff', '& .MuiOutlinedInput-notchedOutline': { border: '0' } }}
+                        onKeyDown={enterListenHandler}
                         endAdornment={
                             <>
                                 <InputAdornment position="end">
