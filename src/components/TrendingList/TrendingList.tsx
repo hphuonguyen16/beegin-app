@@ -1,7 +1,7 @@
 import { Grid, Typography, Box, Stack } from '@mui/material'
 import TrendingCard from './TrendingCard'
 import { TrendingHashtag } from '@/types/trendingHashtag'
-
+import Link from 'next/link'
 interface HashTagListProps {
   trendingHashtags: TrendingHashtag[]
 }
@@ -20,9 +20,14 @@ export default function TrendingList({ trendingHashtags }: HashTagListProps) {
         Trends for you
       </Typography>
       <Stack spacing={1}>
-        {trendingHashtags.map((item) => (
-          <TrendingCard key={item._id} trend={item} />
-        ))}
+        {trendingHashtags.map((item) => {
+          const href = `/search?hashtag=${item.hashtag.name.substring(1)}`
+          return (
+            <Link key={item._id} href={href}>
+              <TrendingCard trend={item} />
+            </Link>
+          )
+        })}
       </Stack>
       <Typography
         color='primary'

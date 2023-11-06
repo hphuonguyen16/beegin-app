@@ -9,27 +9,7 @@ import PostLayout from '@/layouts/PostLayout'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { TrendingHashtag } from '@/types/trendingHashtag'
-//temp data
-const trendingItems = [
-  {
-    id: 1,
-    des: 'Trending in VietNam',
-    trend: '#Zalo',
-    postCount: '20,2K'
-  },
-  {
-    id: 2,
-    des: 'Trending in Music',
-    trend: '#Kpop',
-    postCount: '12M'
-  },
-  {
-    id: 1,
-    des: 'Trending in VietNam',
-    trend: '#Lisa',
-    postCount: '14K'
-  }
-]
+
 export default function Page() {
   const [trendingHashtags, setTrendingHashtags] = useState<TrendingHashtag[]>([])
   const axios = useAxiosPrivate()

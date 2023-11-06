@@ -13,7 +13,6 @@ const UrlConfig = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`
-
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -42,6 +41,10 @@ const UrlConfig = {
   },
   trending: {
     getTrendingHashtags: `/api/v1/trending/hashtags`
+  },
+  search: {
+    getPostsByHashtag: (hashtag: string | null, sort: string = '-createdAt', limit: number = 10) =>
+      `/api/v1/search?hashtag=${hashtag}&sort=${sort}&limit=${limit}`
   }
 }
 
