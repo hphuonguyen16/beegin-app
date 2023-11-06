@@ -2,10 +2,10 @@
 
 import useResponsive from '@/hooks/useResponsive'
 import { Grid, Box, Stack, Typography, styled, Card, CardMedia, CardContent, FilledInput, OutlinedInput, InputAdornment, IconButton, Paper, Avatar, Popover } from '@mui/material'
-import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions } from '@mui/icons-material'
+import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions, AddPhotoAlternate } from '@mui/icons-material'
 import ExtendedUserInfo from './ExtendedUserInfo'
 import AvatarCard from '@/components/common/AvatarCard'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import Message from '@/types/message'
@@ -15,6 +15,8 @@ import Image from 'next/image'
 import newConversationBanner from '@/assets/new_conversation_banner.png'
 import Picker from 'emoji-picker-react';
 import { io } from 'socket.io-client'
+import useSnackbar from '@/context/snackbarContext'
+import RootModal from '@/components/common/modals/RootModal'
 
 const INFO_PANE_WIDTH = "30%";
 
@@ -31,19 +33,20 @@ const ChatBox = ({ friend }: { friend: any }) => {
     const scrollRef = useRef();
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
-
     const handleClose = () => {
         setAnchorEl(null);
     };
-
     const open = Boolean(anchorEl);
     const onEmojiClick = (emojiObject: any, event: any) => {
         setInputMessage(inputMessage + emojiObject.emoji);
     };
+
+    const [data, setData] = useState<Message>(null);
+    const [openDeleteMsgModal, setOpenDeleteMsgModal] = useState(false)
+    const { snack, setSnack } = useSnackbar();
 
     const getMessages = async () => {
         try {
@@ -59,16 +62,16 @@ const ChatBox = ({ friend }: { friend: any }) => {
         }
     }, [user])
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getMessages();
-                console.log(messages)
-            } catch (error) {
-                console.log(error)
-            }
+    const fetchData = async () => {
+        try {
+            await getMessages();
+            console.log(messages)
+        } catch (error) {
+            console.log(error)
         }
+    }
 
+    useEffect(() => {
         fetchData()
     }, [friend])
 
@@ -78,21 +81,29 @@ const ChatBox = ({ friend }: { friend: any }) => {
 
     const sendMessage = async () => {
         try {
+            const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "text", content: inputMessage });
             socket.current.emit('send-msg', {
+                id: res.data.data._id,
                 sender: user?._id,
                 receiver: friend.user,
+                type: "text",
                 content: inputMessage
             })
-            const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { content: inputMessage });
-            setMessages([...messages, { fromSelf: true, content: inputMessage }])
+            setMessages([...messages, { fromSelf: true, type: "text", content: inputMessage }])
             setInputMessage("")
         } catch (err) { }
     }
 
+    const enterListenHandler = async (e: any) => {
+        if (e.key === "Enter") {
+           await sendMessage();
+        }
+    };
+
     useEffect(() => {
         if (socket.current) {
-            socket.current.on("msg-recieve", (content: string) => {
-                setArrivalMessage({ fromSelf: false, content: content });
+            socket.current.on("msg-recieve", (msg: Message) => {
+                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content });
             });
         }
     });
@@ -100,6 +111,53 @@ const ChatBox = ({ friend }: { friend: any }) => {
     useEffect(() => {
         arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
     }, [arrivalMessage]);
+
+    const sendImage = async (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const formData = new FormData()
+            formData.append('file', e.target.files[0])
+            formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
+            const image_url = await fetch(
+                `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.secure_url !== '') {
+                        const uploadedFileUrl = data.secure_url
+                        return uploadedFileUrl
+                    }
+                })
+                .catch((err) => console.error(err))
+            const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "image", content: image_url });
+            socket.current.emit('send-msg', {
+                id: res.data.data._id,
+                sender: user?._id,
+                receiver: friend.user,
+                type: "image",
+                content: image_url
+            })
+            setMessages([...messages, { fromSelf: true, type: "image", content: image_url }])
+        }
+    }
+
+    const onDeleteBtnClick = (msg: Message) => {
+        setOpenDeleteMsgModal(true);
+        setData(msg)
+        console.log(data)
+    }
+
+    async function handleDeleteRole() {
+        const result = await axiosPrivate.delete(`${UrlConfig.messages.deleteMessage}/${data.id}`);
+        if (result) {
+            setOpenDeleteMsgModal(false);
+            setSnack({ open: true, message: "Deleted message successfully" });
+            fetchData()
+        }
+    }
 
     return <>
         <Box sx={{
@@ -126,24 +184,30 @@ const ChatBox = ({ friend }: { friend: any }) => {
                         messages.map((message, index) => {
                             var isMyText = message.fromSelf;
                             var isTopText = index == 0 || messages[index - 1].fromSelf;
+
                             return (
                                 <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
-                                    {!isMyText && <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
-                                        {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
-                                    </Box>}
+                                    {!isMyText &&
+                                        <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
+                                            {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
+                                        </Box>
+                                    }
                                     <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
                                         {/* {(index == 0 || chats[index - 1].sender === "me") && <Typography>Bear, 5 minutes ago</Typography>} */}
-                                        <Paper sx={{
-                                            display: "flex",
-                                            padding: "10px 15px",
-                                            mb: "14px",
-                                            minWidth: "60px", maxWidth: "420px",
-                                            borderRadius: "8px",
-                                            backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
-                                            color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
-                                        }}>
-                                            <Typography>{message.content}</Typography>
-                                        </Paper>
+                                        {message.type === "text" ?
+                                            <Paper sx={{
+                                                display: "flex",
+                                                padding: "10px 15px",
+                                                mb: "14px",
+                                                minWidth: "60px", maxWidth: "420px",
+                                                borderRadius: "8px",
+                                                backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
+                                                color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
+                                            }}>
+                                                <Typography>{message.content}</Typography>
+                                            </Paper> :
+                                            <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
+                                        }
                                         <Stack sx={{
                                             flexDirection: "row",
                                             position: "absolute",
@@ -156,9 +220,9 @@ const ChatBox = ({ friend }: { friend: any }) => {
                                             }} >
                                                 <AddReaction sx={{ fontSize: '1.125rem' }} />
                                             </IconButton>
-                                            <IconButton sx={{ padding: "3px", color: isMyText ? (theme) => '#fff' : (theme) => theme.palette.primary.main }} >
+                                            {isMyText && <IconButton sx={{ padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
                                                 <Delete sx={{ fontSize: '1.125rem' }} />
-                                            </IconButton>
+                                            </IconButton>}
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -176,8 +240,21 @@ const ChatBox = ({ friend }: { friend: any }) => {
                         value={inputMessage}
                         onChange={(event) => setInputMessage(event.target.value)}
                         sx={{ borderRadius: '20px', paddingLeft: "26px", backgroundColor: '#fff', '& .MuiOutlinedInput-notchedOutline': { border: '0' } }}
+                        onKeyDown={enterListenHandler}
                         endAdornment={
                             <>
+                                <InputAdornment position="end">
+                                    <IconButton>
+                                        <div>
+                                            <label
+                                                htmlFor='test'
+                                                className=''
+                                            >
+                                                <AddPhotoAlternate />
+                                                <input id='test' type='file' className='hidden' onChange={sendImage} />
+                                            </label></div>
+                                    </IconButton>
+                                </InputAdornment>
                                 <InputAdornment position="end" onClick={handleClick}>
                                     <IconButton>
                                         <EmojiEmotions />
@@ -194,7 +271,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
                 </Stack>
             </Stack>
         </Box>
-        <ExtendedUserInfo width={INFO_PANE_WIDTH} />
+        <ExtendedUserInfo width={INFO_PANE_WIDTH} friend={friend} />
         <Popover
             open={open}
             anchorEl={anchorEl}
@@ -210,6 +287,17 @@ const ChatBox = ({ friend }: { friend: any }) => {
         >
             <Picker onEmojiClick={onEmojiClick} />
         </Popover>
+        {openDeleteMsgModal && (
+            <RootModal
+                variant="Delete"
+                handleOk={handleDeleteRole}
+                handleClose={() => setOpenDeleteMsgModal(false)}
+                open={openDeleteMsgModal}
+                closeOnly={false}
+                height={"auto"}>
+                <div>Are you sure you want to delete this message?</div>
+            </RootModal>
+        )}
     </>
 }
 
