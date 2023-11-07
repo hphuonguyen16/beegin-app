@@ -6,13 +6,11 @@ import { Box } from '@mui/material'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { ParsedUrlQuery } from 'querystring'
-import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
 export default function PostList(query: ParsedUrlQuery) {
   const [posts, setPosts] = useState<Post[]>([])
   const axios = useAxiosPrivate()
   const searchParams = useSearchParams()
-  console.log(searchParams.get('hashtag'))
   useEffect(() => {
     const fetchPosts = async () => {
       try {
