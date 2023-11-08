@@ -16,6 +16,7 @@ import { Post } from '@/types/post'
 import Popover from '@mui/material/Popover'
 import Picker from 'emoji-picker-react'
 import PostLoader from '@/components/common/Loader/PostLoader'
+import EmojiPicker from '../common/EmojiPicker'
 
 interface NewPostProps {
   content: string | ''
@@ -98,13 +99,11 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
   const [categories, setCategories] = React.useState<Category[]>([])
   const [selectedCategories, setSelectedCategories] = React.useState<Category[]>([])
   const [content, setContent] = React.useState<string | ''>('')
-  const axiosPrivate = useAxiosPrivate()
   const [images, setImages] = React.useState<any>([])
-  const { setSnack } = useSnackbar()
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
-  const [showPicker, setShowPicker] = React.useState(false)
   const [isSuccess, setIsSuccess] = React.useState(false)
   const [isLoad, setIsLoad] = React.useState(false)
+  const axiosPrivate = useAxiosPrivate()
+  const { setSnack } = useSnackbar()
 
   const handleImageChange = (e: any) => {
     if (e.target.files && e.target.files.length > 0 && images.length < 4) {
@@ -157,22 +156,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
       })
     }
   }
-
-  const openPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-    setShowPicker((prev) => !prev)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const onEmojiClick = (emojiObject: any, event: any) => {
-    setContent((prevInput) => prevInput + emojiObject.emoji)
-    setShowPicker(false)
-  }
-
-  const openAnchorEl = Boolean(anchorEl)
-  const id = openAnchorEl ? 'simple-popover' : undefined
 
   React.useEffect(() => {
     const fetchCategories = async () => {
@@ -279,11 +262,11 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
               padding: '13px 10px'
             }}
           >
-            <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px' }}>
+            <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px', width: '45%' }}>
               {' '}
               Add to your post
             </Typography>
-            <Stack direction={'row'} gap={2}>
+            <Stack direction={'row'} gap={2} sx={{ width: '55%' }}>
               <>
                 <input
                   accept='image/*'
@@ -300,25 +283,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
                 </label>
               </>
               <>
-                <IconButton aria-describedby={id} onClick={openPicker}>
-                  <EmojiEmotionsOutlinedIcon color='secondary' fontSize='large' />
-                </IconButton>
-                <Popover
-                  id={id}
-                  open={openAnchorEl}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'center',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left'
-                  }}
-                >
-                  <Picker onEmojiClick={onEmojiClick} />
-                </Popover>
+                <EmojiPicker content={content} setContent={setContent} />
               </>
             </Stack>
           </Box>

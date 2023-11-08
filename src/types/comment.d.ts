@@ -5,4 +5,6 @@ export interface Comment {
   post: string
   numLikes: number
   createdAt: string
+  numReplies: number
+  children?: Comment[]
 }
