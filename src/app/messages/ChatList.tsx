@@ -80,9 +80,9 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                             <Typography component="div" variant="h5">
                                 {friend.friend.firstname + " " + friend.friend.lastname}
                             </Typography>
-                            <Typography variant="subtitle1" color="text.secondary" component="div">
+                            {friend.message && <Typography variant="subtitle1" color="text.secondary" component="div">
                                 {friend.message.fromSelf && "You: "} {friend.message.type === "text" ? friend.message.content : "Image"}
-                            </Typography>
+                            </Typography>}
                         </CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box sx={{
