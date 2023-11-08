@@ -10,9 +10,11 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 
 interface CommentCardProps {
   comment: Comment
+  replyComment: () => void
+  getReplyComments: (postId: string, commentId: string) => void
 }
 
-const CommentCard = ({ comment }: CommentCardProps) => {
+const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [liked, setLiked] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
@@ -32,7 +34,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      <ListItem alignItems='flex-start'>
+      <ListItem alignItems='flex-start' sx={{ paddingTop: '0px !important', paddingBottom: '0px !important' }}>
         <ListItemAvatar>
           <Avatar alt='Remy Sharp' src={comment.user.profile?.avatar} />
         </ListItemAvatar>
@@ -98,12 +100,17 @@ const CommentCard = ({ comment }: CommentCardProps) => {
                         wordWrap: 'break-word',
                         cursor: 'pointer'
                       }}
+                      onClick={() => {
+                        //get the root comment
+                        replyComment()
+                      }}
                     >
                       Reply
                     </Typography>
                   </Stack>
                 </Box>
                 <IconButton
+                  sx={{ marginLeft: 'auto' }}
                   onClick={() => {
                     handleLike()
                   }}
@@ -115,19 +122,32 @@ const CommentCard = ({ comment }: CommentCardProps) => {
                   )}
                 </IconButton>
               </Stack>
-              <Box className='comments-child' sx={{ marginTop: '13px' }}>
-                <Typography
-                  sx={{
-                    color: 'rgba(0, 0, 0, 0.50)',
-                    fontSize: isMobile ? '13px' : '13px',
-                    fontWeight: 600,
-                    wordWrap: 'break-word',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ____ View replies (2)
-                </Typography>
-              </Box>
+              {comment.numReplies > 0 && (
+                <Box className='comments-child' sx={{ marginTop: '13px' }}>
+                  <Typography
+                    sx={{
+                      color: 'rgba(0, 0, 0, 0.50)',
+                      fontSize: isMobile ? '13px' : '13px',
+                      fontWeight: 600,
+                      wordWrap: 'break-word',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      getReplyComments(comment.post, comment._id)
+                    }}
+                  >
+                    {`____   View replies (${comment.numReplies})`}
+                  </Typography>
+                  {comment.children?.map((childComment) => (
+                    <CommentCard
+                      key={childComment._id}
+                      comment={childComment}
+                      replyComment={replyComment}
+                      getReplyComments={getReplyComments}
+                    />
+                  ))}
+                </Box>
+              )}
             </>
           }
         />

@@ -6,6 +6,7 @@ import {
   Divider,
   FormControl,
   IconButton,
+  InputAdornment,
   List,
   ListItem,
   ListItemAvatar,
@@ -28,6 +29,28 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Comment } from '@/types/comment'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
+import EmojiPicker from '../common/EmojiPicker'
+import CustomTextfield from '../common/Textfield'
+import _ from 'lodash'
+
+function findComment(comments: Comment[] | undefined, commentId: string): Comment | undefined {
+  if (!comments) {
+    return undefined
+  }
+
+  for (let i = 0; i < comments.length; i++) {
+    if (comments[i]._id === commentId) {
+      return comments[i]
+    }
+    if (comments[i].children) {
+      const comment = findComment(comments[i].children, commentId)
+      if (comment) {
+        return comment
+      }
+    }
+  }
+  return undefined
+}
 
 interface PostDetailProps {
   post: Post
@@ -37,28 +60,65 @@ interface PostDetailProps {
   handleLike: () => void
   handleClose: () => void
 }
+
 const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
-  const [comments, setComments] = React.useState([]) // [Comment
+  const [comments, setComments] = React.useState<Comment[]>([]) // [Comment
+  const [comment, setComment] = React.useState('')
+  const [commentReply, setCommentReply] = React.useState<Comment>() // [Comment]
   const fetchComments = async () => {
     const response = await axiosPrivate.get(urlConfig.posts.getComments(post._id))
     setComments(response.data.data)
   }
-  // const handleLike = async () => {
-  //   try {
-  //     if (!liked) {
-  //       await axiosPrivate.post(urlConfig.posts.likePost(post._id))
-  //       setLiked(true)
-  //       post.numLikes++
-  //     } else {
-  //       await axiosPrivate.delete(urlConfig.posts.unlikePost(post._id))
-  //       setLiked(false)
-  //       post.numLikes--
-  //     }
-  //   } catch (err) {}
-  // }
+  const createComment = async () => {
+    if (!commentReply) {
+      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+        content: comment
+      })
+      setComments([response.data.data, ...comments])
+    } else {
+      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+        content: comment,
+        parent: commentReply._id
+      })
+      setComments((prev) => {
+        const newComments = _.cloneDeep(prev || [])
+        const comment = newComments.find((c) => c._id === commentReply._id)
+
+        if (comment) {
+          if (!comment.children) {
+            comment.children = []
+          }
+          const childComment = response.data.data
+          childComment.key = childComment._id
+          comment.children = [childComment, ...comment.children]
+        }
+
+        return newComments
+      })
+    }
+  }
+  console.log(comments)
+  const replyComment = (commentReply: Comment) => {
+    console.log(commentReply)
+    setCommentReply(commentReply)
+    setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
+  }
+  const getReplyComments = async (postId: string, commentId: string) => {
+    try {
+      const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
+      setComments((prev) => {
+        const newComments = [...(prev || [])]
+        const index = newComments.findIndex((comment) => comment._id === commentId)
+        if (index >= 0) {
+          newComments[index].children = res.data.data
+        }
+        return newComments
+      })
+    } catch (err) {}
+  }
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -102,8 +162,16 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
               <Slider images={post.images ?? []} />
             </Box>
           )}
-          <Box sx={{ width: hasImages ? '45%' : '100%', height: '83%', bgcolor: 'background.paper', overflow: 'auto' }}>
-            <Box sx={{ overflow: 'auto', width: '100%', height: '100%' }}>
+          <Box
+            sx={{
+              width: hasImages ? '45%' : '100%',
+              height: '83%',
+              bgcolor: 'background.paper',
+              overflow: 'auto',
+              borderRadius: '0px 10px 0px 10px'
+            }}
+          >
+            <Box sx={{ overflow: 'auto', width: '100%', height: '93%' }}>
               <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                 <ListItem alignItems='flex-start'>
                   <ListItemAvatar>
@@ -218,7 +286,14 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
               <Divider variant='inset' />
               <Box>
                 {comments.map((comment: Comment, index: number) => (
-                  <CommentCard key={index} comment={comment} />
+                  <CommentCard
+                    key={comment._id}
+                    comment={comment}
+                    replyComment={() => {
+                      replyComment(comment)
+                    }}
+                    getReplyComments={getReplyComments}
+                  />
                 ))}
               </Box>
             </Box>
@@ -302,9 +377,27 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                       borderRadius: '10px',
                       marginBottom: '15px'
                     }}
-                    //   onChange={handleChange}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (comment === '') return
+                        createComment()
+                        //clear input
+                        setComment('')
+                      }
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <EmojiPicker content={comment} setContent={setComment} />
+                        </InputAdornment>
+                      )
+                    }}
                   />
                 </FormControl>
+                {/* <CustomTextfield /> */}
               </Box>
             </Box>
           </Box>

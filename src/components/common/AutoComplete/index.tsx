@@ -26,6 +26,8 @@ const InputWrapper = styled('div')(
   border-radius: 4px;
   padding: 1px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
 
   &:hover {
@@ -71,6 +73,7 @@ const StyledTag = styled(Tag)(
   display: flex;
   align-items: center;
   height: 24px;
+  margin: auto;
   margin: 2px;
   line-height: 22px;
   background-color: #F5E0ED;

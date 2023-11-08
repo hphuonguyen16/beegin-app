@@ -13,7 +13,6 @@ const UrlConfig = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`
-
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -33,7 +32,9 @@ const UrlConfig = {
   },
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
-    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
+    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
+    createComment: (postId: string) => `/api/v1/posts/${postId}/comments`,
+    getReplyComments: (postId: string, commentId: string) => `/api/v1/posts/${postId}/comments/${commentId}`
   },
   categories: {
     getCategories: `/api/v1/categories`
@@ -43,7 +44,7 @@ const UrlConfig = {
     getFriendMessages: `/api/v1/messages`,
     sendMessage: `/api/v1/messages`,
     deleteMessage: `/api/v1/messages`,
-    getChatImages: `api/v1/messages/get-chat-images`,
+    getChatImages: `api/v1/messages/get-chat-images`
   },
   trending: {
     getTrendingHashtags: `/api/v1/trending/hashtags`
