@@ -1,30 +1,11 @@
 import { Grid, Typography, Box, Stack } from '@mui/material'
 import TrendingCard from './TrendingCard'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { useEffect, useState } from 'react'
-import UrlConfig from '@/config/urlConfig'
 import { TrendingHashtag } from '@/types/trendingHashtag'
-import { axiosPrivate } from '@/axios'
-import { InsertEmoticon } from '@mui/icons-material'
-
+import Link from 'next/link'
 interface HashTagListProps {
   trendingHashtags: TrendingHashtag[]
 }
 export default function TrendingList({ trendingHashtags }: HashTagListProps) {
-  // const [trendingHashtags, setTrendingHashtags] = useState<TrendingHashtag[]>([])
-  // const axios = useAxiosPrivate()
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(UrlConfig.trending.getTrendingHashtags)
-  //       setTrendingHashtags(response.data.data)
-  //     } catch (error) {}
-  //   }
-  //   fetchData()
-  //   console.log(trendingHashtags)
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
   return (
     <Grid
       sx={{
@@ -39,9 +20,14 @@ export default function TrendingList({ trendingHashtags }: HashTagListProps) {
         Trends for you
       </Typography>
       <Stack spacing={1}>
-        {trendingHashtags.map((item) => (
-          <TrendingCard key={item._id} trend={item} />
-        ))}
+        {trendingHashtags.map((item) => {
+          const href = `/search?hashtag=${item.hashtag.name.substring(1)}&f=top`
+          return (
+            <Link key={item._id} href={href}>
+              <TrendingCard trend={item} />
+            </Link>
+          )
+        })}
       </Stack>
       <Typography
         color='primary'

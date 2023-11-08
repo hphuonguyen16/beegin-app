@@ -30,8 +30,9 @@ const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, length }) => {
     segments.push(<span key={lastIndex}>{text.slice(lastIndex, index)}</span>)
 
     // Add the hashtag
+    const href = `/search?hashtag=${hashtag.substring(1)}&f=top`
     segments.push(
-      <Link key={index} href={''} style={{ color: 'blue' }}>
+      <Link key={index} href={href} style={{ color: 'blue' }}>
         {hashtag}
       </Link>
     )

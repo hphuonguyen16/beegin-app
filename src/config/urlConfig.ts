@@ -48,6 +48,10 @@ const UrlConfig = {
   },
   trending: {
     getTrendingHashtags: `/api/v1/trending/hashtags`
+  },
+  search: {
+    getPostsByHashtag: (hashtag: string | null, sort: string = '-createdAt', limit: number = 10) =>
+      `/api/v1/search?hashtag=${hashtag}&sort=${sort}&limit=${limit}`
   }
 }
 
