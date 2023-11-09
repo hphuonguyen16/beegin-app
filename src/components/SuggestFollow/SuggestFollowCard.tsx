@@ -4,7 +4,7 @@ import ButtonFollow from '../ButtonFollow/ButtonFollow'
 import { useRouter } from 'next/navigation'
 
 export default function SuggestFollowCard(props: any) {
-  const { firstname, lastname, avatar, user } = props.user.user.profile
+  const { firstname, lastname, avatar } = props.user.user.profile
   const { count } = props.user
   const router = useRouter()
   const redirectToProfile = (id: string) => {
@@ -21,17 +21,16 @@ export default function SuggestFollowCard(props: any) {
     <Box sx={{ position: 'relative', padding: '0 !important', width: '100%' }}>
       <CardHeader
         sx={{ padding: '20px' }}
-        onClick={() => redirectToProfile(props.user.user._id)}
-        avatar={<Avatar src={avatar} sx={{ width: '60px', height: '60px', marginRight: '10px', cursor: 'pointer' }} />}
+        avatar={
+          <Avatar
+            src={avatar}
+            sx={{ width: '60px', height: '60px', marginRight: '10px', cursor: 'pointer' }}
+            onClick={() => redirectToProfile(props.user.user._id)}
+          />
+        }
         title={firstname + ' ' + lastname}
         subheader={`${count} mutual following`}
-        action={
-          <ButtonFollow
-            userId={props.user.user._id}
-            sx={{ marginLeft: '10px !important', position: 'static !important' }}
-            sendDataToParent={handleDataFromChild}
-          ></ButtonFollow>
-        }
+        action={<ButtonFollow userId={props.user.user._id} sendDataToParent={handleDataFromChild}></ButtonFollow>}
       />
     </Box>
   ) : null
