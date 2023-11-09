@@ -9,27 +9,29 @@ import { useState, useEffect } from 'react'
 import urlConfig from '@/config/urlConfig'
 import CreatePost from '@/components/Posts/CreatePost'
 import { useAuth } from '@/context/AuthContext'
+import { usePosts } from '@/context/PostContext'
 
 export default function Home() {
   const isMobile = useResponsive('down', 'sm')
-  const [postsData, setPostsData] = useState<Post[]>([])
+  // const [postsData, setPostsData] = useState<Post[]>([])
+  const { posts, setPosts } = usePosts()
   const [open, setOpen] = useState(false)
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
   const { user } = useAuth()
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
-        setPostsData(response.data.data.data)
-      } catch (error) {}
-    }
-    fetchPosts()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     try {
+  //       const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
+  //       setPostsData(response.data.data.data)
+  //     } catch (error) {}
+  //   }
+  //   fetchPosts()
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [1])
   useEffect(() => {
     if (newPost) {
-      setPostsData((prev) => [newPost, ...prev])
+      setPosts((prev) => [newPost, ...prev])
     }
   }, [newPost])
 
@@ -78,7 +80,7 @@ export default function Home() {
             />
           </Stack>
           <Box sx={{ marginTop: '50px' }}>
-            {postsData.map((post, index) => (
+            {posts.map((post, index) => (
               <PostCard key={index} post={post} />
             ))}
           </Box>
