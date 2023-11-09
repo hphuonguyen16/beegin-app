@@ -63,6 +63,7 @@ const PostCard = ({ post }: PostCardProps) => {
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
+  const [checkId, setCheck] = React.useState<boolean>()
   const wrapTags = (text: string, regexY: RegExp, className?: string) => {
     const regex = /#(\w+)/g
     const matches: any = {}
@@ -93,8 +94,12 @@ const PostCard = ({ post }: PostCardProps) => {
   const closePostDetail = () => {
     setOpen(false)
   }
-  const redirectToProfile = (id: string) => {
-    router.push(`/profile/${id}`)
+ const redirectToProfile = (id: string) => {
+    if (checkId) {
+      router.push(`/profile`)
+    } else {
+      router.push(`/profile/${id}`)
+    }
   }
   useEffect(() => {
     const checkLiked = async () => {
@@ -103,6 +108,15 @@ const PostCard = ({ post }: PostCardProps) => {
         setLiked(response.data.data)
       } catch (err) {}
     }
+    const checkId = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.me.checkId(post.user._id))
+        setCheck(response.data.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    checkId()
     checkLiked()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
