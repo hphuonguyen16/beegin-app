@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   Chip,
@@ -33,23 +33,25 @@ import EmojiPicker from '../common/EmojiPicker'
 import CustomTextfield from '../common/Textfield'
 import _ from 'lodash'
 
-function findComment(comments: Comment[] | undefined, commentId: string): Comment | undefined {
-  if (!comments) {
-    return undefined
+// find the root of children comment
+function findRootComment(comments: Comment[], comment: Comment) {
+  if (comment.parent) {
+    const parentComment = comments.find((c) => c._id === comment.parent)
+    if (parentComment) {
+      return findRootComment(comments, parentComment)
+    }
   }
+  return comment
+}
 
-  for (let i = 0; i < comments.length; i++) {
-    if (comments[i]._id === commentId) {
-      return comments[i]
-    }
-    if (comments[i].children) {
-      const comment = findComment(comments[i].children, commentId)
-      if (comment) {
-        return comment
-      }
+function findRootCommentIndex(comments: Comment[], comment: Comment) {
+  if (comment.parent) {
+    const parentComment = comments.find((c) => c._id === comment.parent)
+    if (parentComment) {
+      return findRootCommentIndex(comments, parentComment)
     }
   }
-  return undefined
+  return comments.findIndex((c) => c._id === comment._id)
 }
 
 interface PostDetailProps {
@@ -79,23 +81,28 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
       })
       setComments([response.data.data, ...comments])
     } else {
+      const rootComment = findRootComment(comments, commentReply)
       const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
         content: comment,
-        parent: commentReply._id
+        parent: rootComment._id
       })
       setComments((prev) => {
-        const newComments = _.cloneDeep(prev || [])
-        const comment = newComments.find((c) => c._id === commentReply._id)
+        const newComments = _.cloneDeep(prev)
+        const rootCommentIndex = findRootCommentIndex(newComments, commentReply)
 
-        if (comment) {
-          if (!comment.children) {
-            comment.children = []
+        if (rootCommentIndex !== -1) {
+          const rootComment = newComments[rootCommentIndex]
+
+          if (!rootComment.children) {
+            rootComment.children = []
           }
+
           const childComment = response.data.data
           childComment.key = childComment._id
-          comment.children = [childComment, ...comment.children]
-        }
 
+          rootComment.children = [childComment, ...rootComment.children]
+          rootComment.numReplies++
+        }
         return newComments
       })
     }
@@ -289,9 +296,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                   <CommentCard
                     key={comment._id}
                     comment={comment}
-                    replyComment={() => {
-                      replyComment(comment)
-                    }}
+                    replyComment={replyComment}
                     getReplyComments={getReplyComments}
                   />
                 ))}
