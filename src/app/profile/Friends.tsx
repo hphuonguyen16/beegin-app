@@ -58,7 +58,6 @@ function Friends({ userId }: { userId: string }) {
 
     fetchData()
   }, [])
-  console.log(data)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>

@@ -61,6 +61,7 @@ function page() {
     address: string
     bio: string
     gender: boolean
+    username:string
   }>({
     firstname: '',
     lastname: '',
@@ -69,7 +70,8 @@ function page() {
     background: '',
     address: '',
     bio: '',
-    gender: true
+    gender: true,
+    username: ''
   })
   const [postsData, setPostsData] = useState<Post[]>([])
   const [numberPost, setNumberPost] = useState(0)
@@ -98,7 +100,6 @@ function page() {
         const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
         setPostsData(response.data.data)
         setNumberPost(response.data.results)
-        console.log(response.data.data)
       } catch (error) {
         console.log(error)
       }
@@ -116,7 +117,7 @@ function page() {
       }
     }
     fetchData()
-  }, [1])
+  }, [])
 
   const handleOpen = () => {
     setOpen(true)
@@ -124,7 +125,6 @@ function page() {
   const handleClose = () => {
     setOpen(false)
   }
-  console.log(numberPost, postsData)
   return (
     <StyledProfile>
       <Box>
@@ -158,6 +158,9 @@ function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
+                  </Paper>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>{`@${data.username}`}</Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>

@@ -6,6 +6,7 @@ const UrlConfig = {
   },
   me: {
     getMe: `/api/v1/users/me`,
+    checkId: (id: string) => `/api/v1/users/checkId/${id}`,
     getMyNumberOfFollows: `/api/v1/follows/getMyNumberOfFollows`,
     getMyFollowerList: `/api/v1/follows/getMyFollowerList`,
     getMyFollowingList: `/api/v1/follows/getMyFollowingList`,
