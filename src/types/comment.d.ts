@@ -7,4 +7,5 @@ export interface Comment {
   createdAt: string
   numReplies: number
   children?: Comment[]
+  parent?: string
 }

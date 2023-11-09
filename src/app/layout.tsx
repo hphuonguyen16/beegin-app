@@ -10,6 +10,7 @@ import { SessionProvider } from 'next-auth/react'
 import { AuthProvider } from '@/context/AuthContext'
 import { Snackbar } from '@mui/material'
 import { SnackbarContextProvider } from '@/context/snackbarContext'
+import { PostProvider } from '@/context/PostContext'
 
 const poppins = Poppins({
   weight: '400',
@@ -38,7 +39,9 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <AuthProvider>
             <SnackbarContextProvider>
               <SessionProvider session={session}>
-                <ThemeProvider>{children}</ThemeProvider>
+                <PostProvider>
+                  <ThemeProvider>{children}</ThemeProvider>
+                </PostProvider>
               </SessionProvider>
             </SnackbarContextProvider>
           </AuthProvider>
@@ -58,9 +61,11 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <AuthProvider>
             <SnackbarContextProvider>
               <SessionProvider session={session}>
-                <ThemeProvider>
-                  <Layout>{children}</Layout>
-                </ThemeProvider>
+                <PostProvider>
+                  <ThemeProvider>
+                    <Layout>{children}</Layout>
+                  </ThemeProvider>
+                </PostProvider>
               </SessionProvider>
             </SnackbarContextProvider>
           </AuthProvider>
