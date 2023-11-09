@@ -14,7 +14,6 @@ const UrlConfig = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`
-
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -34,12 +33,26 @@ const UrlConfig = {
   },
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
-    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`
+    unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
+    createComment: (postId: string) => `/api/v1/posts/${postId}/comments`,
+    getReplyComments: (postId: string, commentId: string) => `/api/v1/posts/${postId}/comments/${commentId}`
+  },
+  categories: {
+    getCategories: `/api/v1/categories`
   },
   messages: {
-    getFriends: `/api/v1/follows/get-friends`,
+    getFriends: `/api/v1/messages/get-friends-and-recent-message`,
     getFriendMessages: `/api/v1/messages`,
     sendMessage: `/api/v1/messages`,
+    deleteMessage: `/api/v1/messages`,
+    getChatImages: `api/v1/messages/get-chat-images`
+  },
+  trending: {
+    getTrendingHashtags: `/api/v1/trending/hashtags`
+  },
+  search: {
+    getPostsByHashtag: (hashtag: string | null, sort: string = '-createdAt', limit: number = 10) =>
+      `/api/v1/search?hashtag=${hashtag}&sort=${sort}&limit=${limit}`
   }
 }
 

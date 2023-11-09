@@ -1,17 +1,5 @@
 import React from 'react'
-import {
-  Box,
-  Typography,
-  Stack,
-  List,
-  ListItemAvatar,
-  ListItem,
-  Avatar,
-  ListItemText,
-  TextField,
-  IconButton,
-  Button
-} from '@mui/material'
+import { Box, Typography, Stack, Avatar, TextField, IconButton, Button } from '@mui/material'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import EmojiEmotionsOutlinedIcon from '@mui/icons-material/EmojiEmotionsOutlined'
@@ -22,6 +10,13 @@ import { styled } from '@mui/material/styles'
 import useSnackbar from '@/context/snackbarContext'
 import Snackbar from '@/components/common/Snackbar'
 import { useAuth } from '@/context/AuthContext'
+import Autocomplete from '@/components/common/AutoComplete'
+import { Category } from '@/types/category'
+import { Post } from '@/types/post'
+import Popover from '@mui/material/Popover'
+import Picker from 'emoji-picker-react'
+import PostLoader from '@/components/common/Loader/PostLoader'
+import EmojiPicker from '../common/EmojiPicker'
 
 interface NewPostProps {
   content: string | ''
@@ -83,25 +78,33 @@ async function handleFileUpload(files: any) {
           return uploadedFileUrl
         }
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        return err
+      })
   })
   const uploadedUrls = await Promise.all(uploadPromises)
-
-  // uploadedUrls will be an array of uploaded file URLs
-  console.log(uploadedUrls)
-
   return uploadedUrls
 }
 
-const CreatePost = () => {
+interface CreatePostProps {
+  open: boolean
+  setOpen: (open: boolean) => void
+  newPost: Post | null
+  setNewPost: (post: Post | null) => void
+}
+
+const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => {
   const isMobile = useResponsive('down', 'sm')
   const { user } = useAuth()
-  const [newPost, setNewPost] = React.useState<NewPostProps>()
+  const [categories, setCategories] = React.useState<Category[]>([])
+  const [selectedCategories, setSelectedCategories] = React.useState<Category[]>([])
   const [content, setContent] = React.useState<string | ''>('')
-  const axiosPrivate = useAxiosPrivate()
   const [images, setImages] = React.useState<any>([])
+  const [isSuccess, setIsSuccess] = React.useState(false)
+  const [isLoad, setIsLoad] = React.useState(false)
+  const axiosPrivate = useAxiosPrivate()
   const { setSnack } = useSnackbar()
-  console.log(user)
+
   const handleImageChange = (e: any) => {
     if (e.target.files && e.target.files.length > 0 && images.length < 4) {
       const newImages = [...images]
@@ -123,126 +126,177 @@ const CreatePost = () => {
       })
       return
     }
+    setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
     const response = await axiosPrivate.post(urlConfig.posts.createPost, {
       content: content,
       images: uploadedUrls,
-      categories: ['65392b6896ed3a51de02933a']
+      categories: selectedCategories.map((item) => item._id)
     })
+    if (response.data.status === 'success') {
+      setNewPost(response.data.data)
+      setIsLoad(false)
+      setIsSuccess(true)
+      setSnack({
+        open: true,
+        message: 'Create post successfully!',
+        type: 'success'
+      })
+      setTimeout(() => {
+        setContent('')
+        setImages([])
+        setIsSuccess(false)
+        setOpen(false)
+      }, 1000)
+    } else {
+      setSnack({
+        open: true,
+        message: 'Create post failed!',
+        type: 'error'
+      })
+    }
   }
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosPrivate.get(urlConfig.categories.getCategories)
+        setCategories(response.data.data.data)
+      } catch (error) {
+        // Handle any errors that occur during the fetchComments() function
+      }
+    }
+    fetchCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
-    <div>
-      <Snackbar />
-      <Stack direction={'row'} sx={{ alignItems: 'center' }} gap={2}>
-        <Avatar alt='Remy Sharp' src={user?.profile?.avatar} sx={{ width: 60, height: 60 }} />
-        <Box>
-          <Typography variant='h4' sx={{ fontWeight: 'bold' }}>
-            {' '}
-            {user?.profile?.firstname + ' ' + user?.profile?.lastname}
-          </Typography>
-          <Typography
-            sx={{
-              color: 'rgba(0, 0, 0, 0.50)',
-              fontSize: isMobile ? '10px' : '14px',
-              fontWeight: 400
-            }}
-          >
-            @real_bear
-          </Typography>
-        </Box>
-      </Stack>
-      <Box sx={{ justifyContent: 'space-between', maxHeight: '450px', height: '60%', overflow: 'auto' }}>
-        <Box>
-          <TextField
-            id='outlined-multiline-static'
-            multiline
-            placeholder="What's on your mind?"
-            onChange={(e) => setContent(e.target.value)}
-            sx={{
-              width: '100%',
-              marginTop: '20px',
-              marginBottom: '10px',
-              '& fieldset': { border: 'none' },
-              '& .MuiInputBase-root': {
-                overflow: 'auto'
-              }
-            }}
-          />
-          <Box sx={{ position: 'relative' }}>
-            <ImageContainerStyled number={images ? images.length : 0}>
-              {images?.map((item: any, index: number) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  className={`image-${index + 1}`}
-                  src={URL.createObjectURL(item)}
-                  key={index}
-                  alt='image'
-                  loading='lazy'
-                />
-              ))}
-              <IconButton
-                sx={{ position: 'absolute', top: '6%', right: '5%', backgroundColor: 'white !important' }}
-                onClick={() => handleDeleteImages()}
-              >
-                <CloseRoundedIcon sx={{ color: 'black', fontSize: '25px' }} />
-              </IconButton>
-            </ImageContainerStyled>
+    <>
+      {isLoad && <PostLoader />}
+
+      <div>
+        {isSuccess && <Snackbar />}
+        <Stack direction={'row'} sx={{ alignItems: 'center' }} gap={2}>
+          <Avatar alt='Remy Sharp' src={user?.profile?.avatar} sx={{ width: 60, height: 60 }} />
+          <Box>
+            <Typography variant='h4' sx={{ fontWeight: 'bold' }}>
+              {' '}
+              {user?.profile?.firstname + ' ' + user?.profile?.lastname}
+            </Typography>
+            <Typography
+              sx={{
+                color: 'rgba(0, 0, 0, 0.50)',
+                fontSize: isMobile ? '10px' : '14px',
+                fontWeight: 400
+              }}
+            >
+              @real_bear
+            </Typography>
           </Box>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: '0px', // Adjust the position as needed
-          zIndex: 999, // Adjust the z-index as needed
-          backgroundColor: 'white',
-          height: '190px',
-          width: '95%'
-        }}
-      >
+        </Stack>
         <Box
           sx={{
-            display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid rgba(0, 0, 0, 0.12)',
-            borderRadius: '10px',
-            padding: '13px 10px'
+            maxHeight: '450px',
+            height: '60%',
+            overflow: 'auto',
+            marginTop: '17px'
           }}
         >
-          <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px' }}>
-            {' '}
-            Add to your post
-          </Typography>
-          <Stack direction={'row'} gap={2}>
-            <input
-              accept='image/*'
-              type='file'
-              id='icon-button-file'
-              multiple
-              onChange={handleImageChange}
-              style={{ visibility: 'hidden' }}
+          <Autocomplete data={categories} selectedData={selectedCategories} setSelectedData={setSelectedCategories} />
+          <Box>
+            <TextField
+              id='outlined-multiline-static'
+              multiline
+              placeholder="What's on your mind?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              sx={{
+                width: '100%',
+                marginTop: '20px',
+                marginBottom: '10px',
+                '& fieldset': { border: 'none' },
+                '& .MuiInputBase-root': {
+                  overflow: 'auto'
+                }
+              }}
             />
-            <label htmlFor='icon-button-file'>
-              <IconButton component='span'>
-                <CollectionsIcon color='secondary' fontSize='large' />
-              </IconButton>
-            </label>
-
-            <IconButton>
-              <EmojiEmotionsOutlinedIcon color='secondary' fontSize='large' />
-            </IconButton>
-          </Stack>
+            <Box sx={{ position: 'relative' }}>
+              <ImageContainerStyled number={images ? images.length : 0}>
+                {images?.map((item: any, index: number) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    className={`image-${index + 1}`}
+                    src={URL.createObjectURL(item)}
+                    key={index}
+                    alt='image'
+                    loading='lazy'
+                  />
+                ))}
+                <IconButton
+                  sx={{ position: 'absolute', top: '6%', right: '5%', backgroundColor: 'white !important' }}
+                  onClick={() => handleDeleteImages()}
+                >
+                  <CloseRoundedIcon sx={{ color: 'black', fontSize: '25px' }} />
+                </IconButton>
+              </ImageContainerStyled>
+            </Box>
+          </Box>
         </Box>
-        <Button
-          variant='contained'
-          sx={{ width: '100%', marginTop: '20px', padding: '12px 0' }}
-          onClick={() => createPost()}
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: '0px', // Adjust the position as needed
+            zIndex: 999, // Adjust the z-index as needed
+            backgroundColor: 'white',
+            height: '190px',
+            width: '95%'
+          }}
         >
-          Create Post
-        </Button>
-      </Box>
-    </div>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              border: '1px solid rgba(0, 0, 0, 0.12)',
+              borderRadius: '10px',
+              padding: '13px 10px'
+            }}
+          >
+            <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px', width: '45%' }}>
+              {' '}
+              Add to your post
+            </Typography>
+            <Stack direction={'row'} gap={2} sx={{ width: '55%' }}>
+              <>
+                <input
+                  accept='image/*'
+                  type='file'
+                  id='icon-button-file'
+                  multiple
+                  onChange={handleImageChange}
+                  style={{ visibility: 'hidden' }}
+                />
+                <label htmlFor='icon-button-file'>
+                  <IconButton component='span'>
+                    <CollectionsIcon color='secondary' fontSize='large' />
+                  </IconButton>
+                </label>
+              </>
+              <>
+                <EmojiPicker content={content} setContent={setContent} />
+              </>
+            </Stack>
+          </Box>
+          <Button
+            variant='contained'
+            sx={{ width: '100%', marginTop: '20px', padding: '12px 0' }}
+            onClick={() => createPost()}
+          >
+            Create Post
+          </Button>
+        </Box>
+      </div>
+    </>
   )
 }
 

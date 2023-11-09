@@ -7,7 +7,6 @@ import { Post } from '@/types/post'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { useState, useEffect } from 'react'
 import urlConfig from '@/config/urlConfig'
-import RootModal from '@/components/common/modals/RootModal'
 import CreatePost from '@/components/Posts/CreatePost'
 import { useAuth } from '@/context/AuthContext'
 
@@ -15,18 +14,25 @@ export default function Home() {
   const isMobile = useResponsive('down', 'sm')
   const [postsData, setPostsData] = useState<Post[]>([])
   const [open, setOpen] = useState(false)
+  const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
-  const {user} = useAuth()
+  const { user } = useAuth()
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(urlConfig.posts.getPosts)
+        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
         setPostsData(response.data.data.data)
       } catch (error) {}
     }
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [1])
+  useEffect(() => {
+    if (newPost) {
+      setPostsData((prev) => [newPost, ...prev])
+    }
+  }, [newPost])
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -45,7 +51,7 @@ export default function Home() {
             padding: isMobile ? 3 : '20px'
           }}
         >
-          <CreatePost />
+          <CreatePost open={open} setOpen={setOpen} newPost={newPost} setNewPost={setNewPost} />
         </Box>
       </Modal>
       <PostLayout>
@@ -54,10 +60,7 @@ export default function Home() {
             Feeds
           </Typography>
           <Stack direction={'row'} sx={{ marginTop: '25px' }} spacing={2}>
-            <Avatar
-              src={user?.profile?.avatar}
-              sx={{ width: 50, height: 50 }}
-            ></Avatar>
+            <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
             <TextField
               size='small'
               variant='outlined'

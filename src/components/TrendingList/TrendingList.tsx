@@ -1,28 +1,11 @@
 import { Grid, Typography, Box, Stack } from '@mui/material'
 import TrendingCard from './TrendingCard'
-
-//temp data
-const trendingItems = [
-  {
-    id: 1,
-    des: 'Trending in VietNam',
-    trend: '#Zalo',
-    postCount: '20,2K'
-  },
-  {
-    id: 2,
-    des: 'Trending in Music',
-    trend: '#Kpop',
-    postCount: '12M'
-  },
-  {
-    id: 1,
-    des: 'Trending in VietNam',
-    trend: '#Lisa',
-    postCount: '14K'
-  }
-]
-export default function TrendingList() {
+import { TrendingHashtag } from '@/types/trendingHashtag'
+import Link from 'next/link'
+interface HashTagListProps {
+  trendingHashtags: TrendingHashtag[]
+}
+export default function TrendingList({ trendingHashtags }: HashTagListProps) {
   return (
     <Grid
       sx={{
@@ -37,15 +20,14 @@ export default function TrendingList() {
         Trends for you
       </Typography>
       <Stack spacing={1}>
-        {trendingItems.map((item) => (
-          <TrendingCard key={item.id} item={item} />
-        ))}
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
-        <TrendingCard item={trendingItems[0]} />
+        {trendingHashtags.map((item) => {
+          const href = `/search?hashtag=${item.hashtag.name.substring(1)}&f=top`
+          return (
+            <Link key={item._id} href={href}>
+              <TrendingCard trend={item} />
+            </Link>
+          )
+        })}
       </Stack>
       <Typography
         color='primary'
@@ -53,8 +35,8 @@ export default function TrendingList() {
           fontWeight: 'bold',
           verticalAlign: 'middle',
           fontSize: '18px',
-          marginTop: '10px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          margin: '20px 0'
         }}
       >
         Show more

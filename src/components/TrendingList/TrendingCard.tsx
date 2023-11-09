@@ -1,9 +1,11 @@
 import React from 'react'
 import { Box, Stack, Grid, Typography } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-
-export default function TrendingCard(props: any) {
-  const { des, trend, postCount } = props.item
+import { TrendingHashtag } from '@/types/trendingHashtag'
+interface TrendingHashtagProps {
+  trend: TrendingHashtag
+}
+export default function TrendingCard({ trend }: TrendingHashtagProps) {
   return (
     <Box
       sx={{
@@ -12,10 +14,10 @@ export default function TrendingCard(props: any) {
         backgroundColor: 'white',
         padding: '15px',
         borderRadius: '5px',
-        opacity: 1,
+        opacity: 0.9,
         '&:hover': {
-          backgroundColor: 'palette.common.white',
-          opacity: 0.85,
+          backgroundColor: '#f0f4f7',
+          opacity: 1,
           cursor: 'pointer'
         }
       }}
@@ -28,30 +30,30 @@ export default function TrendingCard(props: any) {
               style={{
                 fontWeight: 'normal',
                 verticalAlign: 'middle',
-                fontSize: '14px'
+                fontSize: '16px'
               }}
             >
-              {des}
+              {trend.category === null ? 'Trending' : `Trending in ${trend.category.name}`}
             </Typography>
             <Typography
               color='black'
               style={{
                 fontWeight: 'bold',
                 verticalAlign: 'middle',
-                fontSize: '18px'
+                fontSize: '20px'
               }}
             >
-              {trend}
+              {trend.hashtag.name}
             </Typography>
             <Typography
               color='black'
               style={{
                 fontWeight: 'normal',
                 verticalAlign: 'middle',
-                fontSize: '14px'
+                fontSize: '16px'
               }}
             >
-              {`${postCount} posts`}
+              {`${trend.count} posts`}
             </Typography>
           </Stack>
         </Grid>
