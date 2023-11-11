@@ -198,13 +198,14 @@ const ChatBox = ({ friend }: { friend: any }) => {
                                             <Paper sx={{
                                                 display: "flex",
                                                 padding: "10px 15px",
-                                                mb: "14px",
+                                                mb: "10px",
                                                 minWidth: "60px", maxWidth: "420px",
-                                                borderRadius: "8px",
+                                                borderRadius: "18px",
+                                                ...(isMyText ? {borderTopRightRadius: 0} : {borderTopLeftRadius: 0}),
                                                 backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
                                                 color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
                                             }}>
-                                                <Typography>{message.content}</Typography>
+                                                <Typography className="font-sans">{message.content}</Typography>
                                             </Paper> :
                                             <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
                                         }

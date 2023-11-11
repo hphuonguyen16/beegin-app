@@ -38,7 +38,7 @@ export function responsiveFontWeights({ sm, md, lg }: { sm: number; md: number; 
 
 // ----------------------------------------------------------------------
 
-const FONT_PRIMARY = "Poppins, sans-serif"; // Google Font
+const FONT_PRIMARY = "var(--font-poppins), sans-serif"; // Google Font
 // const FONT_SECONDARY = 'CircularStd, sans-serif'; // Local Font
 
 const typography = {

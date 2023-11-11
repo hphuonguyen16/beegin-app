@@ -15,7 +15,8 @@ import { PostProvider } from '@/context/PostContext'
 const poppins = Poppins({
   weight: '400',
   subsets: ['latin'],
-  display: 'swap'
+  display: 'swap',
+  variable: '--font-poppins'
 })
 
 // export const metadata = {
@@ -35,7 +36,7 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:type" content="website" />
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
-        <body className={poppins.className}>
+        <body className={poppins.variable}>
           <AuthProvider>
             <SnackbarContextProvider>
               <SessionProvider session={session}>
@@ -57,7 +58,7 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <meta property="og:type" content="website" />
           <meta property="og:title" content={metadata.title} /> */}
         </Head>
-        <body className={poppins.className}>
+        <body className={poppins.variable}>
           <AuthProvider>
             <SnackbarContextProvider>
               <SessionProvider session={session}>
