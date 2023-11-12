@@ -52,7 +52,8 @@ const UrlConfig = {
   },
   search: {
     getPostsByHashtag: (hashtag: string | null, sort: string = '-createdAt', limit: number = 10) =>
-      `/api/v1/search?hashtag=${hashtag}&sort=${sort}&limit=${limit}`
+      `/api/v1/search?hashtag=${hashtag}&sort=${sort}&limit=${limit}`,
+    searchUsers: (q: string) => `/api/v1/search/users?q=${q}`
   }
 }
 

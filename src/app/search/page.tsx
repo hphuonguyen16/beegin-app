@@ -10,6 +10,8 @@ import TabPanel from '@mui/lab/TabPanel'
 import PostList from '@/components/SearchResult/PostList'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
+import { Stack } from '@mui/material'
+import UserCard from '@/components/SearchResult/UserCard'
 
 export default function Page() {
   const searchParams = useSearchParams()
@@ -42,7 +44,12 @@ export default function Page() {
           <TabPanel value='latest'>
             <PostList />
           </TabPanel>
-          <TabPanel value='user'>User list</TabPanel>
+          <TabPanel value='user'>
+            <Stack>
+              {/* <UserCard />
+              <UserCard /> */}
+            </Stack>
+          </TabPanel>
           <TabPanel value='media'>Media list</TabPanel>
         </TabContext>
       </Box>
