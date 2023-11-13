@@ -8,4 +8,5 @@ export interface Comment {
   numReplies: number
   children?: Comment[]
   parent?: string
+  isLiked?: boolean
 }

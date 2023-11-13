@@ -14,7 +14,7 @@ import { usePosts } from '@/context/PostContext'
 export default function Home() {
   const isMobile = useResponsive('down', 'sm')
   // const [postsData, setPostsData] = useState<Post[]>([])
-  const { posts, setPosts } = usePosts()
+  const { postsState, postsDispatch } = usePosts()
   const [open, setOpen] = useState(false)
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
@@ -31,7 +31,7 @@ export default function Home() {
   // }, [1])
   useEffect(() => {
     if (newPost) {
-      setPosts((prev) => [newPost, ...prev])
+      postsDispatch({ type: 'ADD_POST', payload: newPost })
     }
   }, [newPost])
 
@@ -80,7 +80,7 @@ export default function Home() {
             />
           </Stack>
           <Box sx={{ marginTop: '50px' }}>
-            {posts.map((post, index) => (
+            {postsState.posts.map((post, index) => (
               <PostCard key={index} post={post} />
             ))}
           </Box>

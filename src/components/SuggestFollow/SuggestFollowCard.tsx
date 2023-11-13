@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function SuggestFollowCard(props: any) {
   const { firstname, lastname, avatar } = props.user.user.profile
+  console.log(props.user.user.profile)
   const { count } = props.user
   const router = useRouter()
   const redirectToProfile = (id: string) => {
