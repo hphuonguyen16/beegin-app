@@ -10,4 +10,5 @@ export interface Post {
   numComments: number
   numShares?: number
   createdAt: string
+  isLiked?: boolean
 }
