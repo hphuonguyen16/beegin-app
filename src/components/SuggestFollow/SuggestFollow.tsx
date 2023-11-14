@@ -8,15 +8,14 @@ import { useEffect, useState } from 'react'
 function SuggestFollow() {
   const axiosPrivate = useAxiosPrivate()
   const storedData = sessionStorage.getItem('myData')
-  const [data, setData] = useState(storedData ? [JSON.parse(storedData)] : [])
-  console.log(storedData)
-
+  const [data, setData] = useState(storedData ? [JSON.parse(storedData)][0] : [])
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axiosPrivate.get(UrlConfig.me.suggestFollow)
         const responseData = response.data.data
         sessionStorage.setItem('myData', JSON.stringify(responseData))
+        setData(response.data.data)
       } catch (error) {
         console.log(error)
       }
@@ -24,7 +23,7 @@ function SuggestFollow() {
 
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  }, [data])
   return (
     <Box>
       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
@@ -45,7 +44,7 @@ function SuggestFollow() {
       </Stack>
       <Box sx={{ marginLeft: '-13px' }}>
         {data && data.length > 0 ? (
-          data[0].map((item: any, index: number) => <SuggestFollowCard key={index} user={item} />)
+          data.map((item: any, index: number) => <SuggestFollowCard key={index} user={item} />)
         ) : (
           <Box></Box>
         )}

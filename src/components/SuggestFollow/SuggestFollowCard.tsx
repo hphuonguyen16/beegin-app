@@ -16,6 +16,9 @@ export default function SuggestFollowCard(props: any) {
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setIsVisible(false)
+      const myData = JSON.parse(sessionStorage.getItem('myData') || '[]')
+      const newData = myData.filter((item: any) => item.user._id !== props.user.user._id)
+      sessionStorage.setItem('myData', JSON.stringify(newData))
     }
   }
   return isVisible ? (
@@ -31,7 +34,13 @@ export default function SuggestFollowCard(props: any) {
         }
         title={firstname + ' ' + lastname}
         subheader={`${count} mutual following`}
-        action={<ButtonFollow userId={props.user.user._id} sendDataToParent={handleDataFromChild}></ButtonFollow>}
+        action={
+          <ButtonFollow
+            userId={props.user.user._id}
+            sendDataToParent={handleDataFromChild}
+            status={false}
+          ></ButtonFollow>
+        }
       />
     </Box>
   ) : null
