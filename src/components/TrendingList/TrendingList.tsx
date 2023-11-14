@@ -21,7 +21,7 @@ export default function TrendingList({ trendingHashtags }: HashTagListProps) {
       </Typography>
       <Stack spacing={1}>
         {trendingHashtags.map((item) => {
-          const href = `/search?hashtag=${item.hashtag.name.substring(1)}&f=top`
+          const href = `/search?q=${encodeURIComponent(item.hashtag.name)}&f=top`
           return (
             <Link key={item._id} href={href}>
               <TrendingCard trend={item} />
