@@ -153,7 +153,6 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                       } else {
                         getReplyComments('', comment._id)
                       }
-
                     }}
                   >
                     {!openReply ? `____   View replies (${comment.numReplies})` : `____   Hide replies`}
