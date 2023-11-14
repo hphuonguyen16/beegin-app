@@ -101,6 +101,15 @@ const RegisterForms = ({
               onChange={handleTextFieldChange}
             />
           </Stack>
+          <TextField
+            error={!formErrors.slug}
+            id='slug'
+            name='slug'
+            label='Slug'
+            value={formValues.slug}
+            helperText={!formErrors.slug && 'Please fill in your slug'}
+            onChange={handleTextFieldChange}
+          />
           <FormControl fullWidth>
             <InputLabel id='demo-simple-select-label'>Age</InputLabel>
             <Select

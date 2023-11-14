@@ -142,7 +142,7 @@ const PostCard = ({ post }: PostCardProps) => {
                   marginLeft: '7px'
                 }}
               >
-                @real_bear
+                {post.user.profile?.slug}
               </Typography>
               <Box
                 sx={{

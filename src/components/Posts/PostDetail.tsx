@@ -107,19 +107,31 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
   }
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
-    setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
+    if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)
+    else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
   const getReplyComments = async (postId: string, commentId: string) => {
     try {
-      const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
-      setComments((prev) => {
-        const newComments = [...(prev || [])]
-        const index = newComments.findIndex((comment) => comment._id === commentId)
-        if (index >= 0) {
-          newComments[index].children = res.data.data
-        }
-        return newComments
-      })
+      if (postId === '' || commentId === '') {
+        setComments((prev) => {
+          const newComments = [...(prev || [])]
+          const index = newComments.findIndex((comment) => comment._id === commentId)
+          if (index >= 0) {
+            newComments[index].children = []
+          }
+          return newComments
+        })
+      } else {
+        const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
+        setComments((prev) => {
+          const newComments = [...(prev || [])]
+          const index = newComments.findIndex((comment) => comment._id === commentId)
+          if (index >= 0) {
+            newComments[index].children = res.data.data
+          }
+          return newComments
+        })
+      }
     } catch (err) {}
   }
   React.useEffect(() => {
@@ -132,6 +144,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
     }
 
     fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -185,7 +198,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                             marginLeft: '7px'
                           }}
                         >
-                          @real_bear
+                          {post.user.profile?.slug}
                         </Typography>
                         <Box
                           sx={{
@@ -236,7 +249,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                           marginLeft: '7px'
                         }}
                       >
-                        @real_bear
+                        {post.user.profile?.slug}
                       </Typography>
                       <Typography
                         sx={{
@@ -288,7 +301,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                 </Stack>
               </Stack>
               <Divider variant='inset' />
-              <Box>
+              <Box sx={{ paddingRight: '15px' }}>
                 {comments.map((comment: Comment, index: number) => (
                   <CommentCard
                     key={comment._id}
@@ -393,7 +406,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position='end'>
-                          <EmojiPicker content={comment} setContent={setComment} />
+                          <EmojiPicker content={comment} setContent={setComment} sizeMedium={false} />
                         </InputAdornment>
                       )
                     }}
