@@ -24,7 +24,7 @@ import socketFunctions from '@/utils/socket';
 
 const INFO_PANE_WIDTH = "30%";
 
-const ChatBox = ({ friend }: { friend: any }) => {
+const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string[] }) => {
     const axiosPrivate = useAxiosPrivate()
     const { user } = useAuth();
     const id = 'send-reaction';
@@ -185,7 +185,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
         }}>
             {/* USER INFO */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#fff", padding: '20px 25px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
-                <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle='active 5m ago' />
+                <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={onlineUserIds.includes(friend?.user) ? "Online" : "Offline"} />
                 <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded /></IconButton>
             </Box>
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>

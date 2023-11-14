@@ -9,6 +9,12 @@ const socketFunctions = {
         socket.emit('add-user', userId)
     },
 
+    getOnlineUsers: (setOnlineUserIds: any) => {
+        socket.on("get-users", (users: any) => {
+            setOnlineUserIds(users)
+        });
+    },
+
     sendSeenStatus: (lastMessage: any, friendId: string, userId: any) => {
         if (lastMessage?.sender !== userId) {
             socket.emit("message-seen-status", {

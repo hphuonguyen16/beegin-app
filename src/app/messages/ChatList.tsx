@@ -19,7 +19,7 @@ interface FriendAndMessage {
     message: Message
 }
 
-const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
+const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any, onlineUserIds: string[] }) => {
     const axiosPrivate = useAxiosPrivate()
     const [friends, setFriends] = useState<FriendAndMessage[]>([])
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -59,18 +59,6 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
         fetchData()
     }, [])
 
-
-    const socket = useRef();
-    socket.current = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`)
-    const [onlineUserIds, setOnlineUserIds] = useState<any>([]);
-    useEffect(() => {
-        if (socket.current) {
-            socket.current.on("get-users", (users: any) => {
-                setOnlineUserIds(users)
-            });
-        }
-    }, [user]);
-
     return (
         <>
             <Stack direction={"row"} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
@@ -78,7 +66,7 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
             </Stack>
             <Scrollbar>
                 <Stack direction={"row"} spacing={2} sx={{ maxWidth: "100%", minHeight: "100%", mb: '20px', position: "relative", px: '10px' }}>
-                    {friends.map(friend => (<Avatar img={friend.friend.avatar} status={onlineUserIds.includes(friend.friend.user) ? 0 : 4} />))}
+                    {friends.map(friend => (<Avatar img={friend.friend.avatar} online={onlineUserIds.includes(friend.friend.user)} />))}
                 </Stack>
             </Scrollbar>
             <Stack spacing={2}>
@@ -91,7 +79,7 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                     }}
                         onClick={(event) => handleListItemClick(event, index, friend.friend)}
                     >
-                        <Avatar img={friend.friend.avatar} status={onlineUserIds.includes(friend.friend.user) ? 0 : 4} />
+                        <Avatar img={friend.friend.avatar} online={onlineUserIds.includes(friend.friend.user)} />
                         {/* <Box sx={{ display: 'flex', flexDirection: 'column' }}> */}
                         <CardContent sx={{ display: 'flex', flexDirection: 'column', padding: '5px !important', width: '100%', justifyContent: 'center', ml: "10px" }}>
                             <Typography component="div" variant="h5">
