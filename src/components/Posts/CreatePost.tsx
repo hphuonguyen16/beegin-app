@@ -189,7 +189,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
                 fontWeight: 400
               }}
             >
-              @real_bear
+              {user?.profile?.slug}
             </Typography>
           </Box>
         </Stack>
@@ -283,7 +283,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
                 </label>
               </>
               <>
-                <EmojiPicker content={content} setContent={setContent} />
+                <EmojiPicker content={content} setContent={setContent} sizeMedium={false} />
               </>
             </Stack>
           </Box>

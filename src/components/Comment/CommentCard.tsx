@@ -16,6 +16,7 @@ interface CommentCardProps {
 
 const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
+  const [openReply, setOpenReply] = React.useState(false)
   const [commentData, setCommentData] = React.useState<Comment>(comment)
   const [liked, setLiked] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
@@ -35,7 +36,10 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      <ListItem alignItems='flex-start' sx={{ paddingTop: '0px !important', paddingBottom: '0px !important' }}>
+      <ListItem
+        alignItems='flex-start'
+        sx={{ paddingTop: '0px !important', paddingBottom: '0px !important', paddingRight: '0px !important' }}
+      >
         <ListItemAvatar>
           <Avatar alt='Remy Sharp' src={comment.user.profile?.avatar} />
         </ListItemAvatar>
@@ -45,7 +49,7 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
               <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                 {comment.user.profile?.firstname + ' ' + comment.user.profile?.lastname}
               </Typography>
-              {/* <Typography
+              <Typography
                 sx={{
                   color: 'rgba(0, 0, 0, 0.50)',
                   fontSize: isMobile ? '10px' : '12px',
@@ -53,8 +57,8 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                   marginLeft: '7px'
                 }}
               >
-                @real_bear
-              </Typography> */}
+                {comment.user.profile?.slug}
+              </Typography>
             </Stack>
           }
           secondary={
@@ -68,7 +72,16 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                       width: '90%'
                     }}
                   >
-                    {comment.content}
+                    {comment.content.split(' ').map((word, index) => {
+                      if (word.startsWith('@')) {
+                        return (
+                          <span key={index} style={{ color: 'blue' }}>
+                            {word + ' '}
+                          </span>
+                        )
+                      }
+                      return word + ' '
+                    })}
                   </Box>
                   <Stack direction={'row'} gap={2}>
                     <Typography
@@ -134,10 +147,15 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                       cursor: 'pointer'
                     }}
                     onClick={() => {
-                      getReplyComments(comment.post, comment._id)
+                      setOpenReply(!openReply)
+                      if (!openReply) {
+                        getReplyComments(comment.post, comment._id)
+                      } else {
+                        getReplyComments('', comment._id)
+                      }
                     }}
                   >
-                    {`____   View replies (${comment.numReplies})`}
+                    {!openReply ? `____   View replies (${comment.numReplies})` : `____   Hide replies`}
                   </Typography>
                   {comment.children?.map((childComment) => (
                     <CommentCard
