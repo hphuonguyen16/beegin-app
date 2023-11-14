@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   Chip,
@@ -33,35 +33,35 @@ import EmojiPicker from '../common/EmojiPicker'
 import CustomTextfield from '../common/Textfield'
 import _ from 'lodash'
 
-function findComment(comments: Comment[] | undefined, commentId: string): Comment | undefined {
-  if (!comments) {
-    return undefined
+// find the root of children comment
+function findRootComment(comments: Comment[], comment: Comment) {
+  if (comment.parent) {
+    const parentComment = comments.find((c) => c._id === comment.parent)
+    if (parentComment) {
+      return findRootComment(comments, parentComment)
+    }
   }
+  return comment
+}
 
-  for (let i = 0; i < comments.length; i++) {
-    if (comments[i]._id === commentId) {
-      return comments[i]
-    }
-    if (comments[i].children) {
-      const comment = findComment(comments[i].children, commentId)
-      if (comment) {
-        return comment
-      }
+function findRootCommentIndex(comments: Comment[], comment: Comment) {
+  if (comment.parent) {
+    const parentComment = comments.find((c) => c._id === comment.parent)
+    if (parentComment) {
+      return findRootCommentIndex(comments, parentComment)
     }
   }
-  return undefined
+  return comments.findIndex((c) => c._id === comment._id)
 }
 
 interface PostDetailProps {
   post: Post
   open: boolean
-  liked: boolean
-  setLiked: (like: boolean) => void
   handleLike: () => void
   handleClose: () => void
 }
 
-const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: PostDetailProps) => {
+const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
@@ -79,30 +79,33 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
       })
       setComments([response.data.data, ...comments])
     } else {
+      const rootComment = findRootComment(comments, commentReply)
       const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
         content: comment,
-        parent: commentReply._id
+        parent: rootComment._id
       })
       setComments((prev) => {
-        const newComments = _.cloneDeep(prev || [])
-        const comment = newComments.find((c) => c._id === commentReply._id)
+        const newComments = _.cloneDeep(prev)
+        const rootCommentIndex = findRootCommentIndex(newComments, commentReply)
 
-        if (comment) {
-          if (!comment.children) {
-            comment.children = []
+        if (rootCommentIndex !== -1) {
+          const rootComment = newComments[rootCommentIndex]
+
+          if (!rootComment.children) {
+            rootComment.children = []
           }
+
           const childComment = response.data.data
           childComment.key = childComment._id
-          comment.children = [childComment, ...comment.children]
-        }
 
+          rootComment.children = [childComment, ...rootComment.children]
+          rootComment.numReplies++
+        }
         return newComments
       })
     }
   }
-  console.log(comments)
   const replyComment = (commentReply: Comment) => {
-    console.log(commentReply)
     setCommentReply(commentReply)
     setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
@@ -127,17 +130,8 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
         // Handle any errors that occur during the fetchComments() function
       }
     }
-    const checkLiked = async () => {
-      try {
-        const response = await axiosPrivate.get(urlConfig.posts.checkLikePost(post._id))
-        setLiked(response.data.data)
-      } catch (err) {}
-    }
 
     fetchData()
-    checkLiked()
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -183,16 +177,16 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                         <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                           {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
                         </Typography>
-                        {/* <Typography
+                        <Typography
                           sx={{
                             color: 'rgba(0, 0, 0, 0.50)',
-                            fontSize: isMobile ? '10px' : '12px',
+                            fontSize: isMobile ? '10px' : '13px',
                             fontWeight: 400,
                             marginLeft: '7px'
                           }}
                         >
                           @real_bear
-                        </Typography> */}
+                        </Typography>
                         <Box
                           sx={{
                             width: '6px',
@@ -233,6 +227,16 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                     <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
                       <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                         {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: 'rgba(0, 0, 0, 0.50)',
+                          fontSize: isMobile ? '10px' : '13px',
+                          fontWeight: 400,
+                          marginLeft: '7px'
+                        }}
+                      >
+                        @real_bear
                       </Typography>
                       <Typography
                         sx={{
@@ -289,9 +293,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                   <CommentCard
                     key={comment._id}
                     comment={comment}
-                    replyComment={() => {
-                      replyComment(comment)
-                    }}
+                    replyComment={replyComment}
                     getReplyComments={getReplyComments}
                   />
                 ))}
@@ -322,7 +324,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                       handleLike()
                     }}
                   >
-                    {liked ? (
+                    {post.isLiked ? (
                       <FavoriteRoundedIcon color='secondary' />
                     ) : (
                       <FavoriteBorderRoundedIcon color='secondary' />

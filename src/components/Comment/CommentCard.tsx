@@ -10,12 +10,13 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 
 interface CommentCardProps {
   comment: Comment
-  replyComment: () => void
+  replyComment: (comment: Comment) => void
   getReplyComments: (postId: string, commentId: string) => void
 }
 
 const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
+  const [commentData, setCommentData] = React.useState<Comment>(comment)
   const [liked, setLiked] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
   const handleLike = async () => {
@@ -59,7 +60,7 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
           secondary={
             <>
               <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
+                <Box sx={{ width: '90%' }}>
                   <Box
                     sx={{
                       margin: isMobile ? '5px 0' : '5px 0',
@@ -102,7 +103,7 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                       }}
                       onClick={() => {
                         //get the root comment
-                        replyComment()
+                        replyComment(comment)
                       }}
                     >
                       Reply
