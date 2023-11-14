@@ -9,8 +9,9 @@ function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
   const [listFollowing, setFollowing] = useState([])
   const [listFollower, setFollower] = useState([])
-  const [data, setData] = useState([])
   const [buttonFollow, setButtonFollow] = useState(true)
+  const [isVisible, setIsVisible] = useState(userId === 'me' ? true : false)
+
   const getListFollowing = async (userId: any) => {
     try {
       let response
@@ -21,7 +22,6 @@ function Friends({ userId }: { userId: string }) {
         response = await axiosPrivate.get(url)
       }
       setFollowing(response.data.data)
-      setData(response.data.data)
     } catch (err) {}
   }
   const getListFollower = async (userId: any) => {
@@ -36,16 +36,6 @@ function Friends({ userId }: { userId: string }) {
       setFollower(response.data.data)
     } catch (err) {}
   }
-  const setButton = (status: string) => {
-      console.log (status)
-    if (status === 'following' || '') {
-      setData(listFollowing)
-      setButtonFollow(true)
-    } else {
-      setData(listFollower)
-      setButtonFollow(false)
-    }
-  }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,9 +45,8 @@ function Friends({ userId }: { userId: string }) {
         console.log(error)
       }
     }
-
     fetchData()
-  }, [])
+  }, [buttonFollow])
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -65,8 +54,7 @@ function Friends({ userId }: { userId: string }) {
           item
           xs={6}
           style={{
-            backgroundColor: buttonFollow === true ? '#ffd9fc' : 'white',
-            color: buttonFollow === true ? '#9747FF' : 'black',
+            borderBottom: buttonFollow === true ? '2px solid #9747FF' : 'none',
             paddingBottom: '15px',
             borderTopLeftRadius: '10px'
           }}
@@ -74,17 +62,17 @@ function Friends({ userId }: { userId: string }) {
           <Typography
             variant='h4'
             sx={{
-              fontWeight: '200',
               textAlign: 'center',
               fontSize: '16px',
               cursor: 'pointer',
-
+              fontWeight: 'bold',
+              color: buttonFollow === true ? '#9747FF' : 'black',
               '&:hover': {
                 color: '#9747FF',
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButton('following')}
+            onClick={() => setButtonFollow(true)}
           >
             Following
           </Typography>
@@ -93,40 +81,40 @@ function Friends({ userId }: { userId: string }) {
           item
           xs={6}
           style={{
-            backgroundColor: buttonFollow === false ? '#ffd9fc' : 'white',
-            color: buttonFollow === false ? '#9747FF' : 'black',
+            borderBottom: buttonFollow === false ? '2px solid #9747FF' : 'none',
             paddingBottom: '15px'
           }}
         >
           <Typography
             variant='h4'
             sx={{
-              fontWeight: '200',
               textAlign: 'center',
               fontSize: '16px',
               cursor: 'pointer',
+              fontWeight: 'bold',
+              color: buttonFollow === false ? '#9747FF' : 'black',
               '&:hover': {
                 color: '#9747FF',
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButton('follower')}
+            onClick={() => setButtonFollow(false)}
           >
             Follower
           </Typography>
         </Grid>
       </Grid>
       <Box>
-        {/* {buttonFollow === true
+        {buttonFollow === true
           ? listFollowing.map((user: any, index) => (
-              <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
+              <CardUser key={index} userId={user.userId} profile={user.profile[0]} status={true} isVisible = {isVisible} />
             ))
           : listFollower.map((user: any, index) => (
-              <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
-            ))} */}
-        {data.map((user: any, index) => (
+              <CardUser key={index} userId={user.userId} profile={user.profile[0]} status={user.status} isVisible = {isVisible} />
+            ))}
+        {/* {data.map((user: any, index) => (
           <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
-        ))}
+        ))} */}
       </Box>
     </Stack>
   )

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function ButtonFollow(props: any) {
   const { userId } = props
   const axiosPrivate = useAxiosPrivate()
-  const [follow, setFollow] = useState<boolean>(true)
+  const [follow, setFollow] = useState<boolean>(props.status !== undefined ? props.status : true)
   const isFollowing = async (id: any) => {
     try {
       const url = UrlConfig.me.isFollowing.replace(':id', id)
@@ -28,13 +28,13 @@ export default function ButtonFollow(props: any) {
     } catch (err) {}
   }
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await isFollowing(userId)
-      } catch (error) {}
+    if (props.status === undefined) {
+      isFollowing(userId)
     }
-    fetchData()
-  }, [])
+    if (props.status !== follow) {
+      setFollow(props.status)
+    }
+  }, [props.status])
   const sendDataToParent = (data: string) => {
     props.sendDataToParent(data)
   }
@@ -48,7 +48,6 @@ export default function ButtonFollow(props: any) {
     }
     setFollow((prev: boolean) => !prev)
   }
-  console.log(userId,follow)
   return (
     <Button
       variant={follow ? 'outlined' : 'contained'}
@@ -63,7 +62,7 @@ export default function ButtonFollow(props: any) {
       }}
       onClick={handleFollow}
     >
-      {follow ? 'Following' : 'Follow'}
+      {follow === true ? 'Following' : 'Follow'}
     </Button>
   )
 }
