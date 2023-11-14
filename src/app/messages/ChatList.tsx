@@ -4,12 +4,15 @@ import useResponsive from '@/hooks/useResponsive'
 import { Grid, Box, Stack, Typography, styled, Card, CardMedia, CardContent, } from '@mui/material'
 import Avatar from '@/components/common/Avatar'
 import AvatarCard from '@/components/common/AvatarCard'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import Profile from '@/types/profile'
 import { theme } from '@/theme'
 import Message from '@/types/message'
+import { io } from 'socket.io-client'
+import Scrollbar from '@/components/common/Scrollbar'
+import { useAuth } from '@/context/AuthContext'
 
 interface FriendAndMessage {
     friend: Profile,
@@ -20,6 +23,8 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
     const axiosPrivate = useAxiosPrivate()
     const [friends, setFriends] = useState<FriendAndMessage[]>([])
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const { user } = useAuth();
 
     const handleListItemClick = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -54,14 +59,28 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
         fetchData()
     }, [])
 
+
+    const socket = useRef();
+    socket.current = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`)
+    const [onlineUserIds, setOnlineUserIds] = useState<any>([]);
+    useEffect(() => {
+        if (socket.current) {
+            socket.current.on("get-users", (users: any) => {
+                setOnlineUserIds(users)
+            });
+        }
+    }, [user]);
+
     return (
         <>
             <Stack direction={"row"} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
                 <Typography variant='h4'>Chats</Typography>
             </Stack>
-            <Stack direction={"row"} spacing={2} sx={{ maxWidth: "100%", overflowX: "hidden", overflowY: "hidden", mb: '20px', px: '10px' }}>
-                {friends.map(friend => (<Avatar img={friend.friend.avatar} status={5} />))}
-            </Stack>
+            <Scrollbar>
+                <Stack direction={"row"} spacing={2} sx={{ maxWidth: "100%", minHeight: "100%", mb: '20px', position: "relative", px: '10px' }}>
+                    {friends.map(friend => (<Avatar img={friend.friend.avatar} status={onlineUserIds.includes(friend.friend.user) ? 0 : 4} />))}
+                </Stack>
+            </Scrollbar>
             <Stack spacing={2}>
                 {friends.map((friend, index) => (
                     <Card sx={{
@@ -72,11 +91,9 @@ const ChatList = ({ setSelectedFriend }: { setSelectedFriend: any }) => {
                     }}
                         onClick={(event) => handleListItemClick(event, index, friend.friend)}
                     >
-                        <CardMedia component="img"
-                            sx={{ height: 60, width: 60, borderRadius: "50%", mr: "10px" }} image={friend.friend.avatar}
-                        ></CardMedia>
+                        <Avatar img={friend.friend.avatar} status={onlineUserIds.includes(friend.friend.user) ? 0 : 4} />
                         {/* <Box sx={{ display: 'flex', flexDirection: 'column' }}> */}
-                        <CardContent sx={{ display: 'flex', flexDirection: 'column', padding: '5px !important', width: '100%', justifyContent: 'center' }}>
+                        <CardContent sx={{ display: 'flex', flexDirection: 'column', padding: '5px !important', width: '100%', justifyContent: 'center', ml: "10px" }}>
                             <Typography component="div" variant="h5">
                                 {friend.friend.firstname + " " + friend.friend.lastname}
                             </Typography>

@@ -72,8 +72,9 @@
   */
 }
 
-.slides::-webkit-scrollbar {
+/* .slides::-webkit-scrollbar {
   width: 10px;
+  
   height: 10px;
 }
 .slides::-webkit-scrollbar-thumb {
@@ -82,7 +83,7 @@
 }
 .slides::-webkit-scrollbar-track {
   background: transparent;
-}
+} */
 .slides > img {
   scroll-snap-align: start;
   flex-shrink: 0;

@@ -2,7 +2,7 @@
 
 import useResponsive from '@/hooks/useResponsive'
 import { Grid, Box, Stack, Typography, styled, Card, CardMedia, CardContent, FilledInput, OutlinedInput, InputAdornment, IconButton, Paper, Avatar, Popover } from '@mui/material'
-import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions, AddPhotoAlternate } from '@mui/icons-material'
+import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions, AddPhotoAlternate, MoreHoriz } from '@mui/icons-material'
 import ExtendedUserInfo from './ExtendedUserInfo'
 import AvatarCard from '@/components/common/AvatarCard'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
@@ -17,13 +17,17 @@ import Picker from 'emoji-picker-react';
 import { io } from 'socket.io-client'
 import useSnackbar from '@/context/snackbarContext'
 import RootModal from '@/components/common/modals/RootModal'
+import Scrollbar from '@/components/common/Scrollbar'
+import { PokemonSelector, PokemonCounter } from '@charkour/react-reactions';
+import EmojiPicker from '@/components/common/EmojiPicker'
+import socketFunctions from '@/utils/socket';
 
 const INFO_PANE_WIDTH = "30%";
 
 const ChatBox = ({ friend }: { friend: any }) => {
     const axiosPrivate = useAxiosPrivate()
     const { user } = useAuth();
-    const id = user?._id;
+    const id = 'send-reaction';
     const socket = useRef();
     const [arrivalMessage, setArrivalMessage] = useState<Message>(null);
 
@@ -32,17 +36,14 @@ const ChatBox = ({ friend }: { friend: any }) => {
     const [inputMessage, setInputMessage] = useState("");
     const scrollRef = useRef();
 
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const [anchor, setanchor] = React.useState<HTMLButtonElement | null>(null);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
+        setanchor(event.currentTarget);
     };
     const handleClose = () => {
-        setAnchorEl(null);
+        setanchor(null);
     };
-    const open = Boolean(anchorEl);
-    const onEmojiClick = (emojiObject: any, event: any) => {
-        setInputMessage(inputMessage + emojiObject.emoji);
-    };
+    const open = Boolean(anchor);
 
     const [data, setData] = useState<Message>(null);
     const [openDeleteMsgModal, setOpenDeleteMsgModal] = useState(false)
@@ -51,21 +52,21 @@ const ChatBox = ({ friend }: { friend: any }) => {
     const getMessages = async () => {
         try {
             let response = await axiosPrivate.get(`${UrlConfig.messages.getFriendMessages}/${friend.user}`)
-            setMessages(response.data.data)
+            const data = response.data.data
+            setMessages(data)
+            socketFunctions.sendSeenStatus(data[data.length - 1], friend?.user, user?._id)
         } catch (err) { }
     }
 
     useEffect(() => {
         if (user) {
-            socket.current = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`)
-            socket.current.emit('add-user', user._id)
+            socketFunctions.addUser(user?._id)
         }
     }, [user])
 
     const fetchData = async () => {
         try {
             await getMessages();
-            console.log(messages)
         } catch (error) {
             console.log(error)
         }
@@ -75,37 +76,44 @@ const ChatBox = ({ friend }: { friend: any }) => {
         fetchData()
     }, [friend])
 
+
     useEffect(() => {
-        scrollRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [messages])
+        socketFunctions.fetchSeenStatus();
+    });
 
     const sendMessage = async () => {
         try {
             const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "text", content: inputMessage });
-            socket.current.emit('send-msg', {
-                id: res.data.data._id,
+            const msg = res.data.data;
+            socketFunctions.sendMessage({
+                id: msg._id,
                 sender: user?._id,
                 receiver: friend.user,
                 type: "text",
-                content: inputMessage
+                content: inputMessage,
+                createdAt: msg.createdAt
             })
-            setMessages([...messages, { fromSelf: true, type: "text", content: inputMessage }])
+            setMessages([...messages, { fromSelf: true, type: "text", content: inputMessage, createdAt: msg.createdAt }])
             setInputMessage("")
         } catch (err) { }
     }
 
+    const [typing, setTyping] = useState(false)
+
     const enterListenHandler = async (e: any) => {
         if (e.key === "Enter") {
-           await sendMessage();
+            await sendMessage();
+        } else {
+            socketFunctions.sendTyping(user?._id, friend?.user);
         }
     };
 
     useEffect(() => {
-        if (socket.current) {
-            socket.current.on("msg-recieve", (msg: Message) => {
-                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content });
-            });
-        }
+        socketFunctions.fetchTyping(setTyping, friend?.user);
+    });
+
+    useEffect(() => {
+        socketFunctions.receiveMessage(setArrivalMessage, friend?.user, user?._id)
     });
 
     useEffect(() => {
@@ -133,21 +141,22 @@ const ChatBox = ({ friend }: { friend: any }) => {
                 })
                 .catch((err) => console.error(err))
             const res = await axiosPrivate.post(`${UrlConfig.messages.sendMessage}/${friend.user}`, { type: "image", content: image_url });
-            socket.current.emit('send-msg', {
-                id: res.data.data._id,
+            const msg = res.data.data;
+            socketFunctions.sendMessage({
+                id: msg._id,
                 sender: user?._id,
                 receiver: friend.user,
                 type: "image",
-                content: image_url
+                content: image_url,
+                createdAt: msg.createdAt
             })
-            setMessages([...messages, { fromSelf: true, type: "image", content: image_url }])
+            setMessages([...messages, { fromSelf: true, type: "image", content: image_url, createdAt: msg.createdAt }])
         }
     }
 
     const onDeleteBtnClick = (msg: Message) => {
         setOpenDeleteMsgModal(true);
         setData(msg)
-        console.log(data)
     }
 
     async function handleDeleteRole() {
@@ -158,6 +167,11 @@ const ChatBox = ({ friend }: { friend: any }) => {
             fetchData()
         }
     }
+    const counters = [{ emoji: 'like', by: " " }]
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [messages, typing])
 
     return <>
         <Box sx={{
@@ -174,66 +188,99 @@ const ChatBox = ({ friend }: { friend: any }) => {
                 <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle='active 5m ago' />
                 <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded /></IconButton>
             </Box>
-            <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 40px' }}>
+            <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>
                 {/* TEXTS */}
-                <Box sx={{ minHeight: "90%", overflowX: "hidden", overflowY: "scroll", position: "relative" }}>
-                    {
-                        messages.length === 0 && (<Image src={newConversationBanner} alt="" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />)
-                    }
-                    {
-                        messages.map((message, index) => {
-                            var isMyText = message.fromSelf;
-                            var isTopText = index == 0 || messages[index - 1].fromSelf;
+                <Scrollbar>
+                    <Box sx={{ minHeight: "90%", position: "relative", marginRight: "8px" }}>
+                        {
+                            messages.length === 0 && (<Image src={newConversationBanner} alt="" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />)
+                        }
+                        {
+                            messages.map((message, index) => {
+                                var isMyText = message.fromSelf;
+                                var isTopText = index == 0 || messages[index - 1].fromSelf;
+                                var isClusterTopText = index == 0 || (messages[index - 1].fromSelf !== messages[index].fromSelf)
 
-                            return (
-                                <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
-                                    {!isMyText &&
-                                        <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
-                                            {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
-                                        </Box>
-                                    }
-                                    <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
-                                        {/* {(index == 0 || chats[index - 1].sender === "me") && <Typography>Bear, 5 minutes ago</Typography>} */}
-                                        {message.type === "text" ?
-                                            <Paper sx={{
-                                                display: "flex",
-                                                padding: "10px 15px",
-                                                mb: "10px",
-                                                minWidth: "60px", maxWidth: "420px",
-                                                borderRadius: "18px",
-                                                ...(isMyText ? {borderTopRightRadius: 0} : {borderTopLeftRadius: 0}),
-                                                backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
-                                                color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
-                                            }}>
-                                                <Typography className="font-sans">{message.content}</Typography>
-                                            </Paper> :
-                                            <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
+                                return (
+                                    <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
+                                        {!isMyText &&
+                                            <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
+                                                {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
+                                            </Box>
                                         }
-                                        <Stack sx={{
-                                            flexDirection: "row",
-                                            position: "absolute",
-                                            ...(isMyText ? { left: "0px" } : { right: "0px" }),
-                                            bottom: "0px", transition: "all 0.3s ease-in-out"
-                                        }} className='icons'>
-                                            <IconButton sx={{
-                                                padding: "3px",
-                                                color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
-                                            }} >
-                                                <AddReaction sx={{ fontSize: '1.125rem' }} />
-                                            </IconButton>
-                                            {isMyText && <IconButton sx={{ padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
-                                                <Delete sx={{ fontSize: '1.125rem' }} />
-                                            </IconButton>}
+                                        <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
+                                            {(isClusterTopText) && <Typography sx={{ opacity: 0.7, textAlign: isMyText ? "right" : "left" }}>{message.createdAt.substring(11, 16)}</Typography>}
+                                            {message.type === "text" ?
+                                                <Paper sx={{
+                                                    display: "flex",
+                                                    padding: "10px 15px",
+                                                    mb: "10px",
+                                                    minWidth: "60px", maxWidth: "420px",
+                                                    borderRadius: "18px",
+                                                    ...(isMyText ? { borderTopRightRadius: 0 } : { borderTopLeftRadius: 0 }),
+                                                    backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
+                                                    color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
+                                                }}>
+                                                    <Typography className="font-sans">{message.content}</Typography>
+                                                </Paper> :
+                                                <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
+                                            }
+
+
+                                            {!isClusterTopText && <Typography sx={{
+                                                position: "absolute", opacity: 0.7,
+                                                ...(isMyText ? { left: "-50px" } : { right: "-50px" }),
+                                                bottom: "calc(50% - 12px)", transition: "all 0.3s ease-in-out"
+                                            }} className='icons'>{message.createdAt.substring(11, 16)}</Typography>}
+
+                                            <Stack sx={{
+                                                flexDirection: "row",
+                                                position: "absolute",
+                                                ...(isMyText ? { left: "0px" } : { right: "0px" }),
+                                                bottom: "0px", transition: "all 0.3s ease-in-out"
+                                            }}>
+                                                {counters.length > 0 ?
+                                                    <Box sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }}>
+                                                        <PokemonCounter user='' counters={counters} />
+                                                    </Box> :
+                                                    <IconButton className='icons' onClick={handleClick} aria-describedby={id} sx={{
+                                                        padding: "3px",
+                                                        color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
+                                                    }} >
+                                                        <AddReaction sx={{ fontSize: '1.125rem' }} />
+                                                    </IconButton>
+                                                }
+
+                                                {isMyText && <IconButton className='icons' sx={{ padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
+                                                    <Delete sx={{ backgroundColor: "#fff", borderRadius: "50%", fontSize: '1.125rem' }} />
+                                                </IconButton>}
+                                            </Stack>
                                         </Stack>
                                     </Stack>
-                                </Stack>
-                            )
-                        })
-                    }
-                </Box>
+                                )
+                            })
+                        }
+                        {typing && (<Stack ref={scrollRef} sx={{ flexDirection: "row", alignItems: "center", marginTop: "10px" }}>
+                            <Avatar src={friend?.avatar} />
+                            <Box sx={{
+                                background: theme => theme.palette.grey[300],
+                                color: theme => theme.palette.grey[400],
+                                width: "80px",
+                                borderRadius: "50px",
+                                marginLeft: "10px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}>
+                                <Typography variant='h2' sx={{ lineHeight: 0.85, width: "50px", position: "relative", bottom: "12px", fontFamily: "'", }} className="typing"></Typography>
+                            </Box>
+                        </Stack>)}
+                    </Box>
+                </Scrollbar >
 
                 {/* INPUT FIELD */}
-                <Stack sx={{ mt: "10px" }}>
+                < Stack sx={{ mt: "10px" }
+                }>
                     <OutlinedInput
                         id="outlined-adornment-password"
                         type='text'
@@ -257,9 +304,7 @@ const ChatBox = ({ friend }: { friend: any }) => {
                                     </IconButton>
                                 </InputAdornment>
                                 <InputAdornment position="end" onClick={handleClick}>
-                                    <IconButton>
-                                        <EmojiEmotions />
-                                    </IconButton>
+                                    {/* <EmojiPicker content={0inputMessage} setContent={setInputMessage} sizeMedium /> */}
                                 </InputAdornment>
                                 <InputAdornment position="end" onClick={sendMessage}>
                                     <IconButton>
@@ -269,36 +314,41 @@ const ChatBox = ({ friend }: { friend: any }) => {
                             </>
                         }
                     />
-                </Stack>
-            </Stack>
-        </Box>
+                </Stack >
+            </Stack >
+
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchor}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+                sx={{ "& .MuiPopover-paper": { pt: '35px', backgroundColor: 'transparent', boxShadow: 0 } }}
+            >
+                <PokemonSelector />
+            </Popover>
+        </Box >
         <ExtendedUserInfo width={INFO_PANE_WIDTH} friend={friend} />
-        <Popover
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-            }}
-            transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-            }}
-        >
-            <Picker onEmojiClick={onEmojiClick} />
-        </Popover>
-        {openDeleteMsgModal && (
-            <RootModal
-                variant="Delete"
-                handleOk={handleDeleteRole}
-                handleClose={() => setOpenDeleteMsgModal(false)}
-                open={openDeleteMsgModal}
-                closeOnly={false}
-                height={"auto"}>
-                <div>Are you sure you want to delete this message?</div>
-            </RootModal>
-        )}
+        {
+            openDeleteMsgModal && (
+                <RootModal
+                    variant="Delete"
+                    handleOk={handleDeleteRole}
+                    handleClose={() => setOpenDeleteMsgModal(false)}
+                    open={openDeleteMsgModal}
+                    closeOnly={false}
+                    height={"auto"}>
+                    <div>Are you sure you want to delete this message?</div>
+                </RootModal>
+            )
+        }
     </>
 }
 

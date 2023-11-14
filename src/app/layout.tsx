@@ -1,5 +1,6 @@
 'use client'
 import './globals.css'
+import '@/styles/typing.css'
 import { Poppins } from 'next/font/google'
 import ThemeProvider from '../theme'
 import * as React from 'react'
