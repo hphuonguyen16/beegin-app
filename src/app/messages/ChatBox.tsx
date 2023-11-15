@@ -2,7 +2,7 @@
 
 import useResponsive from '@/hooks/useResponsive'
 import { Grid, Box, Stack, Typography, styled, Card, CardMedia, CardContent, FilledInput, OutlinedInput, InputAdornment, IconButton, Paper, Avatar, Popover } from '@mui/material'
-import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions, AddPhotoAlternate, MoreHoriz } from '@mui/icons-material'
+import { Send, InfoRounded, AddReaction, Delete, EmojiEmotions, AddPhotoAlternate, RemoveRedEyeOutlined, DoneAll, Done } from '@mui/icons-material'
 import ExtendedUserInfo from './ExtendedUserInfo'
 import AvatarCard from '@/components/common/AvatarCard'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
@@ -21,6 +21,7 @@ import Scrollbar from '@/components/common/Scrollbar'
 import { PokemonSelector, PokemonCounter } from '@charkour/react-reactions';
 import EmojiPicker from '@/components/common/EmojiPicker'
 import socketFunctions from '@/utils/socket';
+import formatDate from '@/utils/formatDate'
 
 const INFO_PANE_WIDTH = "30%";
 
@@ -37,8 +38,9 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
     const scrollRef = useRef();
 
     const [anchor, setanchor] = React.useState<HTMLButtonElement | null>(null);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, msg: Message) => {
         setanchor(event.currentTarget);
+        setData(msg)
     };
     const handleClose = () => {
         setanchor(null);
@@ -78,7 +80,8 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
 
 
     useEffect(() => {
-        socketFunctions.fetchSeenStatus();
+        if (messages.length > 0)
+            socketFunctions.fetchSeenStatus([...messages], setMessages);
     });
 
     const sendMessage = async () => {
@@ -93,7 +96,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                 content: inputMessage,
                 createdAt: msg.createdAt
             })
-            setMessages([...messages, { fromSelf: true, type: "text", content: inputMessage, createdAt: msg.createdAt }])
+            setMessages([...messages, { id: msg._id, fromSelf: true, type: "text", content: inputMessage, status: "sent", reaction: "", createdAt: msg.createdAt }])
             setInputMessage("")
         } catch (err) { }
     }
@@ -109,7 +112,8 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
     };
 
     useEffect(() => {
-        socketFunctions.fetchTyping(setTyping, friend?.user);
+        if (friend?.user)
+            socketFunctions.fetchTyping(setTyping, friend?.user);
     });
 
     useEffect(() => {
@@ -150,7 +154,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                 content: image_url,
                 createdAt: msg.createdAt
             })
-            setMessages([...messages, { fromSelf: true, type: "image", content: image_url, createdAt: msg.createdAt }])
+            setMessages([...messages, { id: msg._id, fromSelf: true, type: "image", content: image_url, status: "sent", reaction: "", createdAt: msg.createdAt }])
         }
     }
 
@@ -167,7 +171,21 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
             fetchData()
         }
     }
-    const counters = [{ emoji: 'like', by: " " }]
+
+    const onReactionSelect = async (messageId: string, reaction: string) => {
+        console.log(data)
+        handleClose();
+        const newMessages = [...messages];
+        newMessages.find(x => x.id === messageId).reaction = reaction;
+        setMessages(newMessages)
+        socketFunctions.sendReaction(messageId, reaction, friend.user)
+        const res = await axiosPrivate.put(UrlConfig.messages.updateMessageReaction, { id: messageId, reaction: reaction });
+    }
+
+    useEffect(() => {
+        if (messages.length > 0)
+            socketFunctions.fetchReaction([...messages], setMessages);
+    });
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -200,46 +218,86 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                 var isMyText = message.fromSelf;
                                 var isTopText = index == 0 || messages[index - 1].fromSelf;
                                 var isClusterTopText = index == 0 || (messages[index - 1].fromSelf !== messages[index].fromSelf)
+                                var isClusterLastText = (index == messages.length - 1) || (messages[index + 1].fromSelf !== messages[index].fromSelf)
+                                var isLastText = index === messages.length - 1
+
+                                // var date1 = new Date()
+                                // if (!isTopText) {
+                                //     date1 = new Date()
+                                // }
+                                // var date2 = new Date(messages[index].createdAt)
+
+                                // console.log(new Date(date1.getFullYear(), date1.getMonth(), date1.getDate() + 1), date2)
+                                var currentMessageDate = messages[index].createdAt.split("T")[0]
+                                var newDate = (index === 0 || (messages[index - 1].createdAt.split("T")[0] !== currentMessageDate))
+
+                                // {isTopText || ()}
+
 
                                 return (
-                                    <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
-                                        {!isMyText &&
-                                            <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
-                                                {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
-                                            </Box>
-                                        }
-                                        <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
-                                            {(isClusterTopText) && <Typography sx={{ opacity: 0.7, textAlign: isMyText ? "right" : "left" }}>{message.createdAt.substring(11, 16)}</Typography>}
-                                            {message.type === "text" ?
-                                                <Paper sx={{
-                                                    display: "flex",
-                                                    padding: "10px 15px",
-                                                    mb: "10px",
-                                                    minWidth: "60px", maxWidth: "420px",
-                                                    borderRadius: "18px",
-                                                    ...(isMyText ? { borderTopRightRadius: 0 } : { borderTopLeftRadius: 0 }),
-                                                    backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
-                                                    color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
-                                                }}>
-                                                    <Typography className="font-sans">{message.content}</Typography>
-                                                </Paper> :
-                                                <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
+                                    <Box sx={{display: "flex", flexDirection: "column"}}>
+                                        {newDate && <Box sx={{ width: "90%", alignSelf: "center", display: "flex", justifyContent: "center", marginTop: "35px", marginBottom: "0px", borderTop: theme => `1px solid${theme.palette.grey[500]}` }}>
+                                            <Typography sx={{ padding: "12px 20px", width: "fit-content", background: "#f4ecf7", position: "relative", top: "-24px", fontSize: "14px" }}>{formatDate(currentMessageDate)}</Typography>
+                                        </Box>}
+                                        <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
+                                            {!isMyText &&
+                                                <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
+                                                    {isTopText && (<Avatar src={friend.avatar}></Avatar>)}
+                                                </Box>
                                             }
+                                            <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
+                                                {/* {(isClusterTopText) && <Typography sx={{ opacity: 0.7, textAlign: isMyText ? "right" : "left" }}>{message.createdAt.substring(11, 16)}</Typography>} */}
+                                                {message.type === "text" ?
+                                                    // console.log(message.content, message.status)
+                                                    <Paper sx={{
+                                                        display: "flex",
+                                                        padding: "10px 15px",
+                                                        mb: "10px",
+                                                        minWidth: "60px", maxWidth: "420px",
+                                                        borderRadius: "18px",
+                                                        ...(isMyText ? { borderTopRightRadius: 0 } : { borderTopLeftRadius: 0 }),
+                                                        backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
+                                                        color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
+                                                    }}>
+                                                        <Typography className="font-sans">{message.content}</Typography>
+                                                    </Paper> :
+                                                    <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
+                                                }
+
+                                                {!isClusterLastText &&
+                                                    <Typography sx={{
+                                                        fontSize: "14px",
+                                                        position: "absolute", color: theme => theme.palette.grey[600],
+                                                        ...(isMyText ? { left: "-50px" } : { right: "-50px" }),
+                                                        bottom: "calc(50% - 7px)", transition: "all 0.3s ease-in-out"
+                                                    }} className='icons'>{message.createdAt.substring(11, 16)}</Typography>
+                                                }
+
+                                                <Stack sx={{
+                                                    flexDirection: "row",
+                                                    position: "absolute",
+                                                    ...(isMyText ? { left: "-7px" } : { right: "-7px" }),
+                                                    bottom: isClusterLastText ? isMyText ? "14px" : "18px" : "0px", transition: "all 0.3s ease-in-out"
+                                                }}>
 
 
-                                            {!isClusterTopText && <Typography sx={{
-                                                position: "absolute", opacity: 0.7,
-                                                ...(isMyText ? { left: "-50px" } : { right: "-50px" }),
-                                                bottom: "calc(50% - 12px)", transition: "all 0.3s ease-in-out"
-                                            }} className='icons'>{message.createdAt.substring(11, 16)}</Typography>}
+                                                    {isMyText ?
+                                                        (message.reaction !== "" && <Box sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }} >
+                                                            <PokemonCounter user='' counters={[{ emoji: message.reaction, by: " " }]} />
+                                                        </Box>) :
+                                                        (message.reaction === "" ?
+                                                            <IconButton className='icons' onClick={(e) => handleClick(e, message)} aria-describedby={id}
+                                                                sx={{
+                                                                    padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
+                                                                }} >
+                                                                <AddReaction sx={{ fontSize: '1.125rem' }} />
+                                                            </IconButton> :
+                                                            <Box onClick={(e) => handleClick(e, message)} sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }}>
+                                                                <PokemonCounter user='' counters={[{ emoji: message.reaction, by: " " }]} />
+                                                            </Box>)
+                                                    }
 
-                                            <Stack sx={{
-                                                flexDirection: "row",
-                                                position: "absolute",
-                                                ...(isMyText ? { left: "0px" } : { right: "0px" }),
-                                                bottom: "0px", transition: "all 0.3s ease-in-out"
-                                            }}>
-                                                {counters.length > 0 ?
+                                                    {/* {counters.length > 0 ?
                                                     <Box sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }}>
                                                         <PokemonCounter user='' counters={counters} />
                                                     </Box> :
@@ -249,14 +307,22 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                     }} >
                                                         <AddReaction sx={{ fontSize: '1.125rem' }} />
                                                     </IconButton>
-                                                }
+                                                } */}
 
-                                                {isMyText && <IconButton className='icons' sx={{ padding: "3px", color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
-                                                    <Delete sx={{ backgroundColor: "#fff", borderRadius: "50%", fontSize: '1.125rem' }} />
-                                                </IconButton>}
+                                                    {isMyText && <IconButton className='icons' sx={{ padding: "3px", color: (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
+                                                        <Delete sx={{ backgroundColor: "#fff", borderRadius: "50%", fontSize: '1.125rem' }} />
+                                                    </IconButton>}
+                                                </Stack>
+
+
+                                                {isClusterLastText &&
+                                                    <Stack direction={"row"} sx={{ justifyContent: isMyText ? "flex-end" : "flex-start", alignItems: "center" }}>
+                                                        <Typography sx={{ fontSize: "14px", marginX: "5px", lineHeight: 1, opacity: 0.7, }}>{message.createdAt.substring(11, 16)}</Typography>
+                                                        {(isLastText && isMyText) && <LastMsgStatus status={message?.status} />}
+                                                    </Stack>}
+
                                             </Stack>
-                                        </Stack>
-                                    </Stack>
+                                        </Stack></Box>
                                 )
                             })
                         }
@@ -332,7 +398,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                 }}
                 sx={{ "& .MuiPopover-paper": { pt: '35px', backgroundColor: 'transparent', boxShadow: 0 } }}
             >
-                <PokemonSelector />
+                <PokemonSelector onSelect={(label) => onReactionSelect(data.id, label)} />
             </Popover>
         </Box >
         <ExtendedUserInfo width={INFO_PANE_WIDTH} friend={friend} />
@@ -344,12 +410,28 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                     handleClose={() => setOpenDeleteMsgModal(false)}
                     open={openDeleteMsgModal}
                     closeOnly={false}
-                    height={"auto"}>
+                    height={"auto"}
+                    width='500px'>
                     <div>Are you sure you want to delete this message?</div>
                 </RootModal>
             )
         }
     </>
+}
+
+const LastMsgStatus = ({ status }: { status: any }) => {
+    switch (status) {
+        case "seen":
+            return < DoneAll sx={{ fontSize: "16px", lineHeight: 1, color: theme => theme.palette.grey[600] }} />
+        case "sent":
+            return < Done sx={{ fontSize: "16px", lineHeight: 1, color: theme => theme.palette.grey[600] }} />
+        case "delivered":
+            return < Done sx={{ fontSize: "16px", lineHeight: 1, color: theme => theme.palette.grey[600] }} />
+            {/* <Circle sx={{fontSize: "5px", lineHeight: 1}} />  */ }
+            {/* <Typography sx={{ fontSize: "14px", lineHeight: 1, marginX: "5px" }}> Delivered </Typography> */ }
+        default:
+            break;
+    }
 }
 
 export default ChatBox;

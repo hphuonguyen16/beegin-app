@@ -45,6 +45,7 @@ const UrlConfig = {
     getFriendMessages: `/api/v1/messages`,
     sendMessage: `/api/v1/messages`,
     deleteMessage: `/api/v1/messages`,
+    updateMessageReaction: `/api/v1/messages`,
     getChatImages: `api/v1/messages/get-chat-images`
   },
   trending: {
