@@ -211,6 +211,7 @@ export default function Register() {
     passwordConfirm: '',
     firstname: '',
     lastname: '',
+    slug: '',
     gender: true
   })
   const [formErrors, setFormErrors] = useState<Register>({
@@ -221,7 +222,8 @@ export default function Register() {
     lastname: true,
     address: true,
     bio: true,
-    gender: true
+    gender: true,
+    slug: true
   })
   const [success, setSuccess] = useState<boolean>(false)
   const { setSnack } = useSnackbar()
