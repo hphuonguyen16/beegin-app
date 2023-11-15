@@ -16,7 +16,8 @@ import { useAuth } from '@/context/AuthContext'
 
 interface FriendAndMessage {
     friend: Profile,
-    message: Message
+    message: Message,
+    unseenMessageCount: number,
 }
 
 const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any, onlineUserIds: string[] }) => {
@@ -89,11 +90,11 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
                                 {friend.message.fromSelf && "You: "} {friend.message.type === "text" ? friend.message.content : "Image"}
                             </Typography>}
                         </CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {friend.unseenMessageCount > 0 && <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box sx={{
-                                backgroundColor: (theme) => theme.palette.error.main, borderRadius: '16px', color: "#fff", padding: "3px 7px",
+                                backgroundColor: (theme) => theme.palette.primary.main, borderRadius: '16px', color: "#fff", padding: "3px 7px",
                                 border: (theme) => `3px solid ${theme.palette.background.paper}`,
-                            }}><Typography variant='subtitle2'>{5}</Typography></Box></Box>
+                            }}><Typography variant='subtitle2'>{friend.unseenMessageCount}</Typography></Box></Box>}
                     </Card>))}
             </Stack>
         </>)

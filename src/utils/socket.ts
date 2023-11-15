@@ -25,9 +25,10 @@ const socketFunctions = {
         }
     },
 
-    fetchSeenStatus: () => {
+    fetchSeenStatus: (messages: any, setMessages: any) => {
         socket.on("message-seen", () => {
-            console.log("last message seen!")
+            messages[messages.length - 1].status = "seen";
+            setMessages(messages);
         })
     },
 
@@ -55,14 +56,27 @@ const socketFunctions = {
     },
 
     receiveMessage: (setArrivalMessage: any, friendId: string, userId: any) => {
-        socket.on("msg-recieve", (msg: any) => {
-            setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content, createdAt: msg.createdAt });
-            socket.emit("message-seen-status", {
-                userId: userId,
-                receiver: friendId,
-                status: "",
-            });
+        socket.on("msg-receive", (msg: any) => {
+            if (friendId === msg.sender) {
+                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content, createdAt: msg.createdAt });
+                socket.emit("message-seen-status", {
+                    userId: userId,
+                    receiver: friendId,
+                    status: "",
+                });
+            }
         });
+    },
+
+    sendReaction: (messageId: string, reaction: string, receiver: string) => {
+        socket.emit("react", { messageId, reaction, receiver })
+    },
+
+    fetchReaction: (messages: any, setMessages: any) => {
+        socket.on("reaction-receive", (data: any) => {
+            messages.find((x: any) => x.id === data.messageId).reaction = data.reaction;
+            setMessages(messages);
+        })
     }
 }
 

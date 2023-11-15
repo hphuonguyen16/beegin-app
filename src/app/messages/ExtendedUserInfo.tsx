@@ -40,14 +40,14 @@ const ExtendedUserInfo = ({ width, friend }: { width: string, friend: any }) => 
 
     return <Box sx={{ position: "absolute", top: '50px', right: 0, width: width, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={friend?.bio} vertical />
-        <Stack direction={"row"} spacing={2} sx={{ mt: "20px" }}>
-            <IconButton onClick={redirectToProfile}>
-                <PersonRounded />
+        <Stack direction={"row"} spacing={2} sx={{ mt: "30px" }}>
+            <IconButton  sx={{color: theme => theme.palette.primary.light}} onClick={redirectToProfile}>
+                <PersonRounded  />
             </IconButton>
-            <IconButton>
+            <IconButton disabled>
                 <NotificationsActive />
             </IconButton>
-            <IconButton>
+            <IconButton disabled>
                 <Search />
             </IconButton>
         </Stack>
@@ -57,16 +57,15 @@ const ExtendedUserInfo = ({ width, friend }: { width: string, friend: any }) => 
                 aria-controls="panel1a-content"
                 id="panel1a-header"
             >
-                <Typography variant='h5'>Chat customization</Typography>
+                <Typography variant='h5'>Chat Theme</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                    malesuada lacus ex, sit amet blandit leo lobortis eget.
+                    Coming soon! (probs 16-17th) Stay tuned!
                 </Typography>
             </AccordionDetails>
         </Accordion>
-        <Accordion>
+        <Accordion sx={{width: "100%"}}>
             <AccordionSummary
                 expandIcon={<ExpandMore />}
                 aria-controls="panel2a-content"
