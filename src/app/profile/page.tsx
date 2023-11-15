@@ -45,7 +45,7 @@ const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
   height: '80px',
   borderRadius: '15px',
-  backgroundColor: '#FEFAFA',
+  backgroundColor: 'white',
   border: '1px solid #D9D9D9'
 }))
 function page() {
@@ -61,7 +61,7 @@ function page() {
     address: string
     bio: string
     gender: boolean
-    username:string
+    username: string
   }>({
     firstname: '',
     lastname: '',
@@ -79,7 +79,7 @@ function page() {
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
-  
+
   const getUsers = async () => {
     try {
       const url = UrlConfig.me.getMe
@@ -160,7 +160,10 @@ function page() {
                     <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
-                    <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>{`@${data.username}`}</Typography>
+                    <Typography
+                      variant='h6'
+                      sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}
+                    >{`@${data.username}`}</Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>

@@ -7,16 +7,15 @@ import Picker from 'emoji-picker-react'
 interface EmojiPickerProps {
   content: string
   setContent: any
+  sizeMedium: boolean
 }
 
-const EmojiPicker = ({ content, setContent }: EmojiPickerProps) => {
+const EmojiPicker = ({ content, setContent, sizeMedium = false }: EmojiPickerProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const [showPicker, setShowPicker] = useState(false)
   const openAnchorEl = Boolean(anchorEl)
   const id = openAnchorEl ? 'simple-popover' : undefined
   const openPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
-    setShowPicker((prev) => !prev)
   }
   const handleClose = () => {
     setAnchorEl(null)
@@ -24,13 +23,12 @@ const EmojiPicker = ({ content, setContent }: EmojiPickerProps) => {
 
   const onEmojiClick = (emojiObject: any, event: any) => {
     setContent((prevInput: string) => prevInput + emojiObject.emoji)
-    setShowPicker(false)
   }
 
   return (
     <>
       <IconButton aria-describedby={id} onClick={openPicker}>
-        <EmojiEmotionsOutlinedIcon color='secondary' fontSize='large' />
+        <EmojiEmotionsOutlinedIcon color='secondary' fontSize={sizeMedium ? 'medium' : 'large'} />
       </IconButton>
       <Popover
         id={id}
@@ -38,12 +36,12 @@ const EmojiPicker = ({ content, setContent }: EmojiPickerProps) => {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right'
+          vertical: 'top',
+          horizontal: 'center',
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
+          vertical: 'bottom',
+          horizontal: 'center',
         }}
       >
         <Picker onEmojiClick={onEmojiClick} />

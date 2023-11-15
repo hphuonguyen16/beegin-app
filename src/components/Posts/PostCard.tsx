@@ -15,6 +15,7 @@ import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import { useRouter } from 'next/navigation'
+import { usePosts } from '@/context/PostContext'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -58,7 +59,7 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post }: PostCardProps) => {
-  const [liked, setLiked] = React.useState(false)
+  const { postsState, postsDispatch } = usePosts()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
@@ -76,13 +77,11 @@ const PostCard = ({ post }: PostCardProps) => {
 
   const handleLike = async () => {
     try {
-      if (!liked) {
-        setLiked(true)
-        post.numLikes++
+      if (!post.isLiked) {
+        postsDispatch({ type: 'MARK_POST_AS_LIKED', payload: post._id })
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
-        setLiked(false)
-        post.numLikes--
+        postsDispatch({ type: 'MARK_POST_AS_UNLIKED', payload: post._id })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
     } catch (err) {}
@@ -94,44 +93,32 @@ const PostCard = ({ post }: PostCardProps) => {
   const closePostDetail = () => {
     setOpen(false)
   }
- const redirectToProfile = (id: string) => {
-    if (checkId) {
-      router.push(`/profile`)
-    } else {
-      router.push(`/profile/${id}`)
+  const redirectToProfile = async () => {
+    try {
+      const response = await axiosPrivate.get(UrlConfig.me.checkId(post.user._id))
+      if (response.data.data) {
+        router.push(`/profile`)
+      } else {
+        router.push(`/profile/${post.user._id}`)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
   useEffect(() => {
-    const checkLiked = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
-        setLiked(response.data.data)
-      } catch (err) {}
-    }
     const checkId = async () => {
       try {
         const response = await axiosPrivate.get(UrlConfig.me.checkId(post.user._id))
         setCheck(response.data.data)
-      } catch (error) {
-        console.log(error)
-      }
+      } catch (error) {}
     }
     checkId()
-    checkLiked()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <>
-      <PostDetail
-        key={post._id}
-        post={post}
-        open={open}
-        liked={liked}
-        setLiked={setLiked}
-        handleClose={closePostDetail}
-        handleLike={handleLike}
-      />
+      <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} handleLike={handleLike} />
       <Box>
         <Stack direction={'row'} gap={isMobile ? 1 : 3}>
           <Avatar
@@ -142,21 +129,21 @@ const PostCard = ({ post }: PostCardProps) => {
             <Stack
               direction={'row'}
               sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
-              onClick={() => redirectToProfile(post.user._id)}
+              onClick={() => redirectToProfile()}
             >
               <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
                 {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
               </Typography>
-              {/* <Typography
-              sx={{
-                color: 'rgba(0, 0, 0, 0.50)',
-                fontSize: isMobile ? '10px' : '12px',
-                fontWeight: 400,
-                marginLeft: '7px'
-              }}
-            >
-              @real_bear
-            </Typography> */}
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.50)',
+                  fontSize: isMobile ? '10px' : '14px',
+                  fontWeight: 400,
+                  marginLeft: '7px'
+                }}
+              >
+                {post.user.profile?.slug}
+              </Typography>
               <Box
                 sx={{
                   width: '6px',
@@ -215,7 +202,11 @@ const PostCard = ({ post }: PostCardProps) => {
                     handleLike()
                   }}
                 >
-                  {liked ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
+                  {post.isLiked ? (
+                    <FavoriteRoundedIcon color='secondary' />
+                  ) : (
+                    <FavoriteBorderRoundedIcon color='secondary' />
+                  )}
                   <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
                 </Button>
                 <Button

@@ -57,13 +57,11 @@ function findRootCommentIndex(comments: Comment[], comment: Comment) {
 interface PostDetailProps {
   post: Post
   open: boolean
-  liked: boolean
-  setLiked: (like: boolean) => void
   handleLike: () => void
   handleClose: () => void
 }
 
-const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: PostDetailProps) => {
+const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
@@ -107,23 +105,33 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
       })
     }
   }
-  console.log(comments)
   const replyComment = (commentReply: Comment) => {
-    console.log(commentReply)
     setCommentReply(commentReply)
-    setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
+    if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)
+    else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
   const getReplyComments = async (postId: string, commentId: string) => {
     try {
-      const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
-      setComments((prev) => {
-        const newComments = [...(prev || [])]
-        const index = newComments.findIndex((comment) => comment._id === commentId)
-        if (index >= 0) {
-          newComments[index].children = res.data.data
-        }
-        return newComments
-      })
+      if (postId === '' || commentId === '') {
+        setComments((prev) => {
+          const newComments = [...(prev || [])]
+          const index = newComments.findIndex((comment) => comment._id === commentId)
+          if (index >= 0) {
+            newComments[index].children = []
+          }
+          return newComments
+        })
+      } else {
+        const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
+        setComments((prev) => {
+          const newComments = [...(prev || [])]
+          const index = newComments.findIndex((comment) => comment._id === commentId)
+          if (index >= 0) {
+            newComments[index].children = res.data.data
+          }
+          return newComments
+        })
+      }
     } catch (err) {}
   }
   React.useEffect(() => {
@@ -134,16 +142,8 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
         // Handle any errors that occur during the fetchComments() function
       }
     }
-    const checkLiked = async () => {
-      try {
-        const response = await axiosPrivate.get(urlConfig.posts.checkLikePost(post._id))
-        setLiked(response.data.data)
-      } catch (err) {}
-    }
 
     fetchData()
-    checkLiked()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -190,16 +190,16 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                         <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                           {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
                         </Typography>
-                        {/* <Typography
+                        <Typography
                           sx={{
                             color: 'rgba(0, 0, 0, 0.50)',
-                            fontSize: isMobile ? '10px' : '12px',
+                            fontSize: isMobile ? '10px' : '13px',
                             fontWeight: 400,
                             marginLeft: '7px'
                           }}
                         >
-                          @real_bear
-                        </Typography> */}
+                          {post.user.profile?.slug}
+                        </Typography>
                         <Box
                           sx={{
                             width: '6px',
@@ -240,6 +240,16 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                     <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
                       <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                         {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: 'rgba(0, 0, 0, 0.50)',
+                          fontSize: isMobile ? '10px' : '13px',
+                          fontWeight: 400,
+                          marginLeft: '7px'
+                        }}
+                      >
+                        {post.user.profile?.slug}
                       </Typography>
                       <Typography
                         sx={{
@@ -291,7 +301,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                 </Stack>
               </Stack>
               <Divider variant='inset' />
-              <Box>
+              <Box sx={{ paddingRight: '15px' }}>
                 {comments.map((comment: Comment, index: number) => (
                   <CommentCard
                     key={comment._id}
@@ -327,7 +337,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                       handleLike()
                     }}
                   >
-                    {liked ? (
+                    {post.isLiked ? (
                       <FavoriteRoundedIcon color='secondary' />
                     ) : (
                       <FavoriteBorderRoundedIcon color='secondary' />
@@ -396,7 +406,7 @@ const PostDetail = ({ post, open, liked, setLiked, handleClose, handleLike }: Po
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position='end'>
-                          <EmojiPicker content={comment} setContent={setComment} />
+                          <EmojiPicker content={comment} setContent={setComment} sizeMedium={false} />
                         </InputAdornment>
                       )
                     }}

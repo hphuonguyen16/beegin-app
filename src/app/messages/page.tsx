@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import Profile from '@/types/profile'
 import CustomSnackbar from '@/components/common/Snackbar'
+import socketFunctions from '@/utils/socket';
 
 const StyledBox = styled('div')(({ theme }) => ({
   width: '100%',
@@ -25,17 +26,22 @@ export default function Page() {
   const axiosPrivate = useAxiosPrivate()
 
 
+  const [onlineUserIds, setOnlineUserIds] = useState<any>([]);
+  useEffect(() => {
+    socketFunctions.getOnlineUsers(setOnlineUserIds)
+  });
+
   return <Box sx={{ width: "100%", height: "100%" }}>
     <Grid sx={{ width: "100%", height: "100%" }} container spacing={3}>
       <Grid item xs={4}>
         <StyledBox>
-          <ChatList setSelectedFriend={setSelectedFriend} />
+          <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} />
         </StyledBox>
       </Grid>
 
       <Grid item xs={8} sx={{ height: "100%" }}>
         <StyledBox sx={{ padding: 0, display: 'flex', position: 'relative' }}>
-          <ChatBox friend={selectedFriend} />
+          <ChatBox friend={selectedFriend} onlineUserIds={onlineUserIds} />
         </StyledBox>
       </Grid>
     </Grid>

@@ -1,17 +1,19 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { User } from '@/types/user'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useReducer } from 'react'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Post } from '@/types/post'
+import { PostState, PostAction, postReducer } from './postReducer'
 
-// Define a user type or interface
+export enum ActionType {
+  FETCH_POSTS = 'FETCH_POSTS',
+  MARK_POST_AS_LIKED = 'MARK_POST_AS_LIKED',
+  MARK_POST_AS_UNLIKED = 'MARK_POST_AS_UNLIKED'
+}
 
 // Create the context
 export interface PostContextType {
-  posts: Post[]
-  setPosts: React.Dispatch<React.SetStateAction<Post[]>>
-  postsUserLikes: Set<string>
-  setPostsUserLikes: React.Dispatch<React.SetStateAction<Set<string>>>
+  postsState: PostState
+  postsDispatch: React.Dispatch<PostAction>
 }
 
 const PostContext = createContext<PostContextType | undefined>(undefined)
@@ -32,56 +34,41 @@ interface PostProviderProps {
 
 export function PostProvider({ children }: PostProviderProps) {
   // post data comment data and children data and store the post and comment which user like
-  const [posts, setPosts] = useState<Post[]>([])
-  const [postsUserLikes, setPostsUserLikes] = useState<Set<string>>(new Set<string>())
+  const initialState: PostState = {
+    posts: []
+  }
+  const [postsState, postsDispatch] = useReducer(postReducer, initialState)
   const axios = useAxiosPrivate()
-  //add the post which user like to the set
-  function addPostUserLikes(postId: string) {
-    setPostsUserLikes((prev) => new Set(prev.add(postId)))
-  }
-  //remove the post which user like from the set
-  function removePostUserLikes(postId: string) {
-    setPostsUserLikes((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(postId)
-      return newSet
-    })
-  }
-  function checkPostUserLikes(postId: string) {
-    return postsUserLikes.has(postId)
-  }
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch posts
         const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
-        const posts = response.data.data.data
-        setPosts(response.data.data.data)
-      } catch (error) {}
-    }
-    fetchPosts()
+        let posts = response.data.data.data
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
-
-  useEffect(() => {
-    const fetchLikes = async () => {
-      for (const post of posts) {
-        const response = await axios.get(urlConfig.posts.checkLikePost(post._id))
-        if (response.data.data) {
-          setPostsUserLikes((prev) => new Set(prev.add(post._id)))
-        }
+        posts = posts.map(async (post: Post) => {
+          const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
+          const isLiked = likeResponse.data.data
+          return {
+            ...post,
+            isLiked
+          }
+        })
+        posts = await Promise.all(posts)
+        postsDispatch({ type: 'SET_POSTS', payload: posts })
+      } catch (error) {
+        // Handle errors if necessary
       }
     }
-    fetchLikes()
-  }, [posts])
+
+    fetchData()
+  }, [])
 
   // Provide user, login, and logout values to the context
   const contextValues: PostContextType = {
-    posts,
-    setPosts,
-    postsUserLikes,
-    setPostsUserLikes
+    postsState,
+    postsDispatch
   }
 
   return <PostContext.Provider value={contextValues}>{children}</PostContext.Provider>

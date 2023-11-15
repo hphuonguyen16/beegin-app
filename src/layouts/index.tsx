@@ -46,7 +46,8 @@ const StyledRoot = styled('div')(({ theme }) => ({
 const poppins = Poppins({
   weight: '400',
   subsets: ['latin'],
-  display: 'swap'
+  display: 'swap',
+  variable: '--font-poppins'
 })
 
 const Main = styled('div')(({ theme }) => ({
@@ -152,7 +153,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       <aside>
         <Sidebar />
       </aside>
-      <Main className={poppins.className}>
+      <Main className={poppins.variable}>
         {!isMobile ? (
           <HeaderBar>
             {/* <FormControl sx={{ width: '65%', justifyContent: 'center' }}>

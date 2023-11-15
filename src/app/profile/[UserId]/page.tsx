@@ -136,7 +136,9 @@ export default function page() {
     <StyledProfile>
       <Box>
         <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
-        <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
+        <Box sx={{ position: 'absolute', right: '130px !important', top: '17% !important' }}>
+          <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
+        </Box>
       </Box>
 
       <Grid container spacing={2}>

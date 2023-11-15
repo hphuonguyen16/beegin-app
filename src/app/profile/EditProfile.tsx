@@ -78,7 +78,6 @@ const ModalComponent = (props: ModalProps) => {
       ...formValues,
       [name]: value
     })
-    console.log(formValues)
   }
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-title' aria-describedby='modal-description'>

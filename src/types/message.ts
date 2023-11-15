@@ -3,6 +3,6 @@ export default interface Message {
     fromSelf: boolean
     type: string
     content: string
-    createdAt?: Date
+    createdAt: string
   }
   
