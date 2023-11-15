@@ -1,6 +1,6 @@
 'use client'
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PostLayout from '@/layouts/PostLayout'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
@@ -10,16 +10,21 @@ import TabPanel from '@mui/lab/TabPanel'
 import PostList from '@/components/SearchResult/PostList'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
+import { Stack } from '@mui/material'
+import UserList from '@/components/SearchResult/UserList'
 
 export default function Page() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [value, setValue] = useState(searchParams.get('f') ?? 'top')
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    const url = `/search?hashtag=${searchParams.get('hashtag') ?? ''}&f=${newValue}`
-    router.push(url)
     setValue(newValue)
   }
+  useEffect(() => {
+    const q = encodeURIComponent(searchParams.get('q') ?? '')
+    const url = `/search?q=${q}&f=${value}`
+    router.push(url)
+  }, [value, searchParams])
   return (
     <PostLayout>
       <Box sx={{ width: '100%', typography: 'body1' }}>
@@ -40,10 +45,16 @@ export default function Page() {
           </Box>
           <TabPanel value='top'>Top list</TabPanel>
           <TabPanel value='latest'>
-            <PostList />
+            <PostList f={value} />
           </TabPanel>
-          <TabPanel value='user'>User list</TabPanel>
-          <TabPanel value='media'>Media list</TabPanel>
+          <TabPanel value='user'>
+            <Stack>
+              <UserList f={value} />
+            </Stack>
+          </TabPanel>
+          <TabPanel value='media'>
+            <PostList f={value} />
+          </TabPanel>
         </TabContext>
       </Box>
     </PostLayout>
