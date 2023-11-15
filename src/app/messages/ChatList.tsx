@@ -92,7 +92,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
                         </CardContent>
                         {friend.unseenMessageCount > 0 && <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box sx={{
-                                backgroundColor: (theme) => theme.palette.error.main, borderRadius: '16px', color: "#fff", padding: "3px 7px",
+                                backgroundColor: (theme) => theme.palette.primary.main, borderRadius: '16px', color: "#fff", padding: "3px 7px",
                                 border: (theme) => `3px solid ${theme.palette.background.paper}`,
                             }}><Typography variant='subtitle2'>{friend.unseenMessageCount}</Typography></Box></Box>}
                     </Card>))}

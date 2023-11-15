@@ -40,7 +40,7 @@ const ExtendedUserInfo = ({ width, friend }: { width: string, friend: any }) => 
 
     return <Box sx={{ position: "absolute", top: '50px', right: 0, width: width, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={friend?.bio} vertical />
-        <Stack direction={"row"} spacing={2} sx={{ mt: "20px" }}>
+        <Stack direction={"row"} spacing={2} sx={{ mt: "30px" }}>
             <IconButton onClick={redirectToProfile}>
                 <PersonRounded />
             </IconButton>
@@ -66,7 +66,7 @@ const ExtendedUserInfo = ({ width, friend }: { width: string, friend: any }) => 
                 </Typography>
             </AccordionDetails>
         </Accordion>
-        <Accordion>
+        <Accordion sx={{width: "100%"}}>
             <AccordionSummary
                 expandIcon={<ExpandMore />}
                 aria-controls="panel2a-content"

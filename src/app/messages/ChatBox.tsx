@@ -204,7 +204,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
             {/* USER INFO */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#fff", padding: '20px 25px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
                 <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={onlineUserIds.includes(friend?.user) ? "Online" : "Offline"} />
-                <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded /></IconButton>
+                <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded sx={{color: theme => theme.palette.primary.light}} /></IconButton>
             </Box>
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>
                 {/* TEXTS */}

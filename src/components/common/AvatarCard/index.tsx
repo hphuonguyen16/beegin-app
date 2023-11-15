@@ -11,10 +11,10 @@ const AvatarCard = ({ name, subtitle, avatar, vertical = false }: { name: string
         >
         </Avatar>
         <Stack sx={{ justifyContent: "center", paddingLeft: vertical ? '0' : '15px', alignItems: vertical ? "center" : "normal" }}>
-            <Typography component="div" variant="h4">
+            <Typography component="div" variant="h4" sx={{marginY: vertical ? "10px" : 0}}>
                 {name}
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ lineHeight: 1 }}>
+            <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ lineHeight: 1, padding: vertical ? "0 20px" : 0, textAlign: vertical ? "center" : "initial" }}>
                 {subtitle}
             </Typography>
         </Stack>
