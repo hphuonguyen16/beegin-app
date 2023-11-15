@@ -20,7 +20,6 @@ function UserList({ f }: UserListProps) {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        console.log('-------------------------------', searchParams.get('q'), f)
         if (searchParams.get('q') !== null) {
           const q = searchParams.get('q') ?? ''
           const response = await axios.get(UrlConfig.search.searchUsers(encodeURIComponent(q)))
@@ -30,7 +29,7 @@ function UserList({ f }: UserListProps) {
     }
 
     fetchProfiles()
-  }, [])
+  }, [searchParams])
   return (
     <Stack spacing={1}>
       {profiles.map((profile, index) => (

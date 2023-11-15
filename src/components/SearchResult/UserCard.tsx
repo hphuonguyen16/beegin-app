@@ -13,7 +13,7 @@ export default function UserCard({ profile }: UserCardProps) {
   return (
     <Card>
       <Grid container spacing={0}>
-        <Grid sx={{ padding: '20px' }} item xs={1}>
+        <Grid sx={{ padding: '20px', minWidth: '60px' }} item xs={1}>
           <Avatar sx={{ width: '60px', height: '60px' }} src={avatar} />
         </Grid>
         <Grid sx={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }} item xs={11}>

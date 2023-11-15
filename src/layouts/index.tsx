@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
 import ProfilePopover from './ProfilePopover'
+import SearchTextbox from './SearchTextbox/SearchTextbox'
 
 // ----------------------------------------------------------------------
 
@@ -124,13 +125,13 @@ const Layout = ({ children }: PropsWithChildren) => {
   const isMobile = useResponsive('down', 'sm')
   const [isLoading, setIsLoading] = React.useState(true)
   const pathname = usePathname() // Get the current route from the router
-  
-	const logOut = async () => {
-		// deleteCookie("access_token", { path: "/" , domain: "localhost"});
-		// deleteCookie("userId", { path: "/" , domain: "localhost"})
-		// await signOut({ redirect: false });
-		window.location.href = "/login";
-	};
+
+  const logOut = async () => {
+    // deleteCookie("access_token", { path: "/" , domain: "localhost"});
+    // deleteCookie("userId", { path: "/" , domain: "localhost"})
+    // await signOut({ redirect: false });
+    window.location.href = '/login'
+  }
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -154,7 +155,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       <Main className={poppins.className}>
         {!isMobile ? (
           <HeaderBar>
-            <FormControl sx={{ width: '700px', justifyContent: 'center' }}>
+            {/* <FormControl sx={{ width: '65%', justifyContent: 'center' }}>
               <TextField
                 size='small'
                 variant='outlined'
@@ -165,7 +166,7 @@ const Layout = ({ children }: PropsWithChildren) => {
                     height: '50px'
                   },
                   background: 'white',
-                  borderRadius: '10px',
+                  borderRadius: '10px'
                   // marginBottom: '15px'
                 }}
                 //   onChange={handleChange}
@@ -177,7 +178,8 @@ const Layout = ({ children }: PropsWithChildren) => {
                   )
                 }}
               />
-            </FormControl>
+            </FormControl> */}
+            <SearchTextbox />
             <Stack direction={'row'} spacing={2}>
               <Button sx={{ borderRadius: '50%' }}>
                 <StyledIconNotifBox>

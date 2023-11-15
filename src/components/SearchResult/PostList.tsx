@@ -39,7 +39,7 @@ function PostList({ f }: PostListProps) {
     }
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  }, [searchParams])
   return <Box sx={{ marginTop: '50px' }}>{posts?.map((post, index) => <PostCard key={index} post={post} />)}</Box>
 }
 

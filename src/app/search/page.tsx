@@ -24,7 +24,7 @@ export default function Page() {
     const q = encodeURIComponent(searchParams.get('q') ?? '')
     const url = `/search?q=${q}&f=${value}`
     router.push(url)
-  }, [value])
+  }, [value, searchParams])
   return (
     <PostLayout>
       <Box sx={{ width: '100%', typography: 'body1' }}>

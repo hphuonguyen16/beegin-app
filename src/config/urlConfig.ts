@@ -51,15 +51,11 @@ const UrlConfig = {
     getTrendingHashtags: `/api/v1/trending/hashtags`
   },
   search: {
-    getPostsByHashtag: (
-      hashtag: string | null,
-      media: string | null = null,
-      sort: string = '-createdAt',
-      limit: number = 10
-    ) => `/api/v1/search?hashtag=${hashtag}&media=${media}&sort=${sort}&limit=${limit}`,
+    getPostsByHashtag: (hashtag: string | null, media: string = '', sort: string = '-createdAt', limit: number = 10) =>
+      `/api/v1/search?hashtag=${hashtag}&media=${media}&sort=${sort}&limit=${limit}`,
     searchUsers: (q: string) => `/api/v1/search/users?q=${q}`,
     searchPosts: (q: string, media: string | null = null, sort: string = '-createdAt', limit: number = 10) =>
-      `/api/v1/search/posts?q=${q}&media${media}&sort=${sort}&limit=${limit}`
+      `/api/v1/search/posts?q=${q}&media=${media}&sort=${sort}&limit=${limit}`
   }
 }
 
