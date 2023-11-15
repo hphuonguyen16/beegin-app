@@ -74,8 +74,6 @@ const socketFunctions = {
 
     fetchReaction: (messages: any, setMessages: any) => {
         socket.on("reaction-receive", (data: any) => {
-            console.log(messages[messages.length - 2])
-            console.log(data)
             messages.find((x: any) => x.id === data.messageId).reaction = data.reaction;
             setMessages(messages);
         })

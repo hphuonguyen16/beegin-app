@@ -176,7 +176,11 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
         console.log(data)
         handleClose();
         const newMessages = [...messages];
-        newMessages.find(x => x.id === messageId).reaction = reaction;
+        const message = newMessages.filter(x => x.id === messageId)[0]
+        if (message?.reaction === reaction)
+            message.reaction = "";
+        else
+            message.reaction = reaction;
         setMessages(newMessages)
         socketFunctions.sendReaction(messageId, reaction, friend.user)
         const res = await axiosPrivate.put(UrlConfig.messages.updateMessageReaction, { id: messageId, reaction: reaction });
@@ -204,7 +208,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
             {/* USER INFO */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#fff", padding: '20px 25px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
                 <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={onlineUserIds.includes(friend?.user) ? "Online" : "Offline"} />
-                <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded sx={{color: theme => theme.palette.primary.light}} /></IconButton>
+                <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded sx={{ color: theme => theme.palette.primary.light }} /></IconButton>
             </Box>
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>
                 {/* TEXTS */}
@@ -221,21 +225,15 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                 var isClusterLastText = (index == messages.length - 1) || (messages[index + 1].fromSelf !== messages[index].fromSelf)
                                 var isLastText = index === messages.length - 1
 
-                                // var date1 = new Date()
-                                // if (!isTopText) {
-                                //     date1 = new Date()
-                                // }
-                                // var date2 = new Date(messages[index].createdAt)
 
-                                // console.log(new Date(date1.getFullYear(), date1.getMonth(), date1.getDate() + 1), date2)
+                                console.log(message)
+
                                 var currentMessageDate = messages[index].createdAt.split("T")[0]
                                 var newDate = (index === 0 || (messages[index - 1].createdAt.split("T")[0] !== currentMessageDate))
 
-                                // {isTopText || ()}
-
 
                                 return (
-                                    <Box sx={{display: "flex", flexDirection: "column"}}>
+                                    <Box sx={{ display: "flex", flexDirection: "column" }}>
                                         {newDate && <Box sx={{ width: "90%", alignSelf: "center", display: "flex", justifyContent: "center", marginTop: "35px", marginBottom: "0px", borderTop: theme => `1px solid${theme.palette.grey[500]}` }}>
                                             <Typography sx={{ padding: "12px 20px", width: "fit-content", background: "#f4ecf7", position: "relative", top: "-24px", fontSize: "14px" }}>{formatDate(currentMessageDate)}</Typography>
                                         </Box>}
@@ -255,7 +253,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                         mb: "10px",
                                                         minWidth: "60px", maxWidth: "420px",
                                                         borderRadius: "18px",
-                                                        ...(isMyText ? { borderTopRightRadius: 0 } : { borderTopLeftRadius: 0 }),
+                                                        ...(isMyText ? { borderBottomRightRadius: 0 } : { borderTopLeftRadius: 0 }),
                                                         backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
                                                         color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
                                                     }}>
