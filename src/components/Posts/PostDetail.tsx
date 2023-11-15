@@ -320,7 +320,8 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                 zIndex: 999, // Adjust the z-index as needed
                 backgroundColor: 'white', // Background color
                 height: '190px',
-                borderTop: '1px solid #e8ebed'
+                borderTop: '1px solid #e8ebed',
+                borderRadius: '12px'
               }}
             >
               <Stack
