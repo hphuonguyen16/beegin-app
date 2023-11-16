@@ -1,9 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment } from '@mui/material'
 import CardUser from './UserCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
+import SearchIcon from '@mui/icons-material/Search'
 
 function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
@@ -11,6 +12,7 @@ function Friends({ userId }: { userId: string }) {
   const [listFollower, setFollower] = useState([])
   const [buttonFollow, setButtonFollow] = useState(true)
   const [isVisible, setIsVisible] = useState(userId === 'me' ? true : false)
+  const [searchValue, setSearchValue] = useState('')
 
   const getListFollowing = async (userId: any) => {
     try {
@@ -47,6 +49,14 @@ function Friends({ userId }: { userId: string }) {
     }
     fetchData()
   }, [buttonFollow])
+
+  const filteredData = buttonFollow
+    ? listFollowing.filter((user: any) =>
+        `${user.profile[0].firstname} ${user.profile[0].lastname}`.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    : listFollower.filter((user: any) =>
+        `${user.profile[0].firstname} ${user.profile[0].lastname}`.toLowerCase().includes(searchValue.toLowerCase())
+      )
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -105,16 +115,39 @@ function Friends({ userId }: { userId: string }) {
         </Grid>
       </Grid>
       <Box>
+        <TextField
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <SearchIcon />
+              </InputAdornment>
+            )
+          }}
+          id='outlined-basic'
+          label='Search'
+          variant='outlined'
+          sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
         {buttonFollow === true
-          ? listFollowing.map((user: any, index) => (
-              <CardUser key={index} userId={user.userId} profile={user.profile[0]} status={true} isVisible = {isVisible} />
+          ? filteredData.map((user: any, index) => (
+              <CardUser
+                key={index}
+                userId={user.userId}
+                profile={user.profile[0]}
+                status={true}
+                isVisible={isVisible}
+              />
             ))
-          : listFollower.map((user: any, index) => (
-              <CardUser key={index} userId={user.userId} profile={user.profile[0]} status={user.status} isVisible = {isVisible} />
+          : filteredData.map((user: any, index) => (
+              <CardUser
+                key={index}
+                userId={user.userId}
+                profile={user.profile[0]}
+                status={user.status}
+                isVisible={isVisible}
+              />
             ))}
-        {/* {data.map((user: any, index) => (
-          <CardUser key={index} userId={user.userId} profile={user.profile[0]} />
-        ))} */}
       </Box>
     </Stack>
   )
