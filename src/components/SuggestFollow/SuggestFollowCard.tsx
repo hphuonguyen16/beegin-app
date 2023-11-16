@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function SuggestFollowCard(props: any) {
   const { firstname, lastname, avatar } = props.user.user.profile
-  console.log(props.user.user.profile)
-  const { count } = props.user
+  const count = props.user.count ? props.user.count : null
   const router = useRouter()
   const redirectToProfile = (id: string) => {
     router.push(`/profile/${id}`)
@@ -33,7 +32,7 @@ export default function SuggestFollowCard(props: any) {
           />
         }
         title={firstname + ' ' + lastname}
-        subheader={`${count} mutual following`}
+        subheader={count ? `${count} mutual following` : props.user.user.profile.slug}
         action={
           <ButtonFollow
             userId={props.user.user._id}

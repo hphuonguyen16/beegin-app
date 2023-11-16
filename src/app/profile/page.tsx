@@ -135,7 +135,7 @@ function page() {
             padding: '10px 20px',
             width: '130px',
             borderRadius: '18px',
-            top: '18%',
+            top: '20%',
             position: 'absolute',
             right: '100px',
             backgroundColor: 'white !important'
