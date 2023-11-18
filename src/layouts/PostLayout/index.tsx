@@ -35,7 +35,7 @@ const PostLayout = ({ children }: PostLayoutProps) => {
         }}
       >
         <Stack gap={3}>
-          <SuggestFollow />
+          {/* <SuggestFollow /> */}
           <Divider sx={{ color: 'rgba(204.44, 128.17, 240.32, 0.25)' }} />
           <ListFollow />
         </Stack>
