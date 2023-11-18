@@ -40,7 +40,8 @@ export default function FollowSearchButton({ userId }: FollowSearchButtonProps) 
   // const sendDataToParent = (data: string) => {
   //   props.sendDataToParent(data)
   // }
-  const handleFollow = () => {
+  const handleFollow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     if (follow === true) {
       unfollow(userId)
       // sendDataToParent('unfollow')
@@ -62,7 +63,7 @@ export default function FollowSearchButton({ userId }: FollowSearchButtonProps) 
         top: '19%',
         backgroundColor: follow ? 'white !important' : 'initial'
       }}
-      onClick={handleFollow}
+      onClick={(e) => handleFollow(e)}
     >
       {follow ? 'Following' : 'Follow'}
     </Button>

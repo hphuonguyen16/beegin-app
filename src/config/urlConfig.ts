@@ -1,4 +1,4 @@
-const UrlConfig = {
+const UrlConfig: any = {
   user: {
     login: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/login`,
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,

@@ -1,18 +1,30 @@
 import * as React from 'react'
-import { Avatar, Card, CardContent, CardHeader, Grid, Stack, Typography } from '@mui/material'
-import ButtonFollow from '../ButtonFollow/ButtonFollow'
+import { Avatar, Card, Grid, Stack, Typography } from '@mui/material'
 import searchProfile from '@/types/searchProfile'
 import { last } from 'lodash'
 import FollowSearchButton from '../ButtonFollow/FollowSearchButton'
+import { useRouter } from 'next/navigation'
 
 interface UserCardProps {
   profile: searchProfile
 }
 export default function UserCard({ profile }: UserCardProps) {
   const { id, avatar, firstname, lastname, user, bio } = profile
+  const router = useRouter()
+  const redirectToProfile = () => {
+    if (user) {
+      console.log(user)
+      router.push(`/profile/${user}`)
+    }
+  }
   return (
     <Card>
-      <Grid container spacing={0}>
+      <Grid
+        container
+        spacing={0}
+        sx={{ '&:hover': { cursor: 'pointer', '.usernameTypo': { color: 'primary.main' } } }}
+        onClick={redirectToProfile}
+      >
         <Grid sx={{ padding: '20px', minWidth: '60px' }} item xs={1}>
           <Avatar sx={{ width: '60px', height: '60px' }} src={avatar} />
         </Grid>
@@ -20,14 +32,10 @@ export default function UserCard({ profile }: UserCardProps) {
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Stack>
               <Typography
+                className='usernameTypo'
                 sx={{
                   fontSize: '18px',
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    color: 'primary.main',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                  }
+                  fontWeight: 'bold'
                 }}
               >
                 {firstname + ' ' + lastname}
