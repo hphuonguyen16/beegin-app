@@ -19,7 +19,19 @@ export default function UserCard({ profile }: UserCardProps) {
         <Grid sx={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }} item xs={11}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Stack>
-              <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{firstname + ' ' + lastname}</Typography>
+              <Typography
+                sx={{
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    color: 'primary.main',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }
+                }}
+              >
+                {firstname + ' ' + lastname}
+              </Typography>
               <Typography>@{firstname + lastname}</Typography>
             </Stack>
             <FollowSearchButton userId={user} />
