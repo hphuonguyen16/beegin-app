@@ -62,6 +62,7 @@ export default function Input(theme: Theme) {
             color: theme.palette.primary.light
           },
           '&:hover': {
+            //@ts-ignore
             backgroundColor: theme.palette.primary.lighter
           },
           '&.Mui-disabled': {

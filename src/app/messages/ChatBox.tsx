@@ -354,9 +354,9 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                             </label></div>
                                     </IconButton>
                                 </InputAdornment>
-                                {/* <InputAdornment position="end" onClick={handleClick}> */}
-                                {/* <EmojiPicker content={0inputMessage} setContent={setInputMessage} sizeMedium /> */}
-                                {/* </InputAdornment> */}
+                                <InputAdornment position="end">
+                                    <EmojiPicker content={inputMessage} setContent={setInputMessage} sizeMedium />
+                                </InputAdornment>
                                 <InputAdornment position="end" onClick={sendMessage}>
                                     <IconButton>
                                         <Send />
