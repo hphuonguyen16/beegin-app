@@ -30,15 +30,15 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
     const { user } = useAuth();
     const id = 'send-reaction';
     const socket = useRef();
-    const [arrivalMessage, setArrivalMessage] = useState<Message>(null);
+    const [arrivalMessage, setArrivalMessage] = useState<Message | null>(null);
 
     const [isInfoOpened, setIsInfoOpened] = useState(false);
     const [messages, setMessages] = useState<Message[]>([])
     const [inputMessage, setInputMessage] = useState("");
-    const scrollRef = useRef();
+    const scrollRef = useRef<null | HTMLElement>(null);
 
     const [anchor, setanchor] = React.useState<HTMLButtonElement | null>(null);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, msg: Message) => {
+    const handleClick = (event: React.MouseEvent<any>, msg: Message) => {
         setanchor(event.currentTarget);
         setData(msg)
     };
@@ -47,7 +47,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
     };
     const open = Boolean(anchor);
 
-    const [data, setData] = useState<Message>(null);
+    const [data, setData] = useState<Message | null>(null);
     const [openDeleteMsgModal, setOpenDeleteMsgModal] = useState(false)
     const { snack, setSnack } = useSnackbar();
 
@@ -164,7 +164,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
     }
 
     async function handleDeleteRole() {
-        const result = await axiosPrivate.delete(`${UrlConfig.messages.deleteMessage}/${data.id}`);
+        const result = await axiosPrivate.delete(`${UrlConfig.messages.deleteMessage}/${data?.id}`);
         if (result) {
             setOpenDeleteMsgModal(false);
             setSnack({ open: true, message: "Deleted message successfully" });
@@ -172,8 +172,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
         }
     }
 
-    const onReactionSelect = async (messageId: string, reaction: string) => {
-        console.log(data)
+    const onReactionSelect = async (messageId: any, reaction: string) => {
         handleClose();
         const newMessages = [...messages];
         const message = newMessages.filter(x => x.id === messageId)[0]
@@ -207,7 +206,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
         }}>
             {/* USER INFO */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#fff", padding: '20px 25px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
-                <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={onlineUserIds.includes(friend?.user) ? "Online" : "Offline"} />
+                <AvatarCard avatar={friend?.avatar} name={friend?.firstname + " " + friend?.lastname} subtitle={onlineUserIds.includes(friend?.user) ? "Online" : "Offline"} vertical={false} />
                 <IconButton onClick={() => setIsInfoOpened(!isInfoOpened)}><InfoRounded sx={{ color: theme => theme.palette.primary.light }} /></IconButton>
             </Box>
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>
@@ -237,6 +236,8 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                         {newDate && <Box sx={{ width: "90%", alignSelf: "center", display: "flex", justifyContent: "center", marginTop: "35px", marginBottom: "0px", borderTop: theme => `1px solid${theme.palette.grey[500]}` }}>
                                             <Typography sx={{ padding: "12px 20px", width: "fit-content", background: "#f4ecf7", position: "relative", top: "-24px", fontSize: "14px" }}>{formatDate(currentMessageDate)}</Typography>
                                         </Box>}
+                                        {/* 
+                                        // @ts-ignore */}
                                         <Stack ref={scrollRef} sx={{ display: 'flex', flexDirection: "row", justifyContent: isMyText ? "flex-end" : "flex-start" }}>
                                             {!isMyText &&
                                                 <Box sx={{ width: "32px", height: "32px", mr: "24px" }}>
@@ -246,7 +247,6 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                             <Stack sx={{ display: "flex", flexDirection: "column", position: "relative", "& .icons": { opacity: "0" }, "&:hover .icons": { opacity: "1" } }}>
                                                 {/* {(isClusterTopText) && <Typography sx={{ opacity: 0.7, textAlign: isMyText ? "right" : "left" }}>{message.createdAt.substring(11, 16)}</Typography>} */}
                                                 {message.type === "text" ?
-                                                    // console.log(message.content, message.status)
                                                     <Paper sx={{
                                                         display: "flex",
                                                         padding: "10px 15px",
@@ -277,8 +277,6 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                     ...(isMyText ? { left: "-7px" } : { right: "-7px" }),
                                                     bottom: isClusterLastText ? isMyText ? "14px" : "18px" : "0px", transition: "all 0.3s ease-in-out"
                                                 }}>
-
-
                                                     {isMyText ?
                                                         (message.reaction !== "" && <Box sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }} >
                                                             <PokemonCounter user='' counters={[{ emoji: message.reaction, by: " " }]} />
@@ -295,18 +293,6 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                             </Box>)
                                                     }
 
-                                                    {/* {counters.length > 0 ?
-                                                    <Box sx={{ display: "flex", alignItems: "center", "& div div:last-child": { display: "none" } }}>
-                                                        <PokemonCounter user='' counters={counters} />
-                                                    </Box> :
-                                                    <IconButton className='icons' onClick={handleClick} aria-describedby={id} sx={{
-                                                        padding: "3px",
-                                                        color: isMyText ? (theme) => theme.palette.primary.light : (theme) => theme.palette.primary.main,
-                                                    }} >
-                                                        <AddReaction sx={{ fontSize: '1.125rem' }} />
-                                                    </IconButton>
-                                                } */}
-
                                                     {isMyText && <IconButton className='icons' sx={{ padding: "3px", color: (theme) => theme.palette.primary.main }} onClick={() => onDeleteBtnClick(message)} >
                                                         <Delete sx={{ backgroundColor: "#fff", borderRadius: "50%", fontSize: '1.125rem' }} />
                                                     </IconButton>}
@@ -318,12 +304,13 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                         <Typography sx={{ fontSize: "14px", marginX: "5px", lineHeight: 1, opacity: 0.7, }}>{message.createdAt.substring(11, 16)}</Typography>
                                                         {(isLastText && isMyText) && <LastMsgStatus status={message?.status} />}
                                                     </Stack>}
-
                                             </Stack>
                                         </Stack></Box>
                                 )
                             })
                         }
+                        {/* 
+                        // @ts-ignore */}
                         {typing && (<Stack ref={scrollRef} sx={{ flexDirection: "row", alignItems: "center", marginTop: "10px" }}>
                             <Avatar src={friend?.avatar} />
                             <Box sx={{
@@ -367,8 +354,8 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                             </label></div>
                                     </IconButton>
                                 </InputAdornment>
-                                <InputAdornment position="end" onClick={handleClick}>
-                                    {/* <EmojiPicker content={0inputMessage} setContent={setInputMessage} sizeMedium /> */}
+                                <InputAdornment position="end">
+                                    <EmojiPicker content={inputMessage} setContent={setInputMessage} sizeMedium />
                                 </InputAdornment>
                                 <InputAdornment position="end" onClick={sendMessage}>
                                     <IconButton>
@@ -396,7 +383,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                 }}
                 sx={{ "& .MuiPopover-paper": { pt: '35px', backgroundColor: 'transparent', boxShadow: 0 } }}
             >
-                <PokemonSelector onSelect={(label) => onReactionSelect(data.id, label)} />
+                <PokemonSelector onSelect={(label) => onReactionSelect(data?.id, label)} />
             </Popover>
         </Box >
         <ExtendedUserInfo width={INFO_PANE_WIDTH} friend={friend} />

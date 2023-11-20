@@ -76,6 +76,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
                         display: 'flex', justifyContent: "space-between", padding: '12px 20px', cursor: "pointer",
                         transition: "0.3s all ease-in-out",
                         ":hover": { boxShadow: theme => theme.shadows[12] },
+                        //@ts-ignore
                         ...(selectedIndex === index && { background: theme => theme.palette.primary.lighter })
                     }}
                         onClick={(event) => handleListItemClick(event, index, friend.friend)}
