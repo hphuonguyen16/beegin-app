@@ -47,7 +47,7 @@ function PostList({ f }: PostListProps) {
     <Stack>
       {loading ? (
         <CircularProgress color='primary' sx={{ alignSelf: 'center' }} />
-      ) : posts.length > 0 ? (
+      ) : posts?.length > 0 ? (
         posts.map((post, index) => <PostCard key={index} post={post} />)
       ) : (
         <NotFound q={searchParams.get('q')} />

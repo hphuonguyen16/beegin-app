@@ -49,7 +49,8 @@ const UrlConfig: any = {
     getChatImages: `api/v1/messages/get-chat-images`
   },
   trending: {
-    getTrendingHashtags: `/api/v1/trending/hashtags`
+    getTrendingHashtags: `/api/v1/trending/hashtags`,
+    getTrendingPosts: (category: string) => `/api/v1/trending/posts?category=${category}`
   },
   search: {
     getPostsByHashtag: (hashtag: string | null, media: string = '', sort: string = '-createdAt', limit: number = 10) =>
