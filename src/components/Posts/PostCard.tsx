@@ -111,17 +111,6 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       console.log(error)
     }
   }
-  useEffect(() => {
-    const checkId = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.me.checkId(post.user._id))
-        setCheck(response.data.data)
-      } catch (error) {}
-    }
-    checkId()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <>
       <Modal open={repostOpen} onClose={() => setRepostOpen(false)}>
