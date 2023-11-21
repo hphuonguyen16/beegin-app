@@ -17,6 +17,7 @@ import Popover from '@mui/material/Popover'
 import Picker from 'emoji-picker-react'
 import PostLoader from '@/components/common/Loader/PostLoader'
 import EmojiPicker from '../common/EmojiPicker'
+import PostCard from './PostCard'
 
 interface NewPostProps {
   content: string | ''
@@ -91,9 +92,10 @@ interface CreatePostProps {
   setOpen: (open: boolean) => void
   newPost: Post | null
   setNewPost: (post: Post | null) => void
+  repost?: Post
 }
 
-const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => {
+const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostProps) => {
   const isMobile = useResponsive('down', 'sm')
   const { user } = useAuth()
   const [categories, setCategories] = React.useState<Category[]>([])
@@ -131,7 +133,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
     const response = await axiosPrivate.post(urlConfig.posts.createPost, {
       content: content,
       images: uploadedUrls,
-      categories: selectedCategories.map((item) => item._id)
+      categories: selectedCategories.map((item) => item._id),
+      parent: repost?._id
     })
     if (response.data.status === 'success') {
       setNewPost(response.data.data)
@@ -196,7 +199,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
         <Box
           sx={{
             justifyContent: 'space-between',
-            maxHeight: '450px',
+            maxHeight: '485px',
             height: '60%',
             overflow: 'auto',
             marginTop: '17px'
@@ -220,7 +223,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
                 }
               }}
             />
-            <Box sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', paddingBottom: '30px' }}>
               <ImageContainerStyled number={images ? images.length : 0}>
                 {images?.map((item: any, index: number) => (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -239,6 +242,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost }: CreatePostProps) => 
                   <CloseRoundedIcon sx={{ color: 'black', fontSize: '25px' }} />
                 </IconButton>
               </ImageContainerStyled>
+              {repost && <PostCard post={repost} isRepost={true} />}
             </Box>
           </Box>
         </Box>

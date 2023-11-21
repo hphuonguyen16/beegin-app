@@ -56,12 +56,12 @@ function page() {
     firstname: string
     lastname: string
     avatar: string
-    birthday: Date
+    birthday: any
     background: string
     address: string
     bio: string
     gender: boolean
-    username: string
+    slug: string
   }>({
     firstname: '',
     lastname: '',
@@ -71,7 +71,7 @@ function page() {
     address: '',
     bio: '',
     gender: true,
-    username: ''
+    slug: ''
   })
   const [postsData, setPostsData] = useState<Post[]>([])
   const [numberPost, setNumberPost] = useState(0)
@@ -117,7 +117,7 @@ function page() {
       }
     }
     fetchData()
-  }, [])
+  }, [open])
 
   const handleOpen = () => {
     setOpen(true)
@@ -128,14 +128,20 @@ function page() {
   return (
     <StyledProfile>
       <Box>
-        <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
+        <Image
+          src={data.background}
+          alt='Background'
+          width={720} // Provide the width
+          height={280} // Provide the height
+          style={{ width: '100%', height: '280px', borderRadius: '10px' }}
+        />
         <Button
           variant={'outlined'}
           sx={{
             padding: '10px 20px',
             width: '130px',
             borderRadius: '18px',
-            top: '20%',
+            top: '19%',
             position: 'absolute',
             right: '100px',
             backgroundColor: 'white !important'
@@ -160,10 +166,9 @@ function page() {
                     <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
-                    <Typography
-                      variant='h6'
-                      sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}
-                    >{`@${data.username}`}</Typography>
+                    <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
+                      {`@${data.slug}`}
+                    </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>

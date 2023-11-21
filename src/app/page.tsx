@@ -57,7 +57,7 @@ export default function Home() {
         </Box>
       </Modal>
       <PostLayout>
-        <Box>
+        <Box sx={{ overflowX: 'hidden' }}>
           <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }}>
             Feeds
           </Typography>
@@ -81,7 +81,7 @@ export default function Home() {
           </Stack>
           <Box sx={{ marginTop: '50px' }}>
             {postsState.posts.map((post, index) => (
-              <PostCard key={index} post={post} />
+              <PostCard key={index} post={post} postParent={post.parent} />
             ))}
           </Box>
         </Box>
