@@ -6,7 +6,7 @@ const nextConfig = {
     ignoreDuringBuilds: true
   },
   env: {
-    NEXT_APP_BEEGIN_DOMAIN: 'https://beeginapp.onrender.com',
+    NEXT_APP_BEEGIN_DOMAIN: 'https://beegin.onrender.com',
     NEXTAUTH_URL: 'http://localhost:3000'
   },
   images: {
