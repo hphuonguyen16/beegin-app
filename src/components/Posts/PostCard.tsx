@@ -105,17 +105,6 @@ const PostCard = ({ post }: PostCardProps) => {
       console.log(error)
     }
   }
-  useEffect(() => {
-    const checkId = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.me.checkId(post.user._id))
-        setCheck(response.data.data)
-      } catch (error) {}
-    }
-    checkId()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <>
       <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} handleLike={handleLike} />

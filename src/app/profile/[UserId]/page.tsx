@@ -64,6 +64,7 @@ export default function page() {
     address: string
     bio: string
     gender: boolean
+    slug: string
   }>({
     firstname: '',
     lastname: '',
@@ -72,7 +73,8 @@ export default function page() {
     background: '',
     address: '',
     bio: '',
-    gender: true
+    gender: true,
+    slug: ''
   })
   const [postsData, setPostsData] = useState<Post[]>([])
   const [numberPost, setNumberPost] = useState(0)
@@ -135,8 +137,14 @@ export default function page() {
   return (
     <StyledProfile>
       <Box>
-        <Image src={background} alt='background' style={{ width: '100%', height: '250px', borderRadius: '10px' }} />
-        <Box sx={{ position: 'absolute', right: '130px !important', top: '17% !important' }}>
+        <Image
+          src={background}
+          alt='background'
+          style={{ width: '100%', height: '280px', borderRadius: '10px' }}
+          width={720}
+          height={280}
+        />
+        <Box sx={{ position: 'absolute', right: '130px !important', top: '19% !important' }}>
           <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
         </Box>
       </Box>
@@ -152,6 +160,11 @@ export default function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
+                  </Paper>
+                  <Paper style={{ backgroundColor: 'white' }}>
+                    <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
+                      {`@${data.slug}`}
+                    </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
