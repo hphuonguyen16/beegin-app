@@ -17,7 +17,7 @@ const PostLayout = ({ children }: PostLayoutProps) => {
     <Box sx={{ display: 'flex', height: '100%' }}>
       <Grid
         sx={{
-          width: isMobile ? '100%' : '68%',
+          width: isMobile ? '100%' : '80%',
           padding: isMobile ? '12px' : '20px',
           borderRadius: '10px',
           overflow: 'auto'
@@ -35,7 +35,7 @@ const PostLayout = ({ children }: PostLayoutProps) => {
         }}
       >
         <Stack gap={3}>
-          <SuggestFollow />
+          {/* <SuggestFollow /> */}
           <Divider sx={{ color: 'rgba(204.44, 128.17, 240.32, 0.25)' }} />
           <ListFollow />
         </Stack>

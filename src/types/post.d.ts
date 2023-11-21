@@ -11,4 +11,5 @@ export interface Post {
   numShares?: number
   createdAt: string
   isLiked?: boolean
+  parent?: Post
 }

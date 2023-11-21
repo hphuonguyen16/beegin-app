@@ -1,5 +1,5 @@
 'use client'
-import { Avatar, Box, Stack, Typography, Button } from '@mui/material'
+import { Avatar, Box, Stack, Typography, Button, Modal } from '@mui/material'
 import Image from 'next/image'
 import { styled } from '@mui/material/styles'
 import React, { useEffect } from 'react'
@@ -16,6 +16,8 @@ import PostDetail from './PostDetail'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import { useRouter } from 'next/navigation'
 import { usePosts } from '@/context/PostContext'
+import CreatePost from './CreatePost'
+import ReplyPostCard from './ReplyPostCard'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -46,7 +48,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   '@media only screen and (max-width: 600px)': {
     gridGap: '2px',
     gridTemplateRows:
-      props.number === 1 ? 'repeat(1,1fr)' : props.number === 2 ? 'repeat(1,170px)' : 'repeat(2, 120px)',
+      props.number === 1 ? 'repeat(1,1fr)' : props.number === 2 ? 'repeat(1,170px)' : 'repeat(2, 100px)',
     '& img': {
       borderRadius: '8px',
       objectFit: 'cover'
@@ -56,14 +58,18 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
 
 interface PostCardProps {
   post: Post
+  isRepost?: boolean
+  postParent?: Post
 }
 
-const PostCard = ({ post }: PostCardProps) => {
+const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const { postsState, postsDispatch } = usePosts()
+  const [newPost, setNewPost] = React.useState<Post | null>(null)
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
+  const [repostOpen, setRepostOpen] = React.useState(false)
   const [checkId, setCheck] = React.useState<boolean>()
   const wrapTags = (text: string, regexY: RegExp, className?: string) => {
     const regex = /#(\w+)/g
@@ -107,14 +113,59 @@ const PostCard = ({ post }: PostCardProps) => {
   }
   return (
     <>
+      <Modal open={repostOpen} onClose={() => setRepostOpen(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            //   width: isMobile ? '80vw' : width ? width : '100vw',
+            width: isMobile ? '80vw' : '40vw',
+            height: isMobile ? '80vh' : '80vh',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            borderRadius: 2,
+            padding: isMobile ? 3 : '20px'
+          }}
+        >
+          <CreatePost
+            open={repostOpen}
+            setOpen={setRepostOpen}
+            newPost={newPost}
+            setNewPost={setNewPost}
+            repost={post}
+          />
+        </Box>
+      </Modal>
       <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} handleLike={handleLike} />
-      <Box>
-        <Stack direction={'row'} gap={isMobile ? 1 : 3}>
+      <Box
+        sx={{
+          ...(isRepost && {
+            border: '1px solid #cdc6c6',
+            paddingTop: '10px',
+            paddingLeft: '10px',
+            borderRadius: '12px',
+            overflowX: 'hidden',
+            paddingBottom: '15px'
+          })
+        }}
+      >
+        <Stack
+          direction={'row'}
+          gap={isMobile ? 1 : 3}
+          sx={{
+            width: '105%',
+            ...(isRepost && {
+              width: '117%'
+            })
+          }}
+        >
           <Avatar
             sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
             src={post.user.profile?.avatar}
           ></Avatar>
-          <Stack sx={{ minWidth: '100%' }}>
+          <Stack sx={{ minWidth: !isMobile ? '100%' : '85%' }}>
             <Stack
               direction={'row'}
               sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
@@ -154,7 +205,12 @@ const PostCard = ({ post }: PostCardProps) => {
                 {timeSince(new Date(post.createdAt))}
               </Typography>
             </Stack>
-            <Box sx={{ width: '70%', minWidth: !isMobile ? '72%' : '100%' }}>
+            <Box
+              sx={{
+                width: '70%',
+                minWidth: !isMobile ? '72%' : '100%'
+              }}
+            >
               <Box
                 sx={{
                   margin: isMobile ? '5px 0' : '10px 0',
@@ -178,38 +234,47 @@ const PostCard = ({ post }: PostCardProps) => {
                   <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
                 ))}
               </ImageContainerStyled>
-              <Stack
-                direction={'row'}
-                sx={{
-                  margin: isMobile ? '7px 0px 30px 0px' : '10px 10px 30px 10px',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <Button
-                  onClick={() => {
-                    handleLike()
+              {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
+              {post?.images?.length === 0 && postParent && <PostCard post={postParent as Post} isRepost={true} />}
+
+              {!isRepost && (
+                <Stack
+                  direction={'row'}
+                  sx={{
+                    margin: isMobile ? '7px 0px 30px 0px' : '10px 10px 30px 10px',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                   }}
                 >
-                  {post.isLiked ? (
-                    <FavoriteRoundedIcon color='secondary' />
-                  ) : (
-                    <FavoriteBorderRoundedIcon color='secondary' />
-                  )}
-                  <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
-                </Button>
-                <Button
-                  onClick={() => {
-                    openPostDetail()
-                  }}
-                >
-                  <ChatBubbleOutlineIcon color='secondary' />{' '}
-                  <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
-                </Button>
-                <Button>
-                  <ShareIcon color='secondary' />
-                </Button>
-              </Stack>
+                  <Button
+                    onClick={() => {
+                      handleLike()
+                    }}
+                  >
+                    {post.isLiked ? (
+                      <FavoriteRoundedIcon color='secondary' />
+                    ) : (
+                      <FavoriteBorderRoundedIcon color='secondary' />
+                    )}
+                    <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      openPostDetail()
+                    }}
+                  >
+                    <ChatBubbleOutlineIcon color='secondary' />{' '}
+                    <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setRepostOpen(true)
+                    }}
+                  >
+                    <ShareIcon color='secondary' />
+                  </Button>
+                </Stack>
+              )}
             </Box>
           </Stack>
         </Stack>
