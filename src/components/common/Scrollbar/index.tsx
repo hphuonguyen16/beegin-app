@@ -12,28 +12,29 @@ Scrollbar.propTypes = {
 	children: PropTypes.node,
 };
 
-function Scrollbar({ children, sx = {
-	height: 1,
-	"& .simplebar-content": {
-		height: 1,
-		display: "flex",
-		flexDirection: "column",
-	},}, ...other }: { children: ReactNode; sx: any }) {
+function Scrollbar({ children, sx, ...other }: { children: ReactNode; sx: any }) {
 	const userAgent = typeof navigator === "undefined" ? "SSR" : navigator.userAgent;
 
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
 	if (isMobile) {
 		return (
-			<Box sx={{ overflowX: "auto", ...sx }} {...other}>
+			<Box sx={{ overflowX: "auto" }} {...other}>
 				{children}
 			</Box>
-		);  
+		);
 	}
 
 	return (
-		<StyledRootScrollbar>
-			<StyledScrollbar clickOnTrack={false} sx={sx} {...other}>
+		<StyledRootScrollbar sx={sx}>
+			<StyledScrollbar clickOnTrack={false} sx={{
+				height: 1,
+				"& .simplebar-content": {
+					height: 1,
+					display: "flex",
+					flexDirection: "column",
+				},
+			}} {...other}>
 				{children}
 			</StyledScrollbar>
 		</StyledRootScrollbar>
