@@ -22,7 +22,14 @@ export default function UserCard({ profile }: UserCardProps) {
       <Grid
         container
         spacing={0}
-        sx={{ '&:hover': { cursor: 'pointer', '.usernameTypo': { color: 'primary.main' } } }}
+        sx={{
+          '&:hover': {
+            backgroundColor: '#f0f4f7',
+            opacity: 1,
+            cursor: 'pointer',
+            '.usernameTypo': { color: 'primary.main' }
+          }
+        }}
         onClick={redirectToProfile}
       >
         <Grid sx={{ padding: '20px', minWidth: '60px' }} item xs={1}>

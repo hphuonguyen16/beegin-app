@@ -1,17 +1,17 @@
 'use client'
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import PostLayout from '@/layouts/PostLayout'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Divider, Stack, Typography } from '@mui/material'
+
 import PostList from '@/components/SearchResult/PostList'
-import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
-import { Stack } from '@mui/material'
 import UserList from '@/components/SearchResult/UserList'
+import PostLayout from '@/layouts/PostLayout'
 
 export default function Page() {
   const searchParams = useSearchParams()
@@ -43,13 +43,19 @@ export default function Page() {
               <Tab label='Media' value='media' sx={{ fontSize: '20px' }} />
             </TabList>
           </Box>
-          <TabPanel value='top'>Top list</TabPanel>
+          <TabPanel value='top'>
+            <Typography variant='h3'>User</Typography>
+            <UserList f={value} limit={3} />
+            <Divider sx={{ padding: '20px 0 20px 0' }} />
+            <Typography variant='h3'>Post</Typography>
+            <PostList f={value} />
+          </TabPanel>
           <TabPanel value='latest'>
             <PostList f={value} />
           </TabPanel>
           <TabPanel value='user'>
             <Stack>
-              <UserList f={value} />
+              <UserList f={value} limit={undefined} />
             </Stack>
           </TabPanel>
           <TabPanel value='media'>
