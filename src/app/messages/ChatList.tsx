@@ -13,6 +13,7 @@ import Message from '@/types/message'
 import { io } from 'socket.io-client'
 import Scrollbar from '@/components/common/Scrollbar'
 import { useAuth } from '@/context/AuthContext'
+import Loader from '@/components/common/Loader/Loader'
 
 interface FriendAndMessage {
     friend: Profile,
@@ -47,6 +48,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
             setSelectedIndex(0);
         } catch (err) { }
     }
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -62,6 +64,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
 
     return (
         <>
+            {friends.length === 0 && < Loader />}
             <Stack direction={"row"} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
                 <Typography variant='h4'>Chats</Typography>
             </Stack>

@@ -144,12 +144,13 @@ const Layout = ({ children }: PropsWithChildren) => {
   const topic =
     pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
-  if (isLoading) {
-    return <Loader />
-  }
+  // if (isLoading) {
+  // return <Loader />
+  // }
 
   return (
     <StyledRoot>
+      {isLoading && <Loader />}
       <aside>
         <Sidebar />
       </aside>

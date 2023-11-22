@@ -212,7 +212,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
             <Stack sx={{ height: "100%", overflow: "hidden", padding: '30px 30px 30px 40px' }}>
                 {/* TEXTS */}
                 <Scrollbar>
-                    <Box sx={{ minHeight: "90%", position: "relative", marginRight: "8px" }}>
+                    <Box sx={{ minHeight: "90%", position: "relative", marginRight: "16px" }}>
                         {
                             messages.length === 0 && (<Image src={newConversationBanner} alt="" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />)
                         }
@@ -253,7 +253,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                         mb: "10px",
                                                         minWidth: "60px", maxWidth: "420px",
                                                         borderRadius: "18px",
-                                                        ...(isMyText ? { borderBottomRightRadius: 0 } : { borderTopLeftRadius: 0 }),
+                                                        ...(isMyText ? { borderBottomRightRadius: "3px" } : { borderTopLeftRadius: "3px" }),
                                                         backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
                                                         color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
                                                     }}>
