@@ -122,7 +122,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     setImages([])
   }
   const createPost = async () => {
-    if (!content && images.length === 0) {
+    if (!content && images.length === 0 && !repost) {
       setSnack({
         open: true,
         message: 'Write something or add images to your post!',
