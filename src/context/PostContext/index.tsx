@@ -65,6 +65,7 @@ export function PostProvider({ children }: PostProviderProps) {
     }
 
     fetchData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken])
 
   // Provide user, login, and logout values to the context
