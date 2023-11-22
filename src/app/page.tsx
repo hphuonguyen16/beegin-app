@@ -29,11 +29,14 @@ export default function Home() {
   //   fetchPosts()
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [1])
-  useEffect(() => {
-    if (newPost) {
-      postsDispatch({ type: 'ADD_POST', payload: newPost })
-    }
-  }, [newPost])
+  // useEffect(() => {
+  //   console.log(newPost)
+  //   if (newPost) {
+  //     postsDispatch({ type: 'ADD_POST', payload: newPost })
+  //   }
+  // }, [newPost])
+  console.log(newPost)
+  console.log(postsState.posts)
 
   return (
     <>
@@ -80,9 +83,13 @@ export default function Home() {
             />
           </Stack>
           <Box sx={{ marginTop: '50px' }}>
-            {postsState.posts.map((post, index) => (
-              <PostCard key={index} post={post} postParent={post.parent} />
-            ))}
+            {postsState.posts.map((post, index) => {
+              if (post.parent) {
+                return <PostCard key={index} post={post} postParent={post.parent} />
+              } else {
+                return <PostCard key={index} post={post} />
+              }
+            })}
           </Box>
         </Box>
       </PostLayout>

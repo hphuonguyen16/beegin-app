@@ -134,7 +134,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             setOpen={setRepostOpen}
             newPost={newPost}
             setNewPost={setNewPost}
-            repost={post}
+            repost={postParent ? postParent : post}
           />
         </Box>
       </Modal>

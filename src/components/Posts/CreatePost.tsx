@@ -18,6 +18,7 @@ import Picker from 'emoji-picker-react'
 import PostLoader from '@/components/common/Loader/PostLoader'
 import EmojiPicker from '../common/EmojiPicker'
 import PostCard from './PostCard'
+import { usePosts } from '@/context/PostContext'
 
 interface NewPostProps {
   content: string | ''
@@ -97,6 +98,7 @@ interface CreatePostProps {
 
 const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostProps) => {
   const isMobile = useResponsive('down', 'sm')
+  const { postsState, postsDispatch } = usePosts()
   const { user } = useAuth()
   const [categories, setCategories] = React.useState<Category[]>([])
   const [selectedCategories, setSelectedCategories] = React.useState<Category[]>([])
@@ -120,7 +122,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     setImages([])
   }
   const createPost = async () => {
-    if (!content && images.length === 0) {
+    if (!content && images.length === 0 && !repost) {
       setSnack({
         open: true,
         message: 'Write something or add images to your post!',
@@ -137,7 +139,9 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       parent: repost?._id
     })
     if (response.data.status === 'success') {
-      setNewPost(response.data.data)
+      console.log(response.data.data)
+      // setNewPost(response.data.data)
+      postsDispatch({ type: 'ADD_POST', payload: response.data.data })
       setIsLoad(false)
       setIsSuccess(true)
       setSnack({

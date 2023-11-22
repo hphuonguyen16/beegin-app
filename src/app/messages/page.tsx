@@ -15,7 +15,7 @@ const StyledBox = styled('div')(({ theme }) => ({
   height: '96%',
   backgroundColor: '#FFFFFF',
   borderRadius: '16px',
-  padding: '15px 25px',
+  padding: '15px 25px', display: 'flex', flexDirection: "column",
 }))
 
 const INFO_PANE_WIDTH = "30%";
@@ -33,14 +33,14 @@ export default function Page() {
 
   return <Box sx={{ width: "100%", height: "100%" }}>
     <Grid sx={{ width: "100%", height: "100%" }} container spacing={3}>
-      <Grid item xs={4}>
+      <Grid item xs={4} sx={{ height: "100%" }}>
         <StyledBox>
           <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} />
         </StyledBox>
       </Grid>
 
       <Grid item xs={8} sx={{ height: "100%" }}>
-        <StyledBox sx={{ padding: 0, display: 'flex', position: 'relative' }}>
+        <StyledBox sx={{ padding: 0, position: 'relative' }}>
           <ChatBox friend={selectedFriend} onlineUserIds={onlineUserIds} />
         </StyledBox>
       </Grid>

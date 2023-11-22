@@ -36,7 +36,7 @@ interface ModalProps {
     firstname: string
     lastname: string
     avatar: string
-    birthday: Dayjs
+    birthday: Dayjs | null
     background: string
     address: string
     bio: string
@@ -58,7 +58,7 @@ const ModalComponent = (props: ModalProps) => {
     avatar: '',
     gender: false,
     slug: '',
-    birthday: dayjs(new Date())
+    birthday: dayjs(new Date()) as Dayjs | null
   })
 
   const editBackground = (imageUrl: string) => {

@@ -3,6 +3,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Post } from '@/types/post'
 import { PostState, PostAction, postReducer } from './postReducer'
+import { useAuth } from '../AuthContext'
 
 export enum ActionType {
   FETCH_POSTS = 'FETCH_POSTS',
@@ -38,13 +39,14 @@ export function PostProvider({ children }: PostProviderProps) {
     posts: []
   }
   const [postsState, postsDispatch] = useReducer(postReducer, initialState)
+  const { accessToken } = useAuth()
   const axios = useAxiosPrivate()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch posts
-        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
+        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=25`)
         let posts = response.data.data.data
 
         posts = posts.map(async (post: Post) => {
@@ -63,7 +65,8 @@ export function PostProvider({ children }: PostProviderProps) {
     }
 
     fetchData()
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken])
 
   // Provide user, login, and logout values to the context
   const contextValues: PostContextType = {
