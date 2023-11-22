@@ -13,6 +13,7 @@ import EditProfile from './EditProfile'
 import PostCard from '../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
+import Scrollbar from '@/components/common/Scrollbar'
 // hooks
 
 import React, { useEffect, useState } from 'react'
@@ -31,7 +32,7 @@ const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)',
+  transform: 'translateY(-80px)',
   minWidth: '300px'
 }))
 const Posts = styled(Card)(({ theme }) => ({
@@ -39,7 +40,7 @@ const Posts = styled(Card)(({ theme }) => ({
   minHeight: '730px',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)'
+  transform: 'translateY(-80px)'
 }))
 const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
@@ -85,14 +86,14 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
   const getNumberOfFollow = async () => {
     try {
       const url = UrlConfig.me.getMyNumberOfFollows
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
   useEffect(() => {
     const fetchPosts = async () => {
@@ -127,35 +128,36 @@ function page() {
   }
   return (
     <StyledProfile>
-      <Box>
-        <Image
-          src={data.background}
-          alt='Background'
-          width={720} // Provide the width
-          height={280} // Provide the height
-          style={{ width: '100%', height: '280px', borderRadius: '10px' }}
-        />
-        <Button
-          variant={'outlined'}
-          sx={{
-            padding: '10px 20px',
-            width: '130px',
-            borderRadius: '18px',
-            top: '19%',
-            position: 'absolute',
-            right: '100px',
-            backgroundColor: 'white !important'
-          }}
-          onClick={handleOpen}
-        >
-          Edit profile
-        </Button>
-        <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
-      </Box>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Stack spacing={2} alignItems='center'>
+      <Grid container spacing={2} sx={{ paddingX: "20px" }}>
+        <Grid item xs={12} md={12} sx={{ paddingRight: "16px" }}>
+          <Box>
+            <Image
+              src={data.background}
+              alt='Background'
+              width={720} // Provide the width
+              height={280} // Provide the height
+              style={{ width: '100%', height: '280px', borderRadius: '10px' }}
+            />
+            <Button
+              variant={'outlined'}
+              sx={{
+                padding: '10px 20px',
+                width: '130px',
+                borderRadius: '18px',
+                top: '20%',
+                position: 'absolute',
+                right: '100px',
+                backgroundColor: 'white !important'
+              }}
+              onClick={handleOpen}
+            >
+              Edit profile
+            </Button>
+            <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Stack spacing={2} alignItems='center' sx={{ position: "sticky", top: "80px" }}>
             <Box>
               <Information>
                 <Stack spacing={2} alignItems='center'>
@@ -306,11 +308,11 @@ function page() {
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: "48px" }}>
           <Paper>
             <Posts>
               {action === true ? (
-                <Box padding={3}>
+                <Box sx={{ padding: "24px 48px" }}>
                   {' '}
                   <Typography
                     variant='h3'
@@ -318,7 +320,7 @@ function page() {
                       fontWeight: 'medium',
                       fontSize: '25px',
                       fontFamily: 'Inter',
-                      marginBottom: '15px !important'
+                      marginBottom: '25px !important'
                     }}
                   >
                     Posts
