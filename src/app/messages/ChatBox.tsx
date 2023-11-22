@@ -224,11 +224,10 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                 var isClusterLastText = (index == messages.length - 1) || (messages[index + 1].fromSelf !== messages[index].fromSelf)
                                 var isLastText = index === messages.length - 1
 
-
-                                console.log(message)
-
                                 var currentMessageDate = messages[index].createdAt.split("T")[0]
                                 var newDate = (index === 0 || (messages[index - 1].createdAt.split("T")[0] !== currentMessageDate))
+
+                                var time = (new Date(message.createdAt)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: true});
 
 
                                 return (
@@ -266,9 +265,9 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                     <Typography sx={{
                                                         fontSize: "14px",
                                                         position: "absolute", color: theme => theme.palette.grey[600],
-                                                        ...(isMyText ? { left: "-50px" } : { right: "-50px" }),
+                                                        ...(isMyText ? { left: "-70px" } : { right: "-70px" }),
                                                         bottom: "calc(50% - 7px)", transition: "all 0.3s ease-in-out"
-                                                    }} className='icons'>{message.createdAt.substring(11, 16)}</Typography>
+                                                    }} className='icons'>{time}</Typography>
                                                 }
 
                                                 <Stack sx={{
@@ -301,7 +300,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
 
                                                 {isClusterLastText &&
                                                     <Stack direction={"row"} sx={{ justifyContent: isMyText ? "flex-end" : "flex-start", alignItems: "center" }}>
-                                                        <Typography sx={{ fontSize: "14px", marginX: "5px", lineHeight: 1, opacity: 0.7, }}>{message.createdAt.substring(11, 16)}</Typography>
+                                                        <Typography sx={{ fontSize: "14px", marginX: "5px", lineHeight: 1, opacity: 0.7, }}>{time}</Typography>
                                                         {(isLastText && isMyText) && <LastMsgStatus status={message?.status} />}
                                                     </Stack>}
                                             </Stack>
