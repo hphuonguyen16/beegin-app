@@ -1,4 +1,5 @@
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography, Grid } from '@mui/material'
+import TopicIcon from '@mui/icons-material/Topic'
 import { Post } from '@/types/post'
 import PostCard from '../Posts/PostCard'
 interface TrendingPostCardProps {
@@ -7,13 +8,16 @@ interface TrendingPostCardProps {
 }
 export default function TrendingPostCard({ category, posts }: TrendingPostCardProps) {
   return (
-    <Box>
-      <Typography>{category}</Typography>
+    <Grid>
+      <Typography variant='h3' sx={{ padding: '20px 0', color: 'black' }}>
+        <TopicIcon color='secondary' sx={{ marginRight: '30px' }} fontSize='large' />
+        {category}
+      </Typography>
       <Stack>
-        {posts.map((post) => (
-          <PostCard post={post} />
+        {posts.map((post, index) => (
+          <PostCard key={index} post={post} />
         ))}
       </Stack>
-    </Box>
+    </Grid>
   )
 }
