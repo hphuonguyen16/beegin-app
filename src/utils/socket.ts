@@ -58,7 +58,7 @@ const socketFunctions = {
     receiveMessage: (setArrivalMessage: any, friendId: string, userId: any) => {
         socket.on("msg-receive", (msg: any) => {
             if (friendId === msg.sender) {
-                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content, createdAt: msg.createdAt });
+                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content, reaction: "", createdAt: msg.createdAt });
                 socket.emit("message-seen-status", {
                     userId: userId,
                     receiver: friendId,

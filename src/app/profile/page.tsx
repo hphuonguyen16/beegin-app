@@ -144,7 +144,7 @@ function page() {
                 padding: '10px 20px',
                 width: '130px',
                 borderRadius: '18px',
-                top: '20%',
+                top: '18%',
                 position: 'absolute',
                 right: '100px',
                 backgroundColor: 'white !important'
