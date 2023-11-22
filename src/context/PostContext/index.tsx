@@ -46,7 +46,7 @@ export function PostProvider({ children }: PostProviderProps) {
     const fetchData = async () => {
       try {
         // Fetch posts
-        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
+        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=25`)
         let posts = response.data.data.data
 
         posts = posts.map(async (post: Post) => {
