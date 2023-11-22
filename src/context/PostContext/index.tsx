@@ -3,6 +3,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Post } from '@/types/post'
 import { PostState, PostAction, postReducer } from './postReducer'
+import { useAuth } from '../AuthContext'
 
 export enum ActionType {
   FETCH_POSTS = 'FETCH_POSTS',
@@ -38,6 +39,7 @@ export function PostProvider({ children }: PostProviderProps) {
     posts: []
   }
   const [postsState, postsDispatch] = useReducer(postReducer, initialState)
+  const { accessToken } = useAuth()
   const axios = useAxiosPrivate()
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export function PostProvider({ children }: PostProviderProps) {
     }
 
     fetchData()
-  }, [])
+  }, [accessToken])
 
   // Provide user, login, and logout values to the context
   const contextValues: PostContextType = {
