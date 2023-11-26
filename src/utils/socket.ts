@@ -1,6 +1,7 @@
 
 import { io } from 'socket.io-client'
 import { getMessages } from '@/api/message';
+import Message from '@/types/message';
 
 const socket = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`);
 
@@ -58,7 +59,7 @@ const socketFunctions = {
     receiveMessage: (setArrivalMessage: any, friendId: string, userId: any) => {
         socket.on("msg-receive", (msg: any) => {
             if (friendId === msg.sender) {
-                setArrivalMessage({ fromSelf: false, type: msg.type, content: msg.content, createdAt: msg.createdAt });
+                setArrivalMessage({ id: msg.id, fromSelf: false, type: msg.type, content: msg.content, reaction: "", createdAt: msg.createdAt });
                 socket.emit("message-seen-status", {
                     userId: userId,
                     receiver: friendId,
@@ -72,10 +73,15 @@ const socketFunctions = {
         socket.emit("react", { messageId, reaction, receiver })
     },
 
-    fetchReaction: (messages: any, setMessages: any) => {
+    fetchReaction: (messages: Message[], setMessages: any) => {
         socket.on("reaction-receive", (data: any) => {
-            messages.find((x: any) => x.id === data.messageId).reaction = data.reaction;
-            setMessages(messages);
+            var selectedMsg = messages.find((x: Message) => x.id === data.messageId)
+            if (selectedMsg) {
+                console.log(data.reaction)
+                console.log(selectedMsg.reaction)
+                selectedMsg.reaction = data.reaction;
+                setMessages(messages);
+            }
         })
     }
 }

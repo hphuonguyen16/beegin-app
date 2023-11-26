@@ -15,7 +15,7 @@ import useResponsive from '@/hooks/useResponsive'
 import { Close, Done } from '@mui/icons-material'
 
 type ModalProps = {
-  variant: 'Create' | 'Edit' | 'Delete'
+  variant: 'Create' | 'Edit' | 'Delete' | 'Primary'
   open: boolean
   handleClose: any
   handleOk: any
@@ -32,7 +32,8 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
   const colors = {
     Create: theme.palette.primary,
     Edit: theme.palette.info,
-    Delete: theme.palette.error
+    Delete: theme.palette.error,
+    Primary: theme.palette.primary,
   } satisfies Record<ModalProps['variant'], {}>
 
   return (
@@ -48,7 +49,6 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          //   width: isMobile ? '80vw' : width ? width : '100vw',
           width: isMobile ? '80vw' : width ? width : '50vw',
           height: isMobile ? '80vh' : height ? height : '50vh',
           bgcolor: 'background.paper',

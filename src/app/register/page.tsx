@@ -227,11 +227,11 @@ export default function Register() {
   })
   const [success, setSuccess] = useState<boolean>(false)
   const { setSnack } = useSnackbar()
-  useEffect(() => {
-    const url = new URL(location.href)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    redirectUrl = url.searchParams.get('callbackUrl') || ''
-  }, [])
+  // useEffect(() => {
+  //   const url = new URL(location.href)
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   redirectUrl = url.searchParams.get('callbackUrl') || ''
+  // }, [])
   const { data: session } = useSession()
   // const router = useRouter();
 
@@ -268,7 +268,7 @@ export default function Register() {
   }
   const mdUp = useResponsive('up', 'md')
 
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(2)
   const isLastStep = activeStep === steps.length - 1
 
   function _sleep(ms: number) {

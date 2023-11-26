@@ -33,7 +33,7 @@ export default function TrendingCard({ trend }: TrendingHashtagProps) {
                 fontSize: '16px'
               }}
             >
-              {trend.category === null ? 'Trending' : `Trending in ${trend.category.name}`}
+              {trend?.category === null ? 'Trending' : `Trending in ${trend.category.name}`}
             </Typography>
             <Typography
               color='black'

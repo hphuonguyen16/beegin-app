@@ -14,7 +14,7 @@ const UrlConfig: any = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`,
-    updateProfile:`/api/v1/users/updateMe`
+    updateProfile: `/api/v1/users/updateMe`
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -50,12 +50,13 @@ const UrlConfig: any = {
     getChatImages: `api/v1/messages/get-chat-images`
   },
   trending: {
-    getTrendingHashtags: `/api/v1/trending/hashtags`
+    getTrendingHashtags: (limit: number = 5) => `/api/v1/trending/hashtags?limit=${limit}`,
+    getTrendingPosts: (category: string) => `/api/v1/trending/posts?category=${category}`
   },
   search: {
     getPostsByHashtag: (hashtag: string | null, media: string = '', sort: string = '-createdAt', limit: number = 10) =>
       `/api/v1/search?hashtag=${hashtag}&media=${media}&sort=${sort}&limit=${limit}`,
-    searchUsers: (q: string) => `/api/v1/search/users?q=${q}`,
+    searchUsers: (q: string, limit: number | undefined = undefined) => `/api/v1/search/users?q=${q}&limit=${limit}`,
     searchPosts: (q: string, media: string | null = null, sort: string = '-createdAt', limit: number = 10) =>
       `/api/v1/search/posts?q=${q}&media=${media}&sort=${sort}&limit=${limit}`
   }
