@@ -42,32 +42,6 @@ export function PostProvider({ children }: PostProviderProps) {
   const { accessToken } = useAuth()
   const axios = useAxiosPrivate()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch posts
-        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=25`)
-        let posts = response.data.data.data
-
-        posts = posts.map(async (post: Post) => {
-          const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
-          const isLiked = likeResponse.data.data
-          return {
-            ...post,
-            isLiked
-          }
-        })
-        posts = await Promise.all(posts)
-        postsDispatch({ type: 'SET_POSTS', payload: posts })
-      } catch (error) {
-        // Handle errors if necessary
-      }
-    }
-
-    fetchData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken])
-
   // Provide user, login, and logout values to the context
   const contextValues: PostContextType = {
     postsState,

@@ -4,7 +4,7 @@ import UrlConfig from '@/config/urlConfig'
 import { useRouter } from 'next/navigation'
 
 const useRefreshToken = () => {
-  const { setAccessToken, setUser } = useAuth()
+  const { setAccessToken, setUser, user } = useAuth()
   const router = useRouter()
 
   const refresh = async () => {

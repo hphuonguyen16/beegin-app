@@ -8,9 +8,6 @@ import Sidebar from '@/layouts/Sidebar'
 import { TextField, InputAdornment, FormControl, Box, Stack, Button, Typography } from '@mui/material'
 
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
-
-import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
-
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded'
 import { Poppins } from 'next/font/google'
 import useResponsive from '@/hooks/useResponsive'
@@ -24,6 +21,20 @@ import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
 import ProfilePopover from './ProfilePopover'
 import SearchTextbox from './SearchTextbox/SearchTextbox'
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded'
+import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import FaceRoundedIcon from '@mui/icons-material/FaceRounded'
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import {
+  HomeOutlined,
+  TextsmsOutlined,
+  Person2Outlined,
+  SettingsOutlined,
+  FaceOutlined,
+  ExploreOutlined
+} from '@mui/icons-material'
 
 // ----------------------------------------------------------------------
 
@@ -122,10 +133,49 @@ const StyledIconNotifBox = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const Layout = ({ children }: PropsWithChildren) => {
+interface LayoutProps {
+  children: ReactNode
+  menuItems: any
+}
+const menuItems = [
+  {
+    icon: <HomeOutlined />,
+    iconActive: <HomeRoundedIcon />,
+    label: 'Home',
+    path: '/'
+  },
+  {
+    icon: <ExploreOutlined />,
+    iconActive: <ExploreRoundedIcon />,
+    label: 'Explore',
+    path: '/explore'
+  },
+  {
+    icon: <TextsmsOutlined />,
+    iconActive: <TextsmsRoundedIcon />,
+    label: 'Messages',
+    path: '/messages'
+  },
+  {
+    icon: <Person2Outlined />,
+    iconActive: <Person2RoundedIcon />,
+    label: 'Profile',
+    path: '/profile'
+  },
+  {
+    icon: <SettingsOutlined />,
+    iconActive: <SettingsRoundedIcon />,
+    label: 'Settings',
+    path: '/settings'
+  }
+]
+
+const Layout = ({ children, menuItems }: LayoutProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [isLoading, setIsLoading] = React.useState(true)
   const pathname = usePathname() // Get the current route from the router
+  const router = useRouter()
+  const { user } = useAuth()
 
   const logOut = async () => {
     // deleteCookie("access_token", { path: "/" , domain: "localhost"});
@@ -139,6 +189,11 @@ const Layout = ({ children }: PropsWithChildren) => {
       setIsLoading(false)
     }, 1000)
   }, [])
+  // React.useEffect(() => {
+  //   if (pathname.startsWith('/admin') && !user?.role?.includes('admin')) {
+  //     router.push('/login')
+  //   }
+  // }, [])
 
   const pathSegments = pathname.split('/')
   const topic =
@@ -151,35 +206,11 @@ const Layout = ({ children }: PropsWithChildren) => {
   return (
     <StyledRoot>
       <aside>
-        <Sidebar />
+        <Sidebar menuItems={menuItems} />
       </aside>
       <Main className={poppins.variable}>
         {!isMobile ? (
           <HeaderBar>
-            {/* <FormControl sx={{ width: '65%', justifyContent: 'center' }}>
-              <TextField
-                size='small'
-                variant='outlined'
-                placeholder='Search'
-                sx={{
-                  marginLeft: '15px',
-                  '& .MuiInputBase-root': {
-                    height: '50px'
-                  },
-                  background: 'white',
-                  borderRadius: '10px'
-                  // marginBottom: '15px'
-                }}
-                //   onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      <SearchRoundedIcon />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </FormControl> */}
             <SearchTextbox />
             <Stack direction={'row'} spacing={2}>
               <Button sx={{ borderRadius: '50%' }}>

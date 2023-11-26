@@ -7,6 +7,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { useSearchParams } from 'next/navigation'
 import NotFound from './NotFound'
+import { usePosts } from '@/context/PostContext'
 
 interface PostListProps {
   f: string
@@ -14,6 +15,7 @@ interface PostListProps {
 function PostList({ f }: PostListProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const { postsState, postsDispatch } = usePosts()
   const axios = useAxiosPrivate()
   const searchParams = useSearchParams()
   useEffect(() => {
@@ -35,20 +37,33 @@ function PostList({ f }: PostListProps) {
             // const media = searchParams.get('f')
             response = await axios.get(UrlConfig.search.searchPosts(encodeURIComponent(q), media))
           }
-          setPosts(response?.data.data)
+          let posts = response.data.data
+          posts = posts.map(async (post: Post) => {
+            const likeResponse = await axios.get(UrlConfig.posts.checkLikePost(post._id))
+            const isLiked = likeResponse.data.data
+            return {
+              ...post,
+              isLiked
+            }
+          })
+          posts = await Promise.all(posts)
+          postsDispatch({ type: 'SET_POSTS', payload: posts })
           setLoading(false)
         }
       } catch (error) {}
     }
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      postsDispatch({ type: 'SET_POSTS', payload: [] })
+    }
   }, [searchParams])
   return (
     <Stack>
       {loading ? (
         <CircularProgress color='primary' sx={{ alignSelf: 'center' }} />
-      ) : posts.length > 0 ? (
-        posts.map((post, index) => <PostCard key={index} post={post} />)
+      ) : postsState.posts.length > 0 ? (
+        postsState.posts.map((post, index) => <PostCard key={index} post={post} />)
       ) : (
         <NotFound q={searchParams.get('q')} />
       )}

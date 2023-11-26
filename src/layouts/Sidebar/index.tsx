@@ -1,18 +1,4 @@
 import React, { useEffect } from 'react'
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
-import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded'
-import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
-import FaceRoundedIcon from '@mui/icons-material/FaceRounded'
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
-import {
-  HomeOutlined,
-  TextsmsOutlined,
-  Person2Outlined,
-  SettingsOutlined,
-  FaceOutlined,
-  ExploreOutlined
-} from '@mui/icons-material'
 import Link from 'next/link'
 import Image from 'next/image'
 import logo from '@/assets/logo.png'
@@ -70,40 +56,10 @@ const StyledIconBox = styled('div')<{ isActive: boolean }>(({ theme, isActive })
   }
 }))
 
-const menuItems = [
-  {
-    icon: <HomeOutlined />,
-    iconActive: <HomeRoundedIcon />,
-    label: 'Home',
-    path: '/'
-  },
-  {
-    icon: <ExploreOutlined />,
-    iconActive: <ExploreRoundedIcon />,
-    label: 'Explore',
-    path: '/explore'
-  },
-  {
-    icon: <TextsmsOutlined />,
-    iconActive: <TextsmsRoundedIcon />,
-    label: 'Messages',
-    path: '/messages'
-  },
-  {
-    icon: <Person2Outlined />,
-    iconActive: <Person2RoundedIcon />,
-    label: 'Profile',
-    path: '/profile'
-  },
-  {
-    icon: <SettingsOutlined />,
-    iconActive: <SettingsRoundedIcon />,
-    label: 'Settings',
-    path: '/settings'
-  }
-]
-
-const Sidebar = () => {
+interface SidebarProps {
+  menuItems: any
+}
+const Sidebar = ({ menuItems }: SidebarProps) => {
   const pathname = usePathname() // Get the current route from the router
   const isMobile = useResponsive('down', 'sm') // Get the current breakpoint from the theme (see below)
 
@@ -129,7 +85,7 @@ const Sidebar = () => {
                 Menu
               </Typography>
               <Stack direction='column' spacing={1} sx={{ marginTop: '25px', width: '100%' }}>
-                {menuItems.map((item) => (
+                {menuItems.map((item: any) => (
                   <StyledLinkBox key={item.path} isActive={isLinkActive(item.path)}>
                     <Link href={item.path}>
                       <StyledStack>
@@ -180,7 +136,7 @@ const Sidebar = () => {
             padding: '0 8px'
           }}
         >
-          {menuItems.map((item) => (
+          {menuItems.map((item: any) => (
             <Link key={item.path} href={item.path}>
               <StyledIconBox key={item.path} isActive={isLinkActive(item.path)}>
                 {isLinkActive(item.path) ? item.iconActive : item.icon}

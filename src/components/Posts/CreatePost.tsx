@@ -19,6 +19,7 @@ import PostLoader from '@/components/common/Loader/PostLoader'
 import EmojiPicker from '../common/EmojiPicker'
 import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
+import { usePathname } from 'next/navigation'
 
 interface NewPostProps {
   content: string | ''
@@ -107,6 +108,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const [isSuccess, setIsSuccess] = React.useState(false)
   const [isLoad, setIsLoad] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
+  const pathName = usePathname()
   const { setSnack } = useSnackbar()
 
   const handleImageChange = (e: any) => {
@@ -139,9 +141,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       parent: repost?._id
     })
     if (response.data.status === 'success') {
-      console.log(response.data.data)
-      // setNewPost(response.data.data)
-      postsDispatch({ type: 'ADD_POST', payload: response.data.data })
+      pathName === '/' && postsDispatch({ type: 'ADD_POST', payload: response.data.data })
       setIsLoad(false)
       setIsSuccess(true)
       setSnack({

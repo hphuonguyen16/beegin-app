@@ -17,6 +17,7 @@ import UrlConfig from '@/config/urlConfig'
 
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
+import { usePosts } from '@/context/PostContext'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -73,7 +74,7 @@ function page() {
     gender: true,
     slug: ''
   })
-  const [postsData, setPostsData] = useState<Post[]>([])
+  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
@@ -98,13 +99,26 @@ function page() {
     const fetchPosts = async () => {
       try {
         const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
-        setPostsData(response.data.data)
+        let posts = response.data.data
+        posts = posts.map(async (post: Post) => {
+          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
+          const isLiked = likeResponse.data.data
+          return {
+            ...post,
+            isLiked
+          }
+        })
+        posts = await Promise.all(posts)
+        postsDispatch({ type: 'SET_POSTS', payload: posts })
         setNumberPost(response.data.results)
       } catch (error) {
         console.log(error)
       }
     }
     fetchPosts()
+    return () => {
+      postsDispatch({ type: 'SET_POSTS', payload: [] })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [1])
   useEffect(() => {
@@ -323,7 +337,7 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {postsData.map((post, index) => (
+                  {postsState.posts.map((post, index) => (
                     <PostCard key={index} post={post} />
                   ))}
                 </Box>

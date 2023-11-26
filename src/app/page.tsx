@@ -10,33 +10,44 @@ import urlConfig from '@/config/urlConfig'
 import CreatePost from '@/components/Posts/CreatePost'
 import { useAuth } from '@/context/AuthContext'
 import { usePosts } from '@/context/PostContext'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Home() {
   const isMobile = useResponsive('down', 'sm')
-  // const [postsData, setPostsData] = useState<Post[]>([])
+  const pathname = usePathname()
   const { postsState, postsDispatch } = usePosts()
   const [open, setOpen] = useState(false)
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
   const { user } = useAuth()
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     try {
-  //       const response = await axios.get(`${urlConfig.posts.getPosts}?limit=10`)
-  //       setPostsData(response.data.data.data)
-  //     } catch (error) {}
-  //   }
-  //   fetchPosts()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [1])
-  // useEffect(() => {
-  //   console.log(newPost)
-  //   if (newPost) {
-  //     postsDispatch({ type: 'ADD_POST', payload: newPost })
-  //   }
-  // }, [newPost])
-  console.log(newPost)
-  console.log(postsState.posts)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch posts
+        const response = await axios.get(`${urlConfig.posts.getPosts}?limit=5`)
+        let posts = response.data.data.data
+
+        posts = posts.map(async (post: Post) => {
+          const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
+          const isLiked = likeResponse.data.data
+          return {
+            ...post,
+            isLiked
+          }
+        })
+        posts = await Promise.all(posts)
+        postsDispatch({ type: 'SET_POSTS', payload: posts })
+      } catch (error) {
+        // Handle errors if necessary
+      }
+    }
+
+    fetchData()
+    return () => {
+      postsDispatch({ type: 'SET_POSTS', payload: [] })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   return (
     <>
