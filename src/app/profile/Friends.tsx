@@ -51,12 +51,23 @@ function Friends({ userId }: { userId: string }) {
   }, [buttonFollow])
 
   const filteredData = buttonFollow
-    ? listFollowing.filter((user: any) =>
-        `${user.profile[0].firstname} ${user.profile[0].lastname}`.toLowerCase().includes(searchValue.toLowerCase())
+    ? listFollowing.filter(
+        (user: any) =>
+          user.following &&
+          user.following.profile &&
+          `${user.following.profile.firstname} ${user.following.profile.lastname}`
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())
       )
-    : listFollower.filter((user: any) =>
-        `${user.profile[0].firstname} ${user.profile[0].lastname}`.toLowerCase().includes(searchValue.toLowerCase())
+    : listFollower.filter(
+        (user: any) =>
+          user.follower &&
+          user.follower.profile &&
+          `${user.follower.profile.firstname} ${user.follower.profile.lastname}`
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())
       )
+
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -133,8 +144,8 @@ function Friends({ userId }: { userId: string }) {
           ? filteredData.map((user: any, index) => (
               <CardUser
                 key={index}
-                userId={user.userId}
-                profile={user.profile[0]}
+                userId={user.following._id}
+                profile={user.following.profile}
                 status={true}
                 isVisible={isVisible}
               />
@@ -142,9 +153,9 @@ function Friends({ userId }: { userId: string }) {
           : filteredData.map((user: any, index) => (
               <CardUser
                 key={index}
-                userId={user.userId}
-                profile={user.profile[0]}
-                status={user.status}
+                userId={user.follower._id}
+                profile={user.follower.profile}
+                status={user.follower.status}
                 isVisible={isVisible}
               />
             ))}
