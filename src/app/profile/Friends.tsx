@@ -68,7 +68,6 @@ function Friends({ userId }: { userId: string }) {
             .includes(searchValue.toLowerCase())
       )
 
-  console.log(listFollower)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
