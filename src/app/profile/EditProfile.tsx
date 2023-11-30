@@ -102,7 +102,6 @@ const ModalComponent = (props: ModalProps) => {
       [name]: value
     })
   }
-  console.log('a', formValues.avatar, 'b', formValues.background)
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-title' aria-describedby='modal-description'>
       <Box sx={style} style={{ paddingBottom: '10px' }}>
