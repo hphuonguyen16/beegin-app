@@ -70,7 +70,6 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
-  const [checkId, setCheck] = React.useState<boolean>()
   const wrapTags = (text: string, regexY: RegExp, className?: string) => {
     const regex = /#(\w+)/g
     const matches: any = {}

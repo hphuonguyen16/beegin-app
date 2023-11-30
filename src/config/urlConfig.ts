@@ -1,4 +1,8 @@
 const UrlConfig: any = {
+  admin: {
+    getOverview: (year: number) => `/api/v1/users/overview/${year}`
+  },
+
   user: {
     login: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/login`,
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,
@@ -14,7 +18,8 @@ const UrlConfig: any = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`,
-    updateProfile: `/api/v1/users/updateMe`
+    updateProfile: `/api/v1/users/updateMe`,
+    createReport: `/api/v1/reports/createReport`
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
