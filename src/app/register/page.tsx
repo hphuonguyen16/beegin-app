@@ -214,7 +214,7 @@ export default function Register() {
     passwordConfirm: '',
     firstname: '',
     lastname: '',
-    slug: '',
+    slug: '@',
     gender: true,
     preferences: []
   })

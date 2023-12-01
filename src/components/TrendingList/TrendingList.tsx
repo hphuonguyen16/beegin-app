@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Grid, Typography, Box, Stack, CircularProgress } from '@mui/material'
 import { useRouter } from 'next/navigation'
-
 import TrendingCard from './TrendingCard'
 import { TrendingHashtag } from '@/types/trendingHashtag'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useQuery } from 'react-query'
 import UrlConfig from '@/config/urlConfig'
 
 interface TrendingListProps {
@@ -13,24 +13,24 @@ interface TrendingListProps {
   isFull: boolean
 }
 export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
-  const [loading, setLoading] = useState<boolean>(true)
-  const [trendingHashtags, setTrendingHashtags] = useState<TrendingHashtag[]>([])
+  // const [loading, setLoading] = useState<boolean>(true)
+  // const [trendingHashtags, setTrendingHashtags] = useState<TrendingHashtag[]>([])
   const axios = useAxiosPrivate()
   const router = useRouter()
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await axios.get(UrlConfig.trending.getTrendingHashtags(count))
-        setTrendingHashtags(response.data.data)
-        console.log(response.data.data)
-        setLoading(false)
-      } catch (error) {}
-    }
-    fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(UrlConfig.trending.getTrendingHashtags(count))
+      return response.data.data
+    } catch (error) {}
+  }
+  const {
+    data: trendingHashtags,
+    error,
+    isLoading,
+    status
+  } = useQuery<TrendingHashtag[]>('trendinghastags', fetchData, {
+    staleTime: 1000 * 60 * 5
+  })
   const handleShowMore = () => {
     router.push('/trends')
   }
@@ -49,10 +49,10 @@ export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
       </Typography>
 
       <Stack spacing={1} sx={{ marginBottom: '30px' }}>
-        {loading ? (
+        {isLoading ? (
           <CircularProgress color='primary' sx={{ alignSelf: 'center' }} />
         ) : (
-          trendingHashtags.map((item, index) => {
+          trendingHashtags?.map((item, index) => {
             const href = `/search?q=${encodeURIComponent(item.hashtag.name)}&f=top`
             return (
               <Link key={index} href={href}>

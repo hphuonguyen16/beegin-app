@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import {
   Box,
   Chip,
+  CircularProgress,
   Divider,
   FormControl,
   IconButton,
@@ -30,7 +31,6 @@ import urlConfig from '@/config/urlConfig'
 import { Comment } from '@/types/comment'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import EmojiPicker from '../common/EmojiPicker'
-import CustomTextfield from '../common/Textfield'
 import _ from 'lodash'
 
 // find the root of children comment
@@ -54,6 +54,8 @@ function findRootCommentIndex(comments: Comment[], comment: Comment) {
   return comments.findIndex((c) => c._id === comment._id)
 }
 
+function getNumComments(comments: Comment[]) {}
+
 interface PostDetailProps {
   post: Post
   open: boolean
@@ -61,16 +63,34 @@ interface PostDetailProps {
   handleClose: () => void
 }
 
+interface pageOfReplyComments {
+  [key: string]: number
+}
+
 const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
-  const [comments, setComments] = React.useState<Comment[]>([]) // [Comment
+  const [comments, setComments] = React.useState<Comment[]>((post.comments as unknown as Comment[]) || [])
   const [comment, setComment] = React.useState('')
   const [commentReply, setCommentReply] = React.useState<Comment>() // [Comment]
+  const [page, setPage] = React.useState(1)
+  const [loading, setLoading] = React.useState(false)
+  const [totalComments, setTotalComments] = React.useState(0)
   const fetchComments = async () => {
-    const response = await axiosPrivate.get(urlConfig.posts.getComments(post._id))
-    setComments(response.data.data)
+    setLoading(true)
+    const response = await axiosPrivate.get(`${urlConfig.posts.getComments(post._id)}?limit=10&page=${page}`)
+    setTotalComments(response.data.total)
+    setComments([...comments, ...response.data.data])
+    post.comments = [...comments, ...response.data.data]
+    let numComments = comments.length
+    comments.forEach((comment) => {
+      if (comment.children) {
+        numComments += comment.children.length
+      }
+    })
+    setPage(page + 1)
+    setLoading(false)
   }
   const createComment = async () => {
     if (!commentReply) {
@@ -110,30 +130,6 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
     if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)
     else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
-  const getReplyComments = async (postId: string, commentId: string) => {
-    try {
-      if (postId === '' || commentId === '') {
-        setComments((prev) => {
-          const newComments = [...(prev || [])]
-          const index = newComments.findIndex((comment) => comment._id === commentId)
-          if (index >= 0) {
-            newComments[index].children = []
-          }
-          return newComments
-        })
-      } else {
-        const res = await axiosPrivate.get(urlConfig.comments.getReplyComments(postId, commentId))
-        setComments((prev) => {
-          const newComments = [...(prev || [])]
-          const index = newComments.findIndex((comment) => comment._id === commentId)
-          if (index >= 0) {
-            newComments[index].children = res.data.data
-          }
-          return newComments
-        })
-      }
-    } catch (err) {}
-  }
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -142,8 +138,9 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
         // Handle any errors that occur during the fetchComments() function
       }
     }
-
-    fetchData()
+    if (!post.comments) {
+      fetchData()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -177,18 +174,19 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               overflow: 'auto',
               borderRadius: '0px 10px 0px 10px'
             }}
+            id='commentDiv'
           >
             <Box sx={{ overflow: 'auto', width: '100%', height: '93%' }}>
               <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                 <ListItem alignItems='flex-start'>
                   <ListItemAvatar>
-                    <Avatar alt='Remy Sharp' src={post.user.profile?.avatar} />
+                    <Avatar alt='Remy Sharp' src={post.user?.profile?.avatar} />
                   </ListItemAvatar>
                   <ListItemText
                     primary={
                       <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
                         <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-                          {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
+                          {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
                         </Typography>
                         <Typography
                           sx={{
@@ -198,7 +196,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                             marginLeft: '7px'
                           }}
                         >
-                          {post.user.profile?.slug}
+                          {post.user?.profile?.slug}
                         </Typography>
                         <Box
                           sx={{
@@ -233,13 +231,13 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               <Stack direction={'row'} gap={isMobile ? 1 : 3} sx={{ margin: '15px 0px 15px 15px' }}>
                 <Avatar
                   sx={{ width: isMobile ? '45px' : '40px', height: isMobile ? '45px' : '40px' }}
-                  src={post.user.profile?.avatar}
+                  src={post.user?.profile?.avatar}
                 ></Avatar>
                 <Stack>
                   <Box>
                     <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
                       <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-                        {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
+                        {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
                       </Typography>
                       <Typography
                         sx={{
@@ -249,7 +247,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                           marginLeft: '7px'
                         }}
                       >
-                        {post.user.profile?.slug}
+                        {post.user?.profile?.slug}
                       </Typography>
                       <Typography
                         sx={{
@@ -272,7 +270,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                           backgroundColor: 'rgba(0, 0, 0, 0.50)'
                         }}
                       ></Box>
-                      {post.categories.map((category: any, index: number) => (
+                      {post?.categories?.map((category: any, index: number) => (
                         <Chip
                           variant='outlined'
                           key={index}
@@ -303,13 +301,26 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               <Divider variant='inset' />
               <Box sx={{ paddingRight: '15px' }}>
                 {comments.map((comment: Comment, index: number) => (
-                  <CommentCard
-                    key={comment._id}
-                    comment={comment}
-                    replyComment={replyComment}
-                    getReplyComments={getReplyComments}
-                  />
+                  <CommentCard key={comment._id} comment={comment} replyComment={replyComment} />
                 ))}
+                {comments.length >= 10 && comments.length < totalComments && (
+                  <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '20px' }}>
+                    <Typography
+                      onClick={() => fetchComments()}
+                      color='primary'
+                      sx={{
+                        fontWeight: 'bold',
+                        verticalAlign: 'middle',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        opacity: 0.7
+                      }}
+                    >
+                      Show more
+                    </Typography>
+                    {loading && <CircularProgress size={14} sx={{ marginLeft: '20px' }} />}
+                  </Stack>
+                )}
               </Box>
             </Box>
             <Box
