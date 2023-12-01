@@ -87,14 +87,14 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
   const getNumberOfFollow = async () => {
     try {
       const url = UrlConfig.me.getMyNumberOfFollows
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
   useEffect(() => {
     const fetchPosts = async () => {
@@ -142,8 +142,8 @@ function page() {
   }
   return (
     <StyledProfile>
-      <Grid container spacing={2} sx={{ paddingX: "20px" }}>
-        <Grid item xs={12} md={12} sx={{ paddingRight: "16px" }}>
+      <Grid container spacing={2} sx={{ paddingX: '20px' }}>
+        <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
             <Image
               src={data.background}
@@ -171,7 +171,7 @@ function page() {
           </Box>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Stack spacing={2} alignItems='center' sx={{ position: "sticky", top: "80px" }}>
+          <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
               <Information>
                 <Stack spacing={2} alignItems='center'>
@@ -322,11 +322,11 @@ function page() {
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={9} sx={{ paddingRight: "48px" }}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: '48px' }}>
           <Paper>
             <Posts>
               {action === true ? (
-                <Box sx={{ padding: "24px 48px" }}>
+                <Box sx={{ padding: '24px 48px' }}>
                   {' '}
                   <Typography
                     variant='h3'

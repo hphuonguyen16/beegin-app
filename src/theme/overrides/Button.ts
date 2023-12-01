@@ -7,7 +7,7 @@ export default function Button(theme: CustomTheme) {
     MuiButton: {
       styleOverrides: {
         root: {
-          color: theme.palette.primary.main,
+          color: theme.palette.secondary.main,
           '&:hover': {
             boxShadow: 'none'
           }
@@ -49,6 +49,16 @@ export default function Button(theme: CustomTheme) {
             backgroundColor: theme.palette.action.hover
           }
         }
+      }
+    },
+    MuiIconButton:{
+      styleOverrides: {
+        root: {
+          color: theme.palette.primary.main,
+          '&:hover': {
+            boxShadow: 'none'
+          }
+        },
       }
     }
   }

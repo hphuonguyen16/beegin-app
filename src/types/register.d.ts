@@ -9,4 +9,5 @@ export interface Register {
   bio?: string | boolean
   avatar?: string | boolean
   slug?: string | boolean
+  preferences?: Array | boolean
 }

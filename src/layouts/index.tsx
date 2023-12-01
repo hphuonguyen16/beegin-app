@@ -219,7 +219,7 @@ const Layout = ({ children, menuItems }: LayoutProps) => {
                   <NotificationsRoundedIcon />
                 </StyledIconNotifBox>
               </Button>
-              <ProfilePopover signOutFn={() => logOut()}></ProfilePopover>
+              <ProfilePopover></ProfilePopover>
             </Stack>
           </HeaderBar>
         ) : (
