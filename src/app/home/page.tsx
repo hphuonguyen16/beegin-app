@@ -1,114 +1,145 @@
 'use client'
 import PostCard from '@/components/Posts/PostCard'
-import { Box, Typography, Stack, FormControl, TextField, Avatar, Grid } from '@mui/material'
+import { Box, Typography, Stack, TextField, Avatar, Modal } from '@mui/material'
 import PostLayout from '@/layouts/PostLayout'
 import useResponsive from '@/hooks/useResponsive'
 import { Post } from '@/types/post'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import urlConfig from '@/config/urlConfig'
-
-// const postData: Post[] = [
-//   {
-//     content: 'This is the first post content.',
-//     user: { username: 'user1', fullName: 'User One' },
-//     images: [
-//       'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-//       'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600'
-//     ],
-//     numLikes: 10,
-//     numComments: 5,
-//     createdAt: '2023-10-14T08:30:00'
-//   },
-//   {
-//     content: 'Another post for testing.',
-//     images: [
-//       'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
-//       'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-//       'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-//     ],
-//     user: { username: 'user2', fullName: 'User Two' },
-//     numLikes: 15,
-//     numComments: 8,
-//     createdAt: '2023-10-15T14:45:00'
-//   },
-//   {
-//     content: 'Sample post with categories.',
-//     categories: ['Technology', 'Science'],
-//     images: [
-//       'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-//       'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600',
-//       'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
-//       'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-//     ],
-//     user: { username: 'user3', fullName: 'User Three' },
-//     numLikes: 20,
-//     numComments: 12,
-//     createdAt: '2023-10-16T10:15:00'
-//   },
-//   {
-//     content: 'Post with hashtags.',
-//     hashtags: ['#programming', '#travel'],
-//     user: { username: 'user4', fullName: 'User Four' },
-//     numLikes: 18,
-//     numComments: 7,
-//     createdAt: '2023-10-17T16:00:00'
-//   },
-//   {
-//     content: 'A simple post with no extra data.',
-//     user: { username: 'user5', fullName: 'User Five' },
-//     numLikes: 12,
-//     numComments: 3,
-//     createdAt: '2023-10-18T12:30:00'
-//   }
-// ]
+import CreatePost from '@/components/Posts/CreatePost'
+import { useAuth } from '@/context/AuthContext'
+import { usePathname, useRouter } from 'next/navigation'
+import { useInfiniteQuery } from 'react-query'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 
 export default function Home() {
   const isMobile = useResponsive('down', 'sm')
-  const [postsData, setPostsData] = useState<Post[]>([])
+  const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(urlConfig.posts.getPosts)
-        setPostsData(response.data.data.data)
-      } catch (error) {}
+  const { user } = useAuth()
+  async function fetchPosts({ pageParam = 1 }) {
+    try {
+      // Fetch posts
+      const response = await axios.get(`${urlConfig.posts.getPosts}?limit=5&page=${pageParam}`)
+      let posts = response.data.data.data
+      let { total } = response.data
+
+      posts = posts.map(async (post: Post) => {
+        const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
+        const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=10`)
+        const comments = commentResponse.data.data as Comment[]
+        const isLiked = likeResponse.data.data
+        return {
+          ...post,
+          isLiked,
+          comments
+        }
+      })
+      posts = await Promise.all(posts)
+      return {
+        posts,
+        total,
+        prevPage: pageParam
+      }
+    } catch (error) {
+      // Handle errors if necessary
     }
-    fetchPosts()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  }
+  // const { data, error, isLoading, status } = useQuery<Post[]>('postsData', fetchPosts)
+  const { data, fetchNextPage, hasNextPage, status, isFetching } = useInfiniteQuery({
+    queryKey: ['postsData'],
+    queryFn: fetchPosts,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage?.prevPage === undefined) return false
+      if (lastPage?.prevPage * 5 > lastPage?.total) {
+        return false
+      }
+      return lastPage?.prevPage + 1
+    },
+    staleTime: 1000 * 60 * 10 // 10 minutes
+  })
+  const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
+    return [...acc, ...page?.posts]
+  }, [])
+
   return (
-    <PostLayout>
-      <Box>
-        <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }}>
-          Feeds
-        </Typography>
-        <Stack direction={'row'} sx={{ marginTop: '25px' }} spacing={2}>
-          <Avatar
-            src='https://images.pexels.com/photos/928966/pexels-photo-928966.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-            sx={{ width: 50, height: 50 }}
-          ></Avatar>
-          <TextField
-            size='small'
-            variant='outlined'
-            placeholder='What’s on your mind?'
-            sx={{
-              '& .MuiInputBase-root': {
-                height: '50px'
-              },
-              //   background: 'white',
-              //   borderRadius: '10px',
-              //   marginBottom: '15px',
-              width: '700px'
-            }}
-          />
-        </Stack>
-        <Box sx={{ marginTop: '50px' }}>
-          {postsData.map((post, index) => (
-            <PostCard key={index} post={post} />
-          ))}
+    <>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            //   width: isMobile ? '80vw' : width ? width : '100vw',
+            width: isMobile ? '80vw' : '40vw',
+            height: isMobile ? '80vh' : '80vh',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            borderRadius: 2,
+            padding: isMobile ? 3 : '20px'
+          }}
+        >
+          <CreatePost open={open} setOpen={setOpen} newPost={newPost} setNewPost={setNewPost} />
         </Box>
-      </Box>
-    </PostLayout>
+      </Modal>
+      <PostLayout>
+        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}></Box>
+
+        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}>
+          <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
+            Feeds
+          </Typography>
+          <Stack direction={'row'} sx={{ marginTop: '25px' }} spacing={2}>
+            <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
+            <TextField
+              size='small'
+              variant='outlined'
+              placeholder='What’s on your mind?'
+              onClick={() => setOpen(true)}
+              sx={{
+                '& .MuiInputBase-root': {
+                  height: '50px'
+                },
+                //   background: 'white',
+                //   borderRadius: '10px',
+                //   marginBottom: '15px',
+                width: '700px'
+              }}
+            />
+          </Stack>
+          <InfiniteScroll
+            dataLength={postsData ? postsData.length : 0}
+            next={() => {
+              fetchNextPage()
+            }}
+            hasMore={true}
+            loader={<></>}
+            endMessage={<div>No more posts</div>}
+            scrollableTarget='scrollableDiv'
+          >
+            <Box sx={{ marginTop: '50px', overflowX: 'hidden' }}>
+              {postsData?.map((post, index) => {
+                if (post && post.parent) {
+                  return <PostCard key={post._id || index} post={post} postParent={post.parent} />
+                } else if (post) {
+                  return <PostCard key={post._id || index} post={post} />
+                }
+              })}
+            </Box>
+          </InfiniteScroll>
+          {isFetching && (
+            <Stack direction='column' spacing={3}>
+              <PostSkeleton />
+              <PostSkeleton />
+            </Stack>
+          )}
+        </Box>
+      </PostLayout>
+    </>
   )
 }

@@ -35,15 +35,15 @@ const BoxStyle = styled(Card)(({ theme }) => ({
 function page() {
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState<{
-    account: Array<Object>
+    account: any
     numOfAccount: number
-    post: Array<Object>
+    post: any
     numOfPost: number
   }>({
-    account: [],
-    numberOfAccount: 0,
-    post: [],
-    numberOfPost: 0
+    account: [], // 'account' property in the state
+    numOfAccount: 0,
+    post: [], // 'post' property in the state
+    numOfPost: 0
   })
   useEffect(() => {
     const fetchData = async () => {
@@ -152,7 +152,13 @@ function page() {
         <Grid item xs={4}>
           <Typography
             variant='h3'
-            sx={{ fontWeight: '600', textAlign: 'center', fontSize: '20px', marginTop: '20px !important',marginBottom:'20px' }}
+            sx={{
+              fontWeight: '600',
+              textAlign: 'center',
+              fontSize: '20px',
+              marginTop: '20px !important',
+              marginBottom: '20px'
+            }}
           >
             Top 10 Accounts
           </Typography>
