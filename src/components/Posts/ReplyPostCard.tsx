@@ -17,15 +17,17 @@ const ReplyPostCard = ({ post }: ReplyPostCardProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
-  const { postsState, postsDispatch } = usePosts()
+  const [liked, setLiked] = React.useState(post.isLiked || false)
 
   const handleLike = async () => {
     try {
-      if (!post.isLiked) {
-        postsDispatch({ type: 'MARK_POST_AS_LIKED', payload: post._id })
+      if (!liked) {
+        setLiked(true)
+        post.isLiked = true
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
-        postsDispatch({ type: 'MARK_POST_AS_UNLIKED', payload: post._id })
+        setLiked(false)
+        post.isLiked = false
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
     } catch (err) {}
@@ -38,16 +40,16 @@ const ReplyPostCard = ({ post }: ReplyPostCardProps) => {
       sx={{ border: '1px solid #cdc6c6', padding: '15px', borderRadius: '15px', marginTop: '15px' }}
       onClick={() => setOpen(true)}
     >
-        <PostDetail
-          key={post._id}
-          post={post}
-          open={open}
+      <PostDetail
+        key={post._id}
+        post={post}
+        open={open}
         handleClose={() => {
           setOpen(false)
           console.log('close')
         }}
-          handleLike={handleLike}
-        />
+        handleLike={handleLike}
+      />
       <Stack
         direction={'row'}
         sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}

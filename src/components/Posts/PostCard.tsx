@@ -63,31 +63,25 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
-  const { postsState, postsDispatch } = usePosts()
   const [newPost, setNewPost] = React.useState<Post | null>(null)
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
   const [open, setOpen] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
-  const [checkId, setCheck] = React.useState<boolean>()
-  const wrapTags = (text: string, regexY: RegExp, className?: string) => {
-    const regex = /#(\w+)/g
-    const matches: any = {}
-    let match
-
-    while ((match = regex.exec(text))) {
-      matches[match.index] = match[0]
-    }
-  }
+  const [like, setLike] = React.useState<boolean>(post.isLiked ? true : false)
 
   const handleLike = async () => {
     try {
-      if (!post.isLiked) {
-        postsDispatch({ type: 'MARK_POST_AS_LIKED', payload: post._id })
+      if (!like) {
+        setLike(true)
+        post.isLiked = true
+        post.numLikes++
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
-        postsDispatch({ type: 'MARK_POST_AS_UNLIKED', payload: post._id })
+        setLike(false)
+        post.isLiked = false
+        post.numLikes--
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
     } catch (err) {}
@@ -163,7 +157,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         >
           <Avatar
             sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
-            src={post.user.profile?.avatar}
+            src={post.user?.profile?.avatar}
           ></Avatar>
           <Stack sx={{ minWidth: !isMobile ? '100%' : '85%' }}>
             <Stack
@@ -172,7 +166,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               onClick={() => redirectToProfile()}
             >
               <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
-                {post.user.profile?.firstname + ' ' + post.user.profile?.lastname}
+                {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
               </Typography>
               <Typography
                 sx={{
@@ -182,7 +176,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   marginLeft: '7px'
                 }}
               >
-                {post.user.profile?.slug}
+                {post.user?.profile?.slug}
               </Typography>
               <Box
                 sx={{

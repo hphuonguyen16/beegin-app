@@ -211,9 +211,10 @@ export default function Register() {
     passwordConfirm: '',
     firstname: '',
     lastname: '',
-    slug: '',
+    slug: '@',
     gender: true
   })
+  console.log(formValues)
   const [formErrors, setFormErrors] = useState<Register>({
     email: true,
     password: true,

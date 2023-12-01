@@ -26,7 +26,8 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import { HomeOutlined, TextsmsOutlined, Person2Outlined, SettingsOutlined, ExploreOutlined } from '@mui/icons-material'
-
+import { QueryClient, QueryClientProvider } from 'react-query'
+import TanstackProvider from '@/providers/TanstackProvider'
 const poppins = Poppins({
   weight: '400',
   subsets: ['latin'],
@@ -103,6 +104,7 @@ export default function RootLayout({ children, session }: { children: React.Reac
   const pathname = usePathname()
   const noLayoutPaths = ['/login', '/register', '/verify']
   const isAdminPath = pathname.startsWith('/admin')
+  const queryClient = new QueryClient()
   if (noLayoutPaths.includes(pathname)) {
     return (
       <html lang='en'>
@@ -114,13 +116,15 @@ export default function RootLayout({ children, session }: { children: React.Reac
         </Head>
         <body className={poppins.variable}>
           <AuthProvider>
-            <SnackbarContextProvider>
-              <SessionProvider session={session}>
-                <PostProvider>
-                  <ThemeProvider>{children}</ThemeProvider>
-                </PostProvider>
-              </SessionProvider>
-            </SnackbarContextProvider>
+            <TanstackProvider>
+              <SnackbarContextProvider>
+                <SessionProvider session={session}>
+                  <PostProvider>
+                    <ThemeProvider>{children}</ThemeProvider>
+                  </PostProvider>
+                </SessionProvider>
+              </SnackbarContextProvider>
+            </TanstackProvider>
           </AuthProvider>
         </body>
       </html>
@@ -136,21 +140,23 @@ export default function RootLayout({ children, session }: { children: React.Reac
         </Head>
         <body className={poppins.variable}>
           <AuthProvider>
-            <SnackbarContextProvider>
-              <SessionProvider session={session}>
-                <PostProvider>
-                  <ThemeProvider>
-                    {isAdminPath ? (
-                      // Use menuAdminItems for admin path
-                      <Layout menuItems={menuAdminItems}>{children}</Layout>
-                    ) : (
-                      // Use menuItems for other paths
-                      <Layout menuItems={menuItems}>{children}</Layout>
-                    )}
-                  </ThemeProvider>
-                </PostProvider>
-              </SessionProvider>
-            </SnackbarContextProvider>
+            <TanstackProvider>
+              <SnackbarContextProvider>
+                <SessionProvider session={session}>
+                  <PostProvider>
+                    <ThemeProvider>
+                      {isAdminPath ? (
+                        // Use menuAdminItems for admin path
+                        <Layout menuItems={menuAdminItems}>{children}</Layout>
+                      ) : (
+                        // Use menuItems for other paths
+                        <Layout menuItems={menuItems}>{children}</Layout>
+                      )}
+                    </ThemeProvider>
+                  </PostProvider>
+                </SessionProvider>
+              </SnackbarContextProvider>
+            </TanstackProvider>
           </AuthProvider>
         </body>
       </html>

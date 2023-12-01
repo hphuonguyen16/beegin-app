@@ -1,5 +1,16 @@
 import React from 'react'
-import { Box, Typography, Stack, List, ListItemAvatar, ListItem, Avatar, ListItemText, IconButton } from '@mui/material'
+import {
+  Box,
+  Typography,
+  Stack,
+  List,
+  ListItemAvatar,
+  ListItem,
+  Avatar,
+  ListItemText,
+  IconButton,
+  CircularProgress
+} from '@mui/material'
 import useResponsive from '@/hooks/useResponsive'
 import { Comment } from '@/types/comment'
 import { timeSince } from '@/utils/changeDate'
@@ -11,27 +22,48 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 interface CommentCardProps {
   comment: Comment
   replyComment: (comment: Comment) => void
-  getReplyComments: (postId: string, commentId: string) => void
 }
 
-const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardProps) => {
+const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [openReply, setOpenReply] = React.useState(false)
   const [commentData, setCommentData] = React.useState<Comment>(comment)
-  const [liked, setLiked] = React.useState(false)
+  const [liked, setLiked] = React.useState(comment.isLiked || false)
   const axiosPrivate = useAxiosPrivate()
+  const [page, setPage] = React.useState(1)
+  const [loading, setLoading] = React.useState(false)
   const handleLike = async () => {
     try {
       if (!liked) {
         setLiked(true)
         comment.numLikes++
+        comment.isLiked = true
         await axiosPrivate.post(UrlConfig.comments.likeComment(comment._id))
       } else {
         setLiked(false)
         comment.numLikes--
+        comment.isLiked = false
         await axiosPrivate.delete(UrlConfig.comments.unlikeComment(comment._id))
       }
     } catch (err) {}
+  }
+  const getReplyComments = async () => {
+    try {
+      setLoading(true)
+      const res = await axiosPrivate.get(
+        `${UrlConfig.comments.getReplyComments(comment.post, comment._id, page)}?limit=5&page=${page}`
+      )
+
+      setCommentData((prevCommentData) => {
+        const childrenArray = prevCommentData?.children || [] // Use an empty array if children is undefined
+        //modify comment children
+        return { ...prevCommentData, children: [...childrenArray, ...res.data.data] }
+      })
+      setPage((prev) => prev + 1)
+      setLoading(false)
+    } catch (err) {
+      // Handle errors
+    }
   }
 
   return (
@@ -147,24 +179,50 @@ const CommentCard = ({ comment, replyComment, getReplyComments }: CommentCardPro
                       cursor: 'pointer'
                     }}
                     onClick={() => {
-                      setOpenReply(!openReply)
                       if (!openReply) {
-                        getReplyComments(comment.post, comment._id)
+                        setOpenReply(true)
+                        if (!commentData.children && !loading) {
+                          getReplyComments()
+                        } else if (commentData?.children?.length === 0 && !loading) {
+                          getReplyComments()
+                        }
                       } else {
-                        getReplyComments('', comment._id)
+                        setOpenReply(false)
                       }
                     }}
                   >
-                    {!openReply ? `____   View replies (${comment.numReplies})` : `____   Hide replies`}
+                    {!openReply
+                      ? `____   View replies (${comment.numReplies})`
+                      : !loading
+                      ? `____   Hide replies`
+                      : `____   View replies (${comment.numReplies})`}
+                    {loading && <CircularProgress size={13} sx={{ marginLeft: '20px' }} />}
                   </Typography>
-                  {comment.children?.map((childComment) => (
-                    <CommentCard
-                      key={childComment._id}
-                      comment={childComment}
-                      replyComment={replyComment}
-                      getReplyComments={getReplyComments}
-                    />
-                  ))}
+                  {openReply && (
+                    <>
+                      {commentData.children?.map((childComment) => (
+                        <CommentCard key={childComment._id} comment={childComment} replyComment={replyComment} />
+                      ))}
+                      {/* {!endOfPage && comment?.children?.length && comment.children.length >= 3 && ( */}
+                      {commentData.children?.length && commentData.numReplies > commentData.children?.length && (
+                        <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '5px' }}>
+                          <Typography
+                            onClick={() => getReplyComments()}
+                            sx={{
+                              color: 'rgba(0, 0, 0, 0.50)',
+                              fontSize: isMobile ? '13px' : '13px',
+                              fontWeight: 600,
+                              wordWrap: 'break-word',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Show more
+                          </Typography>
+                          {loading && <CircularProgress size={13} sx={{ marginLeft: '20px' }} />}
+                        </Stack>
+                      )}
+                    </>
+                  )}
                 </Box>
               )}
             </>
