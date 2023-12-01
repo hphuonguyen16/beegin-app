@@ -12,4 +12,5 @@ export interface Post {
   createdAt: string
   isLiked?: boolean
   parent?: Post
+  comments: Comment[]
 }

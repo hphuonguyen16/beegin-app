@@ -16,6 +16,7 @@ const PostLayout = ({ children }: PostLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
       <Grid
+        id='scrollableDiv'
         sx={{
           width: isMobile ? '100%' : '80%',
           padding: isMobile ? '12px' : '20px',

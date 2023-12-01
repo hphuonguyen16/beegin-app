@@ -20,6 +20,7 @@ import EmojiPicker from '../common/EmojiPicker'
 import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
 import { usePathname } from 'next/navigation'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 interface NewPostProps {
   content: string | ''
@@ -99,7 +100,6 @@ interface CreatePostProps {
 
 const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostProps) => {
   const isMobile = useResponsive('down', 'sm')
-  const { postsState, postsDispatch } = usePosts()
   const { user } = useAuth()
   const [categories, setCategories] = React.useState<Category[]>([])
   const [selectedCategories, setSelectedCategories] = React.useState<Category[]>([])
@@ -108,8 +108,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const [isSuccess, setIsSuccess] = React.useState(false)
   const [isLoad, setIsLoad] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
-  const pathName = usePathname()
   const { setSnack } = useSnackbar()
+  const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
     if (e.target.files && e.target.files.length > 0 && images.length < 4) {
@@ -123,6 +123,57 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const handleDeleteImages = () => {
     setImages([])
   }
+  const createPostMutation = useMutation(
+    (data: NewPostProps) => {
+      return axiosPrivate.post(urlConfig.posts.createPost, {
+        content: data.content,
+        images: data.images,
+        categories: data.categories,
+        parent: repost?._id
+      })
+    },
+    {
+      onSuccess: (data) => {
+        // Invalidates cache and refetch
+        // Add new post to the top of the list
+        queryClient.setQueryData('postsData', (oldData: any) => {
+          const newPosts = [...oldData.pages[0].posts]
+          newPosts.unshift(data.data.data)
+          return {
+            pages: [
+              {
+                posts: newPosts,
+                total: oldData.pages[0].total,
+                prevPage: oldData.pages[0].prevPage
+              }
+            ],
+            pageParams: oldData.pageParams
+          }
+        })
+        setIsLoad(false)
+        setIsSuccess(true)
+        setSnack({
+          open: true,
+          message: 'Create post successfully!',
+          type: 'success'
+        })
+        setTimeout(() => {
+          setContent('')
+          setImages([])
+          setIsSuccess(false)
+          setOpen(false)
+        }, 1000)
+      },
+      onError: (error) => {
+        setIsLoad(false)
+        setSnack({
+          open: true,
+          message: 'Create post failed!',
+          type: 'error'
+        })
+      }
+    }
+  )
   const createPost = async () => {
     if (!content && images.length === 0 && !repost) {
       setSnack({
@@ -134,34 +185,17 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    const response = await axiosPrivate.post(urlConfig.posts.createPost, {
+    // const response = await axiosPrivate.post(urlConfig.posts.createPost, {
+    //   content: content,
+    //   images: uploadedUrls,
+    //   categories: selectedCategories.map((item) => item._id),
+    //   parent: repost?._id
+    // })
+    createPostMutation.mutate({
       content: content,
       images: uploadedUrls,
-      categories: selectedCategories.map((item) => item._id),
-      parent: repost?._id
+      categories: selectedCategories.map((item) => item._id)
     })
-    if (response.data.status === 'success') {
-      pathName === '/' && postsDispatch({ type: 'ADD_POST', payload: response.data.data })
-      setIsLoad(false)
-      setIsSuccess(true)
-      setSnack({
-        open: true,
-        message: 'Create post successfully!',
-        type: 'success'
-      })
-      setTimeout(() => {
-        setContent('')
-        setImages([])
-        setIsSuccess(false)
-        setOpen(false)
-      }, 1000)
-    } else {
-      setSnack({
-        open: true,
-        message: 'Create post failed!',
-        type: 'error'
-      })
-    }
   }
 
   React.useEffect(() => {
