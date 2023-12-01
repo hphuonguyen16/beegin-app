@@ -64,7 +64,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
 
     return (
         <>
-            {< Loader />}
+            {friends.length == 0 && < Loader />}
             <Stack direction={"row"} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
                 <Typography variant='h4'>Chats</Typography>
             </Stack>
@@ -73,7 +73,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
                     {friends.map(friend => (<Avatar img={friend.friend.avatar} online={onlineUserIds.includes(friend.friend.user)} />))}
                 </Stack>
             </Scrollbar>
-            <Scrollbar sx={{height: "82%", paddingBottom: "10px"}}>
+            <Scrollbar sx={{ height: "82%", paddingBottom: "10px" }}>
                 <Box>
                     {friends.map((friend, index) => (
                         <Card sx={{

@@ -326,6 +326,11 @@ export default function Register() {
                   <ArrowBack></ArrowBack>
                 </IconButton>
               </Link>
+              <Link href="/login">
+                <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
+                  <ArrowBack></ArrowBack>
+                </IconButton>
+              </Link>
               <StyledContent>
                 <Box>
                   <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
