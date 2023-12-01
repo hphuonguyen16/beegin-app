@@ -1,10 +1,12 @@
 'use client'
 
-import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem, IconButton } from '@mui/material'
-import { Edit, Delete } from '@mui/icons-material'
-import { useState, ChangeEvent } from 'react'
+import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem, IconButton, FormControlLabel, Checkbox, ToggleButton, Button } from '@mui/material'
+import { Edit, Delete, Favorite, FavoriteBorder } from '@mui/icons-material'
+import { useState, ChangeEvent, useEffect } from 'react'
 import { Register } from '@/types/register'
 import ImageCropper from '@/components/common/ImageCropper'
+import UrlConfig from '@/config/urlConfig'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 interface RegisterFormsProps {
   step: number
@@ -42,6 +44,40 @@ const RegisterForms = ({
       ...formErrors,
       [name]: value.length > 0 ? true : false
     })
+  }
+  const axiosPrivate = useAxiosPrivate()
+
+  const [topics, setTopics] = useState<any>([]);
+  const getTopics = async () => {
+    try {
+      let response = await axiosPrivate.get(`${UrlConfig.categories.getCategories}`)
+      setTopics(response.data.data.data.map((topic: any) => { return { ...topic, isChecked: false } }))
+    } catch (err) { }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getTopics();
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const [selected, setSelected] = useState(false);
+
+  const handleCheckboxTick = (topic: any, index: number) => {
+    var changedTopics = [...topics];
+    changedTopics[index].isChecked = !changedTopics[index].isChecked;
+    setTopics(changedTopics)
+
+    if (formValues.preferences.includes(topic._id)) {
+      setFormValues({ ...formValues, ["preferences"]: formValues.preferences.splice(formValues.preferences.indexOf(topic._id), 1) });
+    } else {
+      setFormValues({ ...formValues, ["preferences"]: [...formValues.preferences, topic._id] });
+    }
   }
 
   return (
@@ -204,39 +240,11 @@ const RegisterForms = ({
         </Stack>
       </FormGroup>
       <FormGroup sx={{ display: step === 3 ? '' : 'none' }}>
-        <Stack spacing={3} className='w-full px-5'>
-          <TextField
-            error={!formErrors.email}
-            id='email'
-            name='email'
-            label='Email'
-            value={formValues.email}
-            helperText={!formErrors.email && 'Please fill in your email'}
-            onChange={handleTextFieldChange}
-          />
-          <TextField
-            error={!formErrors.password}
-            id='password'
-            name='password'
-            type='password'
-            label='Password'
-            value={formValues.password}
-            helperText={!formErrors.password && 'Please fill in your password'}
-            onChange={handleTextFieldChange}
-          />
-          <TextField
-            error={!formErrors.passwordConfirm}
-            id='password'
-            name='passwordConfirm'
-            type='password'
-            label='Confirm Password'
-            value={formValues.passwordConfirm}
-            helperText={!formErrors.passwordConfirm && 'Please confirm your password'}
-            onChange={handleTextFieldChange}
-          />
-        </Stack>
+        <Box className='w-full px-5 text-center'>
+          {topics.map((topic: any, index: number) => <Button sx={{ margin: "15px 0 0 15px", display: 'inline-block' }} variant={topic.isChecked ? "contained" : "outlined"} onClick={() => handleCheckboxTick(topic, index)}>{topic.name}</Button>)}
+        </Box>
       </FormGroup>
-    </form>
+    </form >
   )
 }
 

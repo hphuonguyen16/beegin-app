@@ -64,7 +64,7 @@ const ChatList = ({ setSelectedFriend, onlineUserIds }: { setSelectedFriend: any
 
     return (
         <>
-            {friends.length === 0 && < Loader />}
+            {< Loader />}
             <Stack direction={"row"} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
                 <Typography variant='h4'>Chats</Typography>
             </Stack>

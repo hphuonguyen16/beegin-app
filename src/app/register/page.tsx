@@ -215,7 +215,8 @@ export default function Register() {
     firstname: '',
     lastname: '',
     slug: '',
-    gender: true
+    gender: true,
+    preferences: []
   })
   const [formErrors, setFormErrors] = useState<Register>({
     email: true,
@@ -271,7 +272,7 @@ export default function Register() {
   }
   const mdUp = useResponsive('up', 'md')
 
-  const [activeStep, setActiveStep] = useState(2)
+  const [activeStep, setActiveStep] = useState(0)
   const isLastStep = activeStep === steps.length - 1
 
   function _sleep(ms: number) {
