@@ -21,7 +21,7 @@ import urlConfig from '@/config/urlConfig'
 import CreatePost from '@/components/Posts/CreatePost'
 import { useAuth } from '@/context/AuthContext'
 import { usePathname, useRouter } from 'next/navigation'
-import { useQuery, useInfiniteQuery } from 'react-query'
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 
@@ -70,13 +70,15 @@ export default function Home() {
   const { data, fetchNextPage, hasNextPage, status, isFetching } = useInfiniteQuery({
     queryKey: ['postsData'],
     queryFn: fetchPosts,
+    initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage?.prevPage === undefined) return false
+      if (lastPage?.prevPage === undefined) return undefined
       if (lastPage?.prevPage * 5 > lastPage?.total) {
-        return false
+        return undefined
       }
       return lastPage?.prevPage + 1
     },
+
     staleTime: 1000 * 60 * 10 // 10 minutes
   })
   const postsData = data?.pages?.reduce<Post[]>((acc, page) => {

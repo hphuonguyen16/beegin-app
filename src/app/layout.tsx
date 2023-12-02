@@ -26,7 +26,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import { HomeOutlined, TextsmsOutlined, Person2Outlined, SettingsOutlined, ExploreOutlined } from '@mui/icons-material'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import TanstackProvider from '@/providers/TanstackProvider'
 const poppins = Poppins({
   weight: '400',

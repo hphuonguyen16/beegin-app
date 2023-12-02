@@ -20,7 +20,8 @@ import EmojiPicker from '../common/EmojiPicker'
 import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
 import { usePathname } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
 
 interface NewPostProps {
   content: string | ''
@@ -123,48 +124,47 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const handleDeleteImages = () => {
     setImages([])
   }
-  const createPostMutation = useMutation(
-    (data: NewPostProps) => {
-      return axiosPrivate.post(urlConfig.posts.createPost, {
-        content: data.content,
-        images: data.images,
-        categories: data.categories,
-        parent: repost?._id
+  const addPostApi = async (data: NewPostProps) => {
+    const response = await axiosPrivate.post(urlConfig.posts.createPost, {
+      content: data.content,
+      images: data.images,
+      categories: data.categories
+    })
+    return response.data.data
+  }
+  const createPostMutation = useMutation({
+    mutationFn: addPostApi,
+    onSuccess: (data: any) => {
+      // Invalidates cache and refetch
+      // Add new post to the top of the list
+      queryClient.setQueryData(['postsData'], (oldData: any) => {
+        const newPosts = [...oldData.pages[0].posts]
+        newPosts.unshift(data.data.data)
+        return {
+          pages: [
+            {
+              posts: newPosts,
+              total: oldData.pages[0].total,
+              prevPage: oldData.pages[0].prevPage
+            }
+          ],
+          pageParams: oldData.pageParams
+        }
       })
-    },
-    {
-      onSuccess: (data) => {
-        // Invalidates cache and refetch
-        // Add new post to the top of the list
-        queryClient.setQueryData('postsData', (oldData: any) => {
-          const newPosts = [...oldData.pages[0].posts]
-          newPosts.unshift(data.data.data)
-          return {
-            pages: [
-              {
-                posts: newPosts,
-                total: oldData.pages[0].total,
-                prevPage: oldData.pages[0].prevPage
-              }
-            ],
-            pageParams: oldData.pageParams
-          }
-        })
-        setIsLoad(false)
-        setIsSuccess(true)
-        setSnack({
-          open: true,
-          message: 'Create post successfully!',
-          type: 'success'
-        })
-        setTimeout(() => {
-          setContent('')
-          setImages([])
-          setIsSuccess(false)
-          setOpen(false)
-        }, 1000)
-      },
-      onError: (error) => {
+      setIsLoad(false)
+      setIsSuccess(true)
+      setSnack({
+        open: true,
+        message: 'Create post successfully!',
+        type: 'success'
+      })
+      setTimeout(() => {
+        setContent('')
+        setImages([])
+        setIsSuccess(false)
+        setOpen(false)
+      }, 1000)
+      onError: (error: any) => {
         setIsLoad(false)
         setSnack({
           open: true,
@@ -173,7 +173,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         })
       }
     }
-  )
+  })
   const createPost = async () => {
     if (!content && images.length === 0 && !repost) {
       setSnack({
