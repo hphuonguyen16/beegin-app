@@ -5,7 +5,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import TrendingCard from './TrendingCard'
 import TrendingPostCard from './TrendingPostCard'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 export default function TrendingPostList() {
   // const [categoryPosts, setCategoryPost] = useState<TrendingCategoryPost[]>([])
