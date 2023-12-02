@@ -128,18 +128,20 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     const response = await axiosPrivate.post(urlConfig.posts.createPost, {
       content: data.content,
       images: data.images,
-      categories: data.categories
+      categories: data.categories,
+      parent: repost?._id
     })
     return response.data.data
   }
   const createPostMutation = useMutation({
     mutationFn: addPostApi,
-    onSuccess: (data: any) => {
+    onSuccess: (data: NewPostProps) => {
       // Invalidates cache and refetch
       // Add new post to the top of the list
+      console.log(data)
       queryClient.setQueryData(['postsData'], (oldData: any) => {
         const newPosts = [...oldData.pages[0].posts]
-        newPosts.unshift(data.data.data)
+        newPosts.unshift(data)
         return {
           pages: [
             {
@@ -164,14 +166,14 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         setIsSuccess(false)
         setOpen(false)
       }, 1000)
-      onError: (error: any) => {
-        setIsLoad(false)
-        setSnack({
-          open: true,
-          message: 'Create post failed!',
-          type: 'error'
-        })
-      }
+    },
+    onError: (error: any) => {
+      setIsLoad(false)
+      setSnack({
+        open: true,
+        message: 'Create post failed!',
+        type: 'error'
+      })
     }
   })
   const createPost = async () => {

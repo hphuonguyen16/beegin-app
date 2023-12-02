@@ -45,7 +45,7 @@ const menuItems = [
     icon: <HomeOutlined />,
     iconActive: <HomeRoundedIcon />,
     label: 'Home',
-    path: '/'
+    path: '/home'
   },
   {
     icon: <ExploreOutlined />,

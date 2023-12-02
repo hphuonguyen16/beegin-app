@@ -21,7 +21,7 @@ export default function Home() {
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
   const { user } = useAuth()
-  async function fetchPosts({ pageParam = 1 }) {
+  async function fetchPosts({ pageParam }: { pageParam?: number }) {
     try {
       // Fetch posts
       const response = await axios.get(`${urlConfig.posts.getPosts}?limit=5&page=${pageParam}`)
@@ -30,7 +30,7 @@ export default function Home() {
 
       posts = posts.map(async (post: Post) => {
         const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
-        const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=10`)
+        const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=5`)
         const comments = commentResponse.data.data as Comment[]
         const isLiked = likeResponse.data.data
         return {

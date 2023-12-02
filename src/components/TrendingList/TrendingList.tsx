@@ -29,7 +29,7 @@ export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
     isLoading,
     status
   } = useQuery<TrendingHashtag[]>({
-    queryKey: ['todos', 1],
+    queryKey: ['trendingHashtags'],
     queryFn: fetchData,
     staleTime: 1000 * 60 * 5 // 5 minutes
   })
