@@ -1,14 +1,15 @@
 'use client'
 
 import useResponsive from '@/hooks/useResponsive'
-import { Grid, Box, styled } from '@mui/material'
+import { Grid, Box, Card, Typography, styled } from '@mui/material'
 import ChatList from './ChatList'
 import ChatBox from './ChatBox'
 import React, { useEffect, useState } from 'react'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import Profile from '@/types/profile'
 import CustomSnackbar from '@/components/common/Snackbar'
-import socketFunctions from '@/utils/socket';
+import socketFunctions from '@/utils/socket'; import Image from 'next/image'
+import NoFriendImg from "@/assets/no_friends.jpg";
 
 const StyledBox = styled('div')(({ theme }) => ({
   width: '100%',
@@ -22,7 +23,8 @@ const INFO_PANE_WIDTH = "30%";
 
 export default function Page() {
   const isMobile = useResponsive('down', 'sm');
-  const [selectedFriend, setSelectedFriend] = useState<Profile>()
+  const [hasFriends, setHasFriends] = useState<boolean | null>(null);
+  const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null)
   const axiosPrivate = useAxiosPrivate()
 
 
@@ -33,18 +35,31 @@ export default function Page() {
 
   return <Box sx={{ width: "100%", height: "100%" }}>
     <Grid sx={{ width: "100%", height: "100%" }} container spacing={3}>
-      <Grid item xs={4} sx={{ height: "100%" }}>
-        <StyledBox>
-          <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} />
-        </StyledBox>
-      </Grid>
+      {hasFriends == false ?
+        <Grid item xs={12} sx={{ height: "100%" }}>
+          <Card className="flex flex-col justify-center items-center" sx={{height: "95%"}}>
+            <Image src={NoFriendImg} alt="" height={400} />
+            <Typography variant="h1">Boohoo.</Typography>
+            <Typography variant="h2">You don't have any friends yet</Typography>
+            <Typography variant='h3'>Beefriend others now by following people you know!</Typography>
+            <Typography variant='h6'>(and tell them to follow you back too)</Typography>
+          </Card>
+        </Grid>
+        : <><Grid item xs={4} sx={{ height: "100%" }}>
+          <StyledBox>
+            <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} setHasFriends={setHasFriends} />
+          </StyledBox>
+        </Grid>
 
-      <Grid item xs={8} sx={{ height: "100%" }}>
-        <StyledBox sx={{ padding: 0, position: 'relative' }}>
-          <ChatBox friend={selectedFriend} onlineUserIds={onlineUserIds} />
-        </StyledBox>
-      </Grid>
+          <Grid item xs={8} sx={{ height: "100%" }}>
+            <StyledBox sx={{ padding: 0, position: 'relative' }}>
+              <ChatBox friend={selectedFriend} onlineUserIds={onlineUserIds} />
+            </StyledBox>
+          </Grid>
+        </>
+      }
     </Grid>
+
     <CustomSnackbar />
   </Box>
 }

@@ -25,7 +25,7 @@ export default function SearchTextbox() {
           '& .MuiInputBase-root': {
             height: '50px'
           },
-          background: 'white',
+          background: 'transparent',
           borderRadius: '10px'
           // marginBottom: '15px'
         }}
