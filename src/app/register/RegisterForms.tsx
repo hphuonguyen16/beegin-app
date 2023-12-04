@@ -152,7 +152,7 @@ const RegisterForms = ({
               labelId='demo-simple-select-label'
               id='demo-simple-select'
               value={formValues.gender === true ? 1 : 0}
-              label='Age'
+              label='Gender'
               onChange={(e) => setFormValues({ ...formValues, gender: e.target.value === 1 ? true : false })}
             >
               <MenuItem value={1}>Male</MenuItem>

@@ -4,9 +4,16 @@ import './Loader.css'
 
 const Loader = () => {
   return (
-    <div className='loader-container'>
-      <div className='ball'></div>
-      <div className='shadow'></div>
+    <div id="background">
+      <div id="bee-container">
+        <div id="bee">
+          <div className="leg" id="right"></div>
+          <div id="body">
+            <div id="face"></div>
+          </div>
+          <div className="leg" id="left"></div>
+        </div>
+      </div>
     </div>
   )
 }

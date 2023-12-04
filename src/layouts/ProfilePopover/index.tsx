@@ -61,6 +61,14 @@ const StyledIconBox = styled('div')(({ theme }) => ({
 	boxShadow: '-7px 10px 21px 1px rgba(204.44, 128.17, 240.32, 0.30)'
 }))
 
+const StyledMenuItem = styled(MenuItem)(({theme}) => ({
+	width: "100%", 
+	borderRadius: "6px",
+	margin: "2px 0",
+	padding: "10px 15px",
+	minWidth: "220px"
+}))
+
 const LANGS = [
 	{
 		value: "vi",
@@ -85,7 +93,6 @@ const ProfilePopover = () => {
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleClick = (event: any) => {
-		console.log("ttt")
 		setAnchorEl(event.currentTarget);
 	};
 
@@ -96,7 +103,6 @@ const ProfilePopover = () => {
 	const open = Boolean(anchorEl);
 
 	const signOutFn = () => {
-		console.log("sign out")
 		localStorage.clear();
 		router.push('/login')
 	}
@@ -114,11 +120,8 @@ const ProfilePopover = () => {
 	};
 
 	const handleLangClick = async (lang: any) => {
-		// handleSlideToParent();
 		await setLanguage(lang);
 	};
-
-	const underBreakPointsSm = true;
 
 	return (
 		<div>
@@ -131,7 +134,7 @@ const ProfilePopover = () => {
 					<Person2RoundedIcon />
 				</StyledIconBox>
 			</Button>
-			<Menu open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ "& .MuiList-root": { height: parent ? "132px" : "235px", overflow: "hidden", transition: "0.2s all ease-in-out" } }}>
+			<Menu open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ "& .MuiList-root": { height: parent ? "150px" : "250px", overflow: "hidden", transition: "0.2s all ease-in-out" } }}>
 				<Paper
 					sx={{ display: "flex", }}
 					ref={containerRef}
@@ -146,18 +149,18 @@ const ProfilePopover = () => {
 							<Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "10px" }}>
 								<IconButton
 									onClick={handleSlideToParent}
-									sx={{ display: "block", padding: "0 10px" }}
+									sx={{ display: "block", padding: "0 10px", marginRight: "5px" }}
 								>
 									<ArrowBackIosNew sx={{ fontSize: " 15px" }} />
 								</IconButton>
-								<ListItemText>Language</ListItemText>
+								<ListItemText sx={{marginTop: "6.5px"}}>Language</ListItemText>
 							</Box>
 							<Stack sx={{ p: "8px" }}>
 								{LANGS.map((option) => (
-									<MenuItem key={option.value} selected={option.value === lang} onClick={() => handleLangClick(option.value)} sx={{ width: "100%", borderRadius: "6px", marginBottom: "6px" }}>
+									<StyledMenuItem key={option.value} selected={option.value === lang} onClick={() => handleLangClick(option.value)}>
 										<Box component="img" alt={option.label} src={option.icon} sx={{ width: 28, mr: 2 }} />
 										<ListItemText>{t("common:" + option.label)}</ListItemText>
-									</MenuItem>
+									</StyledMenuItem>
 								))}
 							</Stack>
 						</Paper>
@@ -169,7 +172,7 @@ const ProfilePopover = () => {
 						container={containerRef.current}
 					>
 						<Paper>
-							<MenuItem sx={{ pointerEvents: "none", marginBottom: "8px", paddingTop: "15px" }}>
+							<StyledMenuItem sx={{ pointerEvents: "none" }}>
 								<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "5px" }}>
 									<Avatar src={user?.profile.avatar} alt="photoURL" />
 									<Box sx={{ ml: 1.5 }}>
@@ -182,26 +185,26 @@ const ProfilePopover = () => {
 										</Typography>
 									</Box>
 								</Box>
-							</MenuItem>
+							</StyledMenuItem>
 
 							<Divider sx={{ m: "0 !important" }} />
 
 							<Stack sx={{ p: "8px" }}>
 								<Link href="/profile">
-									<MenuItem onClick={() => handleClose()} sx={{ width: "100%", borderRadius: "6px", marginBottom: "5px" }}>
+									<StyledMenuItem onClick={() => handleClose()}>
 										<ListItemIcon sx={{ alignItems: "center" }}>
 											<AccountCircle fontSize="small" />
 										</ListItemIcon>
 										<ListItemText>{t("common:ManageProfile")}</ListItemText>
-									</MenuItem>
+									</StyledMenuItem>
 								</Link>
-								<MenuItem onClick={handleSlideToChild("language")} sx={{ width: "100%", borderRadius: "6px", marginBottom: "5px" }}>
+								<StyledMenuItem onClick={handleSlideToChild("language")} >
 									<ListItemIcon sx={{ alignItems: "center" }}>
 										<GTranslate fontSize="small" />
 									</ListItemIcon>
 									<ListItemText>{t("common:Language")}</ListItemText>
 									<ArrowForwardIos sx={{ fontSize: "13px" }} />
-								</MenuItem>
+								</StyledMenuItem>
 								{/* <Link href="/identity/security_log">
 									<MenuItem onClick={() => handleClose()} sx={{ width: "100%", borderRadius: "6px", marginBottom: "5px" }}>
 										<ListItemIcon sx={{ alignItems: "center" }}>
@@ -215,12 +218,12 @@ const ProfilePopover = () => {
 							<Divider sx={{ m: "0px 0" }} />
 
 							<Stack sx={{ p: "8px" }}>
-								<MenuItem onClick={signOutFn} sx={{ width: "100%", borderRadius: "6px" }}>
+								<StyledMenuItem onClick={signOutFn}>
 									<ListItemIcon sx={{ color: "#FF4842" }}>
 										<Logout fontSize="small" />
 									</ListItemIcon>
 									<ListItemText sx={{ "& span": { color: "#FF4842 !important" } }}>{t("common:SignOut")}</ListItemText>
-								</MenuItem>
+								</StyledMenuItem>
 							</Stack>
 						</Paper>
 					</Slide>
