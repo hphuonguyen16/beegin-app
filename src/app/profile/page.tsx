@@ -14,6 +14,7 @@ import PostCard from '../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import Scrollbar from '@/components/common/Scrollbar'
+import DefaultBackground from "@/assets/default_background.jpg"
 // hooks
 
 import React, { useEffect, useState } from 'react'
@@ -146,11 +147,11 @@ function page() {
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
             <Image
-              src={data.background}
+              src={data.background ?? DefaultBackground}
               alt='Background'
               width={720} // Provide the width
               height={280} // Provide the height
-              style={{ width: '100%', height: '280px', borderRadius: '10px' }}
+              style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: "cover" }}
             />
             <Button
               variant={'outlined'}

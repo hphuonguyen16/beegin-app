@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 
 const CustomPopover = ({ open, anchorEl, onClose, children, padding, minWidth }) => {
 	const StyledRoot = styled(Box)(({ theme }) => ({
-		...bgBlur({ color: theme.palette.background.paper, opacity: 0.7, backgroundGradient: true }),
+		...bgBlur({ color: theme.palette.background.paper, opacity: 0.8, backgroundGradient: true }),
 		boxShadow: "none",
 		// paddingTop: "10px",
 		padding: padding ? `${padding}px` : 0,
