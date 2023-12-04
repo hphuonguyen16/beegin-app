@@ -40,6 +40,7 @@ export default function ListItemButton(theme: CustomTheme) {
 		},
 		MuiListItemText: {
 			styleOverrides: {
+				root: { "& .MuiTypography-root": { lineHeight: 1 } },
 				primary: {
 					color: theme.palette.text.primary,
 				},
