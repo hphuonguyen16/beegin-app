@@ -56,7 +56,7 @@ export default function ButtonFollow(props: any) {
         width: '100px',
         borderRadius: '18px',
         position: 'absolute',
-        right: '20px',
+        right: '10px',
         top: '19%',
         backgroundColor: follow ? 'white !important' : 'initial'
       }}
