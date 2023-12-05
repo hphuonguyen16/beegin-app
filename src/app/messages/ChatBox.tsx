@@ -269,7 +269,7 @@ const ChatBox = ({ friend, onlineUserIds }: { friend: any, onlineUserIds: string
                                                                 backgroundColor: isMyText ? (theme) => theme.palette.primary.main : "#fff",
                                                                 color: isMyText ? '#fff' : (theme) => theme.palette.primary.main
                                                             }}>
-                                                                <Typography className="font-sans break-all">{message.content}</Typography>
+                                                                <Typography className="font-sans">{message.content}</Typography>
                                                             </Paper> :
                                                             <Image src={message.content} alt="" width={200} height={300} className='shadow-md rounded-lg mb-[14px]' />
                                                         }

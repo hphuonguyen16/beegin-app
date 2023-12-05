@@ -21,6 +21,20 @@ import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
 import ProfilePopover from './ProfilePopover'
 import SearchTextbox from './SearchTextbox/SearchTextbox'
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded'
+import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import FaceRoundedIcon from '@mui/icons-material/FaceRounded'
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import {
+  HomeOutlined,
+  TextsmsOutlined,
+  Person2Outlined,
+  SettingsOutlined,
+  FaceOutlined,
+  ExploreOutlined
+} from '@mui/icons-material'
 
 // ----------------------------------------------------------------------
 
@@ -123,6 +137,38 @@ interface LayoutProps {
   children: ReactNode
   menuItems: any
 }
+const menuItems = [
+  {
+    icon: <HomeOutlined />,
+    iconActive: <HomeRoundedIcon />,
+    label: 'Home',
+    path: '/'
+  },
+  {
+    icon: <ExploreOutlined />,
+    iconActive: <ExploreRoundedIcon />,
+    label: 'Explore',
+    path: '/explore'
+  },
+  {
+    icon: <TextsmsOutlined />,
+    iconActive: <TextsmsRoundedIcon />,
+    label: 'Messages',
+    path: '/messages'
+  },
+  {
+    icon: <Person2Outlined />,
+    iconActive: <Person2RoundedIcon />,
+    label: 'Profile',
+    path: '/profile'
+  },
+  {
+    icon: <SettingsOutlined />,
+    iconActive: <SettingsRoundedIcon />,
+    label: 'Settings',
+    path: '/settings'
+  }
+]
 
 const Layout = ({ children, menuItems }: LayoutProps) => {
   const isMobile = useResponsive('down', 'sm')

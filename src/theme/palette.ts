@@ -29,7 +29,7 @@ const SECONDARY = {
   lighter: '#D6E4FF',
   light: '#84A9FF',
   main: '#CC80F0',
-  dark: '#942cc5',
+  dark: '#1939B7',
   darker: '#091A7A',
   contrastText: '#fff'
 }
@@ -91,7 +91,6 @@ const palette = {
   grey: GREY,
   reminder: REMINDER,
   divider: alpha(GREY[500], 0.24),
-  disabled: '#e4dee7',
   text: {
     primary: GREY[700],
     secondary: GREY[600],

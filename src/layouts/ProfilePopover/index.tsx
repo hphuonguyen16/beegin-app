@@ -18,7 +18,7 @@ import {
 	Slide,
 	Menu,
 } from "@mui/material";
-import { LockResetOutlined, Logout, PersonOutline, SensorOccupiedOutlined, ArrowBackIosNew, GTranslate, AccountCircle, ArrowForwardIos, Settings } from "@mui/icons-material";
+import { LockResetOutlined, Logout, PersonOutline, SensorOccupiedOutlined, ArrowBackIosNew, GTranslate, AccountCircle, ArrowForwardIos } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
@@ -61,8 +61,8 @@ const StyledIconBox = styled('div')(({ theme }) => ({
 	boxShadow: '-7px 10px 21px 1px rgba(204.44, 128.17, 240.32, 0.30)'
 }))
 
-const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
-	width: "100%",
+const StyledMenuItem = styled(MenuItem)(({theme}) => ({
+	width: "100%", 
 	borderRadius: "6px",
 	margin: "2px 0",
 	padding: "10px 15px",
@@ -134,7 +134,7 @@ const ProfilePopover = () => {
 					<Person2RoundedIcon />
 				</StyledIconBox>
 			</Button>
-			<Menu open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ "& .MuiList-root": { height: parent ? "150px" : "295px", overflow: "hidden", transition: "0.2s all ease-in-out" } }}>
+			<Menu open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ "& .MuiList-root": { height: parent ? "150px" : "250px", overflow: "hidden", transition: "0.2s all ease-in-out" } }}>
 				<Paper
 					sx={{ display: "flex", }}
 					ref={containerRef}
@@ -153,7 +153,7 @@ const ProfilePopover = () => {
 								>
 									<ArrowBackIosNew sx={{ fontSize: " 15px" }} />
 								</IconButton>
-								<ListItemText sx={{ marginTop: "6.5px" }}>Language</ListItemText>
+								<ListItemText sx={{marginTop: "6.5px"}}>Language</ListItemText>
 							</Box>
 							<Stack sx={{ p: "8px" }}>
 								{LANGS.map((option) => (
@@ -205,14 +205,14 @@ const ProfilePopover = () => {
 									<ListItemText>{t("common:Language")}</ListItemText>
 									<ArrowForwardIos sx={{ fontSize: "13px" }} />
 								</StyledMenuItem>
-								<Link href="/settings">
-								<StyledMenuItem onClick={handleClose} >
-									<ListItemIcon sx={{ alignItems: "center" }}>
-										<Settings fontSize="small" />
-									</ListItemIcon>
-									<ListItemText>{t("common:Settings")}</ListItemText>
-								</StyledMenuItem>
-								</Link>
+								{/* <Link href="/identity/security_log">
+									<MenuItem onClick={() => handleClose()} sx={{ width: "100%", borderRadius: "6px", marginBottom: "5px" }}>
+										<ListItemIcon sx={{ alignItems: "center" }}>
+											<LockResetOutlined fontSize="small" />
+										</ListItemIcon>
+										<ListItemText>{t("common:SecurityLogs")}</ListItemText>
+									</MenuItem>
+								</Link> */}
 							</Stack>
 
 							<Divider sx={{ m: "0px 0" }} />
