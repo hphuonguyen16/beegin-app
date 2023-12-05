@@ -60,14 +60,15 @@ const ModalComponent = (props: ModalProps) => {
     slug: '',
     birthday: dayjs(new Date()) as Dayjs | null
   })
+  const [firstnameError, setFirstnameError] = useState(false)
+  const [lastnameError, setLastnameError] = useState(false)
+  const [slugError, setSlugError] = useState(false)
 
   const editBackground = (imageUrl: string) => {
     setFormValues({ ...formValues, background: imageUrl })
-    console.log('background', formValues.avatar)
   }
   const editAvatar = (imageUrl: string) => {
     setFormValues({ ...formValues, avatar: imageUrl })
-    console.log('avatar', formValues.avatar)
   }
   useEffect(() => {
     if (data) {
@@ -83,8 +84,21 @@ const ModalComponent = (props: ModalProps) => {
         slug: data.slug
       })
     }
+    setFirstnameError(false)
+    setLastnameError(false)
+    setSlugError(false)
   }, [data])
   const updateProfile = async () => {
+    const hasFirstnameError = formValues.firstname.trim() === ''
+    const hasLastnameError = formValues.lastname.trim() === ''
+    const hasSlugError = formValues.slug.trim() === ''
+
+    setFirstnameError(hasFirstnameError)
+    setLastnameError(hasLastnameError)
+    setSlugError(hasSlugError)
+    if (hasFirstnameError || hasLastnameError || hasSlugError) {
+      return
+    }
     try {
       const url = UrlConfig.me.updateProfile
       const updatedData = {
@@ -101,6 +115,13 @@ const ModalComponent = (props: ModalProps) => {
       ...formValues,
       [name]: value
     })
+    if (name === 'firstname') {
+      setFirstnameError(value.trim() === '')
+    } else if (name === 'lastname') {
+      setLastnameError(value.trim() === '')
+    } else if (name === 'slug') {
+      setSlugError(value.trim() === '')
+    }
   }
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-title' aria-describedby='modal-description'>
@@ -133,9 +154,9 @@ const ModalComponent = (props: ModalProps) => {
             overflow: 'hidden'
           }}
         >
-           <EditAvatar editAvatar={editAvatar} />
+          <EditAvatar editAvatar={editAvatar} />
         </Box>
-        <Box marginTop={'-30px'}>
+        <Box marginTop={'-65px'}>
           <Grid container>
             <Grid item xs={12} md={6} marginTop={3} marginRight={5}>
               <TextField
@@ -145,6 +166,8 @@ const ModalComponent = (props: ModalProps) => {
                 name='firstname'
                 value={formValues.firstname}
                 onChange={handleInputChange}
+                error={firstnameError}
+                helperText={firstnameError ? 'First Name cannot be empty' : ''}
               />
             </Grid>
             <Grid item xs={12} md={5} marginTop={3}>
@@ -155,6 +178,8 @@ const ModalComponent = (props: ModalProps) => {
                 name='lastname'
                 value={formValues.lastname}
                 onChange={handleInputChange}
+                error={lastnameError}
+                helperText={lastnameError ? 'Last Name cannot be empty' : ''}
               />
             </Grid>
           </Grid>
@@ -177,6 +202,8 @@ const ModalComponent = (props: ModalProps) => {
                 variant='outlined'
                 value={formValues.slug}
                 onChange={handleInputChange}
+                error={slugError}
+                helperText={slugError ? 'Slug cannot be empty' : ''}
               />
             </Grid>
           </Grid>
@@ -209,7 +236,7 @@ const ModalComponent = (props: ModalProps) => {
               id='outlined-multiline-static'
               label='Bio'
               multiline
-              rows={4}
+              rows={3}
               style={{ width: '100%' }}
               value={formValues.bio}
               name='bio'
@@ -223,7 +250,7 @@ const ModalComponent = (props: ModalProps) => {
               variant={'outlined'}
               sx={{
                 margin: '20px 0',
-                marginLeft:'130px',
+                marginLeft: '130px',
                 width: '100px',
                 backgroundColor: 'white !important',
                 boxShadow: 'none'
@@ -239,7 +266,7 @@ const ModalComponent = (props: ModalProps) => {
               sx={{
                 margin: '20px auto',
                 width: '100px',
-                marginLeft:'20px',
+                marginLeft: '20px',
                 backgroundColor: '#E078D8 !important',
                 color: 'white',
                 border: 'none'
