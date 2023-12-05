@@ -60,7 +60,7 @@
     "eslint-config-next": "latest",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "next-translate-plugin": "^2.6.1",
+    "next-translate-plugin": "^2.6.2",
     "postcss": "latest",
     "prettier": "^3.0.3",
     "tailwindcss": "latest",
