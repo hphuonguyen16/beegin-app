@@ -5,17 +5,18 @@ const AvatarCard = ({ name, subtitle, avatar, vertical = false }: { name: string
     const isMobile = useResponsive('down', 'sm')
 
     return <Stack direction={vertical ? "column" : "row"} alignItems={"center"}>
-        {avatar ? <Avatar
-            sx={{ width: vertical ? '60px' : '45px', height: vertical ? '60px' : '45px', borderRadius: "50%" }}
-            src={avatar} />
+        {avatar !== null ?
+            <Avatar sx={{ width: vertical ? '60px' : '45px', height: vertical ? '60px' : '45px', borderRadius: "50%" }} src={avatar} />
             : <Skeleton variant="circular" width={40} height={40} />}
         <Stack sx={{ justifyContent: "center", paddingLeft: vertical ? '0' : '15px', alignItems: vertical ? "center" : "normal" }}>
-            {name !== "undefined undefined" ? <Typography component="div" variant="h4" sx={{ marginY: vertical ? "10px" : 0 }}>
-                {name}
-            </Typography> : <Skeleton width={300} />}
-            {subtitle ? <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ lineHeight: 1, padding: vertical ? "0 20px" : 0, textAlign: vertical ? "center" : "initial" }}>
-                {subtitle}
-            </Typography> :  <Skeleton width={100} />
+            {name !== "undefined undefined" ?
+                <Typography component="div" variant="h4" sx={{ marginY: vertical ? "10px" : 0, lineHeight: 1, marginBottom: "2px" }}>{name}</Typography>
+                : <Skeleton width={150} />}
+            {subtitle ?
+                <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ lineHeight: 1, padding: vertical ? "0 20px" : 0, textAlign: vertical ? "center" : "initial" }}>
+                    {subtitle}
+                </Typography>
+                : <Skeleton width={100} />
             }
         </Stack>
     </Stack>

@@ -10,6 +10,7 @@ import Profile from '@/types/profile'
 import CustomSnackbar from '@/components/common/Snackbar'
 import socketFunctions from '@/utils/socket'; import Image from 'next/image'
 import NoFriendImg from "@/assets/no_friends.jpg";
+import Message from '@/types/message'
 
 const StyledBox = styled('div')(({ theme }) => ({
   width: '100%',
@@ -21,12 +22,17 @@ const StyledBox = styled('div')(({ theme }) => ({
 
 const INFO_PANE_WIDTH = "30%";
 
+interface FriendAndMessage {
+  friend: Profile,
+  message: Message,
+  unseenMessageCount: number,
+}
+
 export default function Page() {
   const isMobile = useResponsive('down', 'sm');
-  const [hasFriends, setHasFriends] = useState<boolean | null>(null);
   const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null)
-  const axiosPrivate = useAxiosPrivate()
-
+  const [friends, setFriends] = useState<FriendAndMessage[] | null>(null)
+  const axiosPrivate = useAxiosPrivate();
 
   const [onlineUserIds, setOnlineUserIds] = useState<any>([]);
   useEffect(() => {
@@ -35,19 +41,18 @@ export default function Page() {
 
   return <Box sx={{ width: "100%", height: "100%" }}>
     <Grid sx={{ width: "100%", height: "100%" }} container spacing={3}>
-      {hasFriends == false ?
+      {friends?.length === 0 ?
         <Grid item xs={12} sx={{ height: "100%" }}>
-          <Card className="flex flex-col justify-center items-center" sx={{height: "95%"}}>
+          <Card className="flex flex-col justify-center items-center" sx={{height: "95%", background: "#fdfdfd"}}>
             <Image src={NoFriendImg} alt="" height={400} />
             <Typography variant="h1">Boohoo.</Typography>
-            <Typography variant="h2">You don't have any friends yet</Typography>
-            <Typography variant='h3'>Beefriend others now by following people you know!</Typography>
-            <Typography variant='h6'>(and tell them to follow you back too)</Typography>
+            <Typography variant="h3">You don't have any friends yet</Typography>
+            <Typography variant='h5'>Beefriend others now by following people you know!</Typography>
           </Card>
         </Grid>
         : <><Grid item xs={4} sx={{ height: "100%" }}>
           <StyledBox>
-            <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} setHasFriends={setHasFriends} />
+            <ChatList setSelectedFriend={setSelectedFriend} onlineUserIds={onlineUserIds} friends={friends} setFriends={setFriends} />
           </StyledBox>
         </Grid>
 
