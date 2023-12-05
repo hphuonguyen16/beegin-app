@@ -33,15 +33,6 @@ const BoxStyle = styled(Card)(({ theme }) => ({
   backgroundColor: 'white'
 }))
 function page() {
-  const [selectedYear, setSelectedYear] = useState(2023)
-  const startYear = 2022
-  const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: currentYear - startYear + 1 }, (_, index) => startYear + index).reverse()
-
-  const handleYearChange = (event: any) => {
-    setSelectedYear(event.target.value)
-    // You can perform additional actions when the year changes
-  }
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState<{
     account: any
@@ -57,14 +48,14 @@ function page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosPrivate.get(UrlConfig.admin.getOverview(selectedYear))
+        const response = await axiosPrivate.get(UrlConfig.admin.getOverview(2023))
         setData(response.data)
       } catch (error) {
         console.log(error)
       }
     }
     fetchData()
-  }, [selectedYear])
+  }, [1])
   function createData(ID: number, Fullname: string, Total: number) {
     return { ID, Fullname, Total }
   }
@@ -155,17 +146,6 @@ function page() {
             </BoxStyle>
           </Grid>
           <Grid item xs={12} sx={{ background: 'white', marginTop: '20px', borderRadius: '15px' }}>
-            <div>
-              <label htmlFor='year'>Select a year: </label>
-              <select id='year' value={selectedYear} onChange={handleYearChange}>
-                <option value=''>-- Select a year --</option>
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
             <ChartComponent accountData={data.account} postData={data.post} />
           </Grid>
         </Grid>

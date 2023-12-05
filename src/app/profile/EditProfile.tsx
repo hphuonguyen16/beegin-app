@@ -222,9 +222,9 @@ const ModalComponent = (props: ModalProps) => {
             <Button
               variant={'outlined'}
               sx={{
-                margin: '20px 0',
-                marginLeft:'130px',
+                margin: '20px auto',
                 width: '100px',
+                display: 'flex',
                 backgroundColor: 'white !important',
                 boxShadow: 'none'
               }}
@@ -239,7 +239,7 @@ const ModalComponent = (props: ModalProps) => {
               sx={{
                 margin: '20px auto',
                 width: '100px',
-                marginLeft:'20px',
+                display: 'flex',
                 backgroundColor: '#E078D8 !important',
                 color: 'white',
                 border: 'none'
