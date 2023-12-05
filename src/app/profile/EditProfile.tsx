@@ -252,6 +252,7 @@ const ModalComponent = (props: ModalProps) => {
                 margin: '20px 0',
                 marginLeft: '130px',
                 width: '100px',
+                display: 'flex',
                 backgroundColor: 'white !important',
                 boxShadow: 'none'
               }}
