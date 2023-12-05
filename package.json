@@ -40,8 +40,6 @@
     "react-image-crop": "^10.1.8",
     "react-infinite-scroll-component": "^6.1.0",
     "react-pro-sidebar": "^1.1.0-alpha.1",
-    "react-query": "^3.39.3",
-    "react-query-devtools": "^2.6.3",
     "recharts": "^2.10.1",
     "sass": "^1.68.0",
     "sharp": "^0.32.6",
