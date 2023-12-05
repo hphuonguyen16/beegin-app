@@ -63,7 +63,7 @@ const LineChart = ({ accountData, postData }: { accountData: any; postData: any 
                 },
                 title: {
                   display: true,
-                  text: 'Overview 2023',
+                  text: 'Overview Chart',
                   font: {
                     size: 30
                   }

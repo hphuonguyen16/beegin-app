@@ -148,9 +148,11 @@ function page() {
             <Image
               src={data.background}
               alt='Background'
-              width={720} // Provide the width
-              height={280} // Provide the height
-              style={{ width: '100%', height: '280px', borderRadius: '10px' }}
+              width={720}
+              height={280}
+              objectFit='fill'
+              objectPosition='center center'
+              style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit:'fill' }}
             />
             <Button
               variant={'outlined'}
@@ -158,7 +160,7 @@ function page() {
                 padding: '10px 20px',
                 width: '130px',
                 borderRadius: '18px',
-                top: '18%',
+                top: '19%',
                 position: 'absolute',
                 right: '100px',
                 backgroundColor: 'white !important'
@@ -183,7 +185,7 @@ function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
-                      {`@${data.slug}`}
+                      {`${data.slug}`}
                     </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>

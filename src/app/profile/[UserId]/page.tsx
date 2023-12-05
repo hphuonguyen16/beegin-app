@@ -18,7 +18,9 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import { Post } from '@/types/post'
+import { usePosts } from '@/context/PostContext'
 
+//component-style
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
@@ -31,7 +33,7 @@ const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)',
+  transform: 'translateY(-80px)',
   minWidth: '300px'
 }))
 const Posts = styled(Card)(({ theme }) => ({
@@ -39,27 +41,26 @@ const Posts = styled(Card)(({ theme }) => ({
   minHeight: '730px',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-40px)'
+  transform: 'translateY(-80px)'
 }))
 const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
   height: '80px',
   borderRadius: '15px',
-  backgroundColor: '#FEFAFA',
+  backgroundColor: 'white',
   border: '1px solid #D9D9D9'
 }))
-
-export default function page() {
-  const router = useRouter()
+function page() {
   const pathname = usePathname()
   const segments = pathname.split('/')
   const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
+  const [action, setAction] = useState(true)
   const [data, setData] = useState<{
     firstname: string
     lastname: string
     avatar: string
-    birthday: Date
+    birthday: any
     background: string
     address: string
     bio: string
@@ -76,7 +77,7 @@ export default function page() {
     gender: true,
     slug: ''
   })
-  const [postsData, setPostsData] = useState<Post[]>([])
+  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
@@ -113,13 +114,26 @@ export default function page() {
     const fetchPosts = async () => {
       try {
         const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
-        setPostsData(response.data.data)
+        let posts = response.data.data
+        posts = posts.map(async (post: Post) => {
+          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
+          const isLiked = likeResponse.data.data
+          return {
+            ...post,
+            isLiked
+          }
+        })
+        posts = await Promise.all(posts)
+        postsDispatch({ type: 'SET_POSTS', payload: posts })
         setNumberPost(response.data.results)
       } catch (error) {
         console.log(error)
       }
     }
     fetchPosts()
+    return () => {
+      postsDispatch({ type: 'SET_POSTS', payload: [] })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [1])
   useEffect(() => {
@@ -133,25 +147,26 @@ export default function page() {
     }
     fetchData()
   }, [])
-  const [action, setAction] = useState(true)
+
   return (
     <StyledProfile>
-      <Box>
-        <Image
-          src={background}
-          alt='background'
-          style={{ width: '100%', height: '280px', borderRadius: '10px' }}
-          width={720}
-          height={280}
-        />
-        <Box sx={{ position: 'absolute', right: '130px !important', top: '19% !important' }}>
-          <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
-        </Box>
-      </Box>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Stack spacing={2} alignItems='center'>
+      <Grid container spacing={2} sx={{ paddingX: '20px' }}>
+        <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
+          <Box>
+            <Image
+              src={data.background}
+              alt='Background'
+              width={720}
+              height={280}
+              style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: 'cover' }}
+            />
+            <Box sx={{ position: 'absolute', right: '130px !important', top: '19% !important' }}>
+              <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
               <Information>
                 <Stack spacing={2} alignItems='center'>
@@ -163,7 +178,7 @@ export default function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
-                      {`@${data.slug}`}
+                      {`${data.slug}`}
                     </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
@@ -302,11 +317,11 @@ export default function page() {
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: '48px' }}>
           <Paper>
             <Posts>
               {action === true ? (
-                <Box padding={3}>
+                <Box sx={{ padding: '24px 48px' }}>
                   {' '}
                   <Typography
                     variant='h3'
@@ -314,12 +329,12 @@ export default function page() {
                       fontWeight: 'medium',
                       fontSize: '25px',
                       fontFamily: 'Inter',
-                      marginBottom: '15px !important'
+                      marginBottom: '25px !important'
                     }}
                   >
                     Posts
                   </Typography>
-                  {postsData.map((post, index) => (
+                  {postsState.posts.map((post, index) => (
                     <PostCard key={index} post={post} />
                   ))}
                 </Box>
@@ -333,3 +348,5 @@ export default function page() {
     </StyledProfile>
   )
 }
+
+export default page
