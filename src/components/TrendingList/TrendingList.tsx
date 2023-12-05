@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import TrendingCard from './TrendingCard'
 import { TrendingHashtag } from '@/types/trendingHashtag'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import UrlConfig from '@/config/urlConfig'
 
 interface TrendingListProps {
@@ -28,8 +28,10 @@ export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
     error,
     isLoading,
     status
-  } = useQuery<TrendingHashtag[]>('trendinghastags', fetchData, {
-    staleTime: 1000 * 60 * 5
+  } = useQuery<TrendingHashtag[]>({
+    queryKey: ['trendingHashtags'],
+    queryFn: fetchData,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
   const handleShowMore = () => {
     router.push('/trends')

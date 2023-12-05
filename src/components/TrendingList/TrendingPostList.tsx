@@ -5,7 +5,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import TrendingCard from './TrendingCard'
 import TrendingPostCard from './TrendingPostCard'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 export default function TrendingPostList() {
   // const [categoryPosts, setCategoryPost] = useState<TrendingCategoryPost[]>([])
@@ -15,8 +15,10 @@ export default function TrendingPostList() {
     error,
     isLoading,
     status
-  } = useQuery<TrendingCategoryPost[]>('categoryPosts', fetchData, {
-    staleTime: 1000 * 60 * 5
+  } = useQuery<TrendingCategoryPost[]>({
+    queryKey: ['categoryPosts'],
+    queryFn: fetchData,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
   async function fetchData() {
     try {
@@ -39,7 +41,7 @@ export default function TrendingPostList() {
         categoryPosts?.map((item, index) => (
           <>
             <Divider sx={{}} />
-            <TrendingPostCard key={index} category={item.category.name} posts={item.posts} />
+            <TrendingPostCard key={index} category={item?.category?.name} posts={item.posts} />
           </>
         ))
       )}

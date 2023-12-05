@@ -1,6 +1,8 @@
 {
-    "ManageProfile": "Manage Profile",   
+    "ManageProfile": "Manage Profile",
+	"Language": "Language",   
 	"SignOut": "Sign Out",
+	"Settings": "Settings",
 
     "Unauthorized": "Unauthorized",
 	"PageNotFound": "Page Not Found",
