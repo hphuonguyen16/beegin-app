@@ -163,7 +163,7 @@ export default function page() {
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
                     <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
-                      {`@${data.slug}`}
+                      {`${data.slug}`}
                     </Typography>
                   </Paper>
                   <Paper style={{ backgroundColor: 'white' }}>
