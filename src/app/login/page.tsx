@@ -4,7 +4,7 @@
 import React from 'react'
 // @mui
 import { styled } from '@mui/material/styles'
-import { Link, Container, Typography, Stack, Button, TextField, Checkbox, FormControlLabel, Box } from '@mui/material'
+import { Link, Container, Typography, Stack, Button, TextField, Checkbox, FormControlLabel, Box, CircularProgress } from '@mui/material'
 import { LogoDev } from '@mui/icons-material'
 
 // hooks
@@ -88,7 +88,8 @@ export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [isLoading, setIsLoading] = React.useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { setSnack } = useSnackbar()
   const mdUp = useResponsive('up', 'md')
 
@@ -103,6 +104,7 @@ export default function LoginPage() {
   }
 
   const handleLogin = async () => {
+    setIsLoggingIn(true);
     const res = await fetch(urlConfig.user.login, {
       method: 'POST',
       headers: {
@@ -124,17 +126,11 @@ export default function LoginPage() {
       localStorage.setItem('persist', 'persist')
       router.push('/')
     } else {
+      setIsLoggingIn(false);
       setSnack({ open: true, type: 'error', message: resJson.message })
     }
   }
 
-  // if (isAuthenticated) {
-  //   if (pathname === '/login') {
-  //     router.push('/')
-  //   } else {
-  //     router.push(pathname)
-  //   }
-  // } else {
   return (
     <>
       <Snackbar />
@@ -142,9 +138,6 @@ export default function LoginPage() {
       <StyledRoot>
         {mdUp && (
           <StyledBanner>
-            {/* <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5, zIndex: 10 }}>
-								Hi, Welcome Back
-							</Typography> */}
             <Box
               sx={{
                 width: '100%',
@@ -218,8 +211,10 @@ export default function LoginPage() {
               size='large'
               color='inherit'
               variant='outlined'
+              disabled={isLoggingIn ? true : false}
               sx={{
-                background: (theme) => `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
+                //@ts-ignore
+                background: isLoggingIn ? (theme) => `${theme.palette.disabled}!important` : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
                 color: 'white !important',
                 width: '100%'
               }}
@@ -227,11 +222,11 @@ export default function LoginPage() {
                 handleLogin()
               }}
             >
-              Login
+              {isLoggingIn ? <CircularProgress size={20} sx={{color: theme => theme.palette.secondary.dark}} /> : "Login"}
             </Button>
             <Typography variant='body2' sx={{ mt: 1, mb: 8, width: '100%' }} textAlign={'right'}>
-              Don’t have an account yet? 
-             {' '} <Link variant='body2' href="/register">Get started</Link>
+              Don’t have an account yet?
+              {' '} <Link variant='body2' href="/register">Get started</Link>
             </Typography>
           </StyledContent>
         </Container>
