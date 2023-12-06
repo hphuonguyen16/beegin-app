@@ -6,7 +6,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 
 export default function CardUser(props: any) {
-  const { firstname, lastname, avatar } = props.profile
+  const { firstname, lastname, avatar, slug } = props.profile
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const redirectToProfile = async () => {
@@ -23,7 +23,7 @@ export default function CardUser(props: any) {
   }
   const handleDataFromChild = (data: string) => {}
   return (
-    <Card sx={{ position: 'relative', padding: '0 !important', width: '80%', boxShadow: '2px' }}>
+    <Card sx={{ position: 'relative', padding: '0 20px !important', width: '100%', boxShadow: '2px' }}>
       <CardHeader
         sx={{
           padding: '20px',
@@ -41,7 +41,7 @@ export default function CardUser(props: any) {
           />
         }
         title={firstname + ' ' + lastname}
-        subheader={`@username`}
+        subheader={slug !== '' ? slug : `@username`}
         action={
           props.isVisible === true ? (
             <ButtonFollow
