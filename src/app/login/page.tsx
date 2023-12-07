@@ -124,7 +124,7 @@ export default function LoginPage() {
       setUser(resJson.data.user)
       //set local storage
       localStorage.setItem('persist', 'persist')
-      router.push('/')
+      router.push('/home')
     } else {
       setIsLoggingIn(false);
       setSnack({ open: true, type: 'error', message: resJson.message })

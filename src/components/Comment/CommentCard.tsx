@@ -25,6 +25,7 @@ interface CommentCardProps {
 }
 
 const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
+  console.log(comment)
   const isMobile = useResponsive('down', 'sm')
   const [openReply, setOpenReply] = React.useState(false)
   const [commentData, setCommentData] = React.useState<Comment>(comment)
@@ -65,6 +66,7 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
       // Handle errors
     }
   }
+
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
