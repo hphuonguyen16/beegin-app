@@ -102,9 +102,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }
   return (
     <>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -25,10 +25,10 @@ interface CommentCardProps {
 }
 
 const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
-  console.log(comment)
   const isMobile = useResponsive('down', 'sm')
   const [openReply, setOpenReply] = React.useState(false)
   const [commentData, setCommentData] = React.useState<Comment>(comment)
+  const [children, setChildren] = React.useState<Comment[]>(comment.children || [])
   const [liked, setLiked] = React.useState(comment.isLiked || false)
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = React.useState(1)
@@ -66,7 +66,6 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
       // Handle errors
     }
   }
-
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
