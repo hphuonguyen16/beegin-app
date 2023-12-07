@@ -27,5 +27,5 @@ export function timeSince(date: Date): string {
     return Math.floor(interval) + ' minutes'
   }
 
-  return Math.floor(seconds) + ' seconds'
+  return 'Just now'
 }

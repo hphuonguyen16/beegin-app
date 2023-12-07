@@ -73,7 +73,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
   const axiosPrivate = useAxiosPrivate()
   const [comments, setComments] = React.useState<Comment[]>((post.comments as unknown as Comment[]) || [])
   const [comment, setComment] = React.useState('')
-  const [commentReply, setCommentReply] = React.useState<Comment>() // [Comment]
+  const [commentReply, setCommentReply] = React.useState<Comment>()
   const [page, setPage] = React.useState(1)
   const [loading, setLoading] = React.useState(false)
   const [totalComments, setTotalComments] = React.useState(0)
@@ -123,8 +123,10 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
         }
         return newComments
       })
+      setCommentReply(undefined)
     }
   }
+  console.log(comments)
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)

@@ -39,7 +39,12 @@ export default function Home() {
           comments
         }
       })
-      posts = await Promise.all(posts)
+      posts = await Promise.allSettled(posts)
+      posts = posts.map((post: any) => {
+        if (post.status === 'fulfilled') {
+          return post.value
+        }
+      })
       return {
         posts,
         total,
@@ -65,6 +70,7 @@ export default function Home() {
   const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
     return [...acc, ...page?.posts]
   }, [])
+
 
   return (
     <>
