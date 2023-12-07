@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardHeader, Avatar, Button, Box } from '@mui/material'
+import { Card, CardHeader, Avatar, Button, Box, Typography } from '@mui/material'
 import ButtonFollow from '../ButtonFollow/ButtonFollow'
 import { useRouter } from 'next/navigation'
 
 export default function SuggestFollowCard(props: any) {
-  const { firstname, lastname, avatar } = props.user.user.profile
+  const { firstname, lastname, avatar, slug } = props.user.user.profile
   const count = props.user.count ? props.user.count : null
   const router = useRouter()
   const redirectToProfile = (id: string) => {
@@ -31,8 +31,15 @@ export default function SuggestFollowCard(props: any) {
             onClick={() => redirectToProfile(props.user.user._id)}
           />
         }
-        title={firstname + ' ' + lastname}
-        subheader={count ? `${count} mutual following` : props.user.user.profile.slug}
+          title={
+          <>
+            <Typography variant="subtitle1">{firstname + ' ' + lastname}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {slug}
+            </Typography>
+          </>
+        }
+        subheader={count ? `${count} mutual following` : `Same interests`}
         action={
           <ButtonFollow
             userId={props.user.user._id}
