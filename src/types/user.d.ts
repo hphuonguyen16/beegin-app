@@ -5,7 +5,7 @@ export interface User {
   password: string
   phonenumber: string
   role: string
-  preferences: any
+  preferences: string[]
   createdAt: string
   profile: any
 }
