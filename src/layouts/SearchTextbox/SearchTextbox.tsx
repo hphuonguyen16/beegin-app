@@ -14,6 +14,12 @@ export default function SearchTextbox() {
       router.push(url)
     }
   }
+
+  const handleSearchTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value && event.target.value.length < 40) {
+      setSearchText(event.target.value)
+    }
+  }
   return (
     <FormControl sx={{ width: '65%', justifyContent: 'center' }}>
       <TextField
@@ -30,8 +36,9 @@ export default function SearchTextbox() {
           // marginBottom: '15px'
         }}
         //   onChange={handleChange}
-        onChange={(event) => setSearchText(event.target.value)}
+        onChange={handleSearchTextChange}
         onKeyDown={handleKeyDown}
+        value={searchText}
         InputProps={{
           startAdornment: (
             <InputAdornment position='start'>
