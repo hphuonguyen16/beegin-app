@@ -15,9 +15,6 @@ export default function SuggestFollowCard(props: any) {
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setIsVisible(false)
-      const myData = JSON.parse(sessionStorage.getItem('myData') || '[]')
-      const newData = myData.filter((item: any) => item.user._id !== props.user.user._id)
-      sessionStorage.setItem('myData', JSON.stringify(newData))
     }
   }
   return isVisible ? (

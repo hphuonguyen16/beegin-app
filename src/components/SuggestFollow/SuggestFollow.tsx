@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react'
 
 function SuggestFollow() {
   const axiosPrivate = useAxiosPrivate()
-  const storedData = sessionStorage.getItem('myData')
-  const [data, setData] = useState(storedData ? [JSON.parse(storedData)][0] : [])
+  const [data, setData] = useState([])
+
   const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
@@ -16,7 +16,6 @@ function SuggestFollow() {
       try {
         const response = await axiosPrivate.get(UrlConfig.me.suggestFollow)
         const responseData = response.data.data
-        sessionStorage.setItem('myData', JSON.stringify(responseData))
         setData(responseData)
       } catch (error) {
         console.log(error)
