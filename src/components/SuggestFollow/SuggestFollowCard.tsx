@@ -31,10 +31,10 @@ export default function SuggestFollowCard(props: any) {
             onClick={() => redirectToProfile(props.user.user._id)}
           />
         }
-          title={
+        title={
           <>
-            <Typography variant="subtitle1">{firstname + ' ' + lastname}</Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant='subtitle1'>{firstname + ' ' + lastname}</Typography>
+            <Typography variant='body2' color='textSecondary'>
               {slug}
             </Typography>
           </>
