@@ -111,7 +111,6 @@ export default function RootLayout({ children, session }: { children: React.Reac
   const pathname = usePathname()
   const noLayoutPaths = ['/login', '/register', '/verify']
   const isAdminPath = pathname.startsWith('/admin')
-  const queryClient = new QueryClient()
   if (noLayoutPaths.includes(pathname)) {
     return (
       <html lang='en'>
