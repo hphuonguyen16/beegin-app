@@ -38,7 +38,7 @@ export default function Home() {
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
   const { user } = useAuth()
-  async function fetchPosts({ pageParam = 1 }) {
+  async function fetchPosts({ pageParam }: { pageParam?: number }) {
     try {
       // Fetch posts
       const response = await axios.get(`${urlConfig.posts.getPosts}?limit=5&page=${pageParam}`)
@@ -144,9 +144,9 @@ export default function Home() {
             <Box sx={{ marginTop: '50px', overflowX: 'hidden' }}>
               {postsData?.map((post, index) => {
                 if (post && post.parent) {
-                  return <PostCard key={post._id || index} post={post} postParent={post.parent} />
+                  return <PostCard key={index} post={post} postParent={post.parent} />
                 } else if (post) {
-                  return <PostCard key={post._id || index} post={post} />
+                  return <PostCard key={index} post={post} />
                 }
               })}
             </Box>

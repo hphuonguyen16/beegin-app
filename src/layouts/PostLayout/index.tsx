@@ -1,6 +1,7 @@
 'use client'
 import ListFollow from '@/components/ListFollowing/ListFollow'
 import SuggestFollow from '@/components/SuggestFollow/SuggestFollow'
+import PersistentScrollView from '@/components/common/PersistentScrollView'
 import useResponsive from '@/hooks/useResponsive'
 import { Divider, Grid, Stack } from '@mui/material'
 import { Box } from '@mui/system'
@@ -16,15 +17,13 @@ const PostLayout = ({ children }: PostLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
       <Grid
-        id='scrollableDiv'
         sx={{
           width: isMobile ? '100%' : '80%',
           padding: isMobile ? '12px' : '20px',
-          borderRadius: '10px',
-          overflow: 'auto'
+          borderRadius: '10px'
         }}
       >
-        {children}
+        <PersistentScrollView id='scrollableDiv'>{children}</PersistentScrollView>
       </Grid>
       <Divider orientation='vertical' flexItem sx={{ color: 'rgba(204.44, 128.17, 240.32, 0.25)' }} />
       <Grid

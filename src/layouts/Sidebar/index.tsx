@@ -65,7 +65,7 @@ const Sidebar = ({ menuItems }: SidebarProps) => {
   const pathname = usePathname() // Get the current route from the router
   const isMobile = useResponsive('down', 'sm') // Get the current breakpoint from the theme (see below)
 
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   const isLinkActive = (path: String) => {
     return path === pathname
@@ -114,10 +114,15 @@ const Sidebar = ({ menuItems }: SidebarProps) => {
                 ))}
               </Stack>
             </Box>
-            <Link style={{ margin: "10px 25px 20px 15px" }} href={"/profile"}>
-              <Button sx={{ width: "100%" }}>
-                <ListItem sx={{ paddingLeft: "10px" }}>
-                  <AvatarCard avatar={user ? user?.profile.avatar : null} name={user?.profile.firstname + " " + user?.profile.lastname} subtitle={user?.profile.slug} vertical={false} />
+            <Link style={{ margin: '10px 25px 20px 15px' }} href={'/profile'}>
+              <Button sx={{ width: '100%' }}>
+                <ListItem sx={{ paddingLeft: '10px' }}>
+                  <AvatarCard
+                    avatar={user ? user?.profile.avatar : null}
+                    name={user?.profile.firstname + ' ' + user?.profile.lastname}
+                    subtitle={user?.profile.slug}
+                    vertical={false}
+                  />
                   {/* <ListItemAvatar>
                 <Avatar></Avatar>
               </ListItemAvatar>
