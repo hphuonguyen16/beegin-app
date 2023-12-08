@@ -16,7 +16,7 @@ export default function SearchTextbox() {
   }
 
   const handleSearchTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value && event.target.value.length < 40) {
+    if (event.target.value.length < 40) {
       setSearchText(event.target.value)
     }
   }
