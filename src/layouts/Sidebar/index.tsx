@@ -12,7 +12,7 @@ import AvatarCard from '@/components/common/AvatarCard'
 import { useAuth } from '@/context/AuthContext'
 
 const StyledSidebar = styled(Box)(({ theme }) => ({
-  height: '100vh',
+  height: '100%',
   width: '310px',
   paddingLeft: '10px',
   backgroundColor: '#fff'

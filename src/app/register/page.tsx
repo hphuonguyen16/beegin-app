@@ -51,8 +51,8 @@ const BORDER_RADIUS = '16px'
 const StyledRoot = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
-    width: '70vw',
-    height: '80vh',
+    width: '70%',
+    height: '80%',
     position: 'absolute',
     left: '50%',
     top: '50%',

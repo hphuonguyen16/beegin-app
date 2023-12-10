@@ -136,9 +136,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const createPostMutation = useMutation({
     mutationFn: addPostApi,
     onSuccess: (data: NewPostProps) => {
-      // Invalidates cache and refetch
-      // Add new post to the top of the list
-      console.log(data)
       queryClient.setQueryData(['postsData'], (oldData: any) => {
         const newPosts = [...oldData.pages[0].posts]
         newPosts.unshift(data)

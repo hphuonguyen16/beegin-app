@@ -8,9 +8,13 @@
   --background-end-rgb: 255, 255, 255; */
   background-color: #FDF4FF;
 }
-body{
-  background-color: #FDF4FF;
+
+@media (-webkit-device-pixel-ratio: 1.25) {
+  body {
+    zoom: 0.8;
+  }
 }
+
 
 /* @media (prefers-color-scheme: dark) {
   :root {
@@ -31,13 +35,16 @@ body {
 } */
 
 @layer utilities {
+
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
