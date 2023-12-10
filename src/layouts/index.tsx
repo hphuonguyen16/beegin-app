@@ -19,7 +19,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
-import ProfilePopover from './ProfilePopover'
+import ProfilePopover from './ProfilePopover/index'
 import SearchTextbox from './SearchTextbox/SearchTextbox'
 
 // ----------------------------------------------------------------------
@@ -111,12 +111,6 @@ const StyledIconNotifBox = styled('div')(({ theme }) => ({
   }
 }))
 
-// const poppins = Poppins({
-//   weight: '400',
-//   subsets: ['latin'],
-//   display: 'swap'
-// })
-
 // ----------------------------------------------------------------------
 
 interface LayoutProps {
@@ -153,9 +147,6 @@ const Layout = ({ children, menuItems }: LayoutProps) => {
   const topic =
     pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
-  // if (isLoading) {
-  // return <Loader />
-  // }
 
   return (
     <StyledRoot>

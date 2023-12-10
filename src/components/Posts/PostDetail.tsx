@@ -55,7 +55,7 @@ function findRootCommentIndex(comments: Comment[], comment: Comment) {
   return comments.findIndex((c) => c._id === comment._id)
 }
 
-function getNumComments(comments: Comment[]) {}
+function getNumComments(comments: Comment[]) { }
 
 interface PostDetailProps {
   post: Post
@@ -216,8 +216,8 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
           left: '50%',
           transform: 'translate(-50%, -50%)',
           //   width: isMobile ? '80vw' : width ? width : '100vw',
-          width: isMobile ? '80vw' : hasImages ? '80vw' : '50vw',
-          height: isMobile ? '80vh' : '90vh',
+          width: isMobile ? '80%' : hasImages ? '80%' : '50%',
+          height: isMobile ? '80%' : '90%',
           bgcolor: 'rgba(0, 0, 0, 1)',
           boxShadow: 24,
           borderRadius: 2

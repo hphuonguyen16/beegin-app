@@ -134,7 +134,16 @@ const ProfilePopover = () => {
 					<Person2RoundedIcon />
 				</StyledIconBox>
 			</Button>
-			<Menu open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ "& .MuiList-root": { height: parent ? "150px" : "295px", overflow: "hidden", transition: "0.2s all ease-in-out" } }}>
+			<Menu open={open} anchorEl={anchorEl} onClose={handleClose}
+				sx={{
+					"& .MuiList-root": { height: parent ? "150px" : "295px", overflow: "hidden", transition: "0.2s all ease-in-out" },
+					"& .MuiMenu-paper": {
+						'@media (-webkit-device-pixel-ratio: 1.25)': {
+							left: '1500px !important'
+						}
+					}
+				}}
+			>
 				<Paper
 					sx={{ display: "flex", }}
 					ref={containerRef}
@@ -206,12 +215,12 @@ const ProfilePopover = () => {
 									<ArrowForwardIos sx={{ fontSize: "13px" }} />
 								</StyledMenuItem>
 								<Link href="/settings">
-								<StyledMenuItem onClick={handleClose} >
-									<ListItemIcon sx={{ alignItems: "center" }}>
-										<Settings fontSize="small" />
-									</ListItemIcon>
-									<ListItemText>{t("common:Settings")}</ListItemText>
-								</StyledMenuItem>
+									<StyledMenuItem onClick={handleClose} >
+										<ListItemIcon sx={{ alignItems: "center" }}>
+											<Settings fontSize="small" />
+										</ListItemIcon>
+										<ListItemText>{t("common:Settings")}</ListItemText>
+									</StyledMenuItem>
 								</Link>
 							</Stack>
 

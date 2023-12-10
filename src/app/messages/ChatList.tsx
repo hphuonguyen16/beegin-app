@@ -13,7 +13,6 @@ import Message from '@/types/message'
 import { io } from 'socket.io-client'
 import Scrollbar from '@/components/common/Scrollbar'
 import { useAuth } from '@/context/AuthContext'
-import Loader from '@/components/common/Loader/Loader'
 import { useField } from '@mui/x-date-pickers/internals'
 
 const ChatList = ({
@@ -47,7 +46,7 @@ const ChatList = ({
       setSelectedFriend(friends[0].friend)
       setSelectedIndex(0)
       console.log(friends.length)
-    } catch (err) {}
+    } catch (err) { }
   }
 
   useEffect(() => {
@@ -64,7 +63,6 @@ const ChatList = ({
 
   return (
     <>
-      {/* {friends == null && < Loader />} */}
       <Stack direction={'row'} spacing={2} alignItems='center' sx={{ height: '50px', mb: '10px', px: '20px' }}>
         <Typography variant='h4'>Chats</Typography>
       </Stack>
