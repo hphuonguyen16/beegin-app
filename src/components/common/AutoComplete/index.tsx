@@ -23,7 +23,7 @@ const InputWrapper = styled('div')(
   width: 100%;
   border: 1px solid ${theme.palette.secondary.main};
   background-color: ${theme.palette.mode === 'dark' ? '#141414' : '#fff'};
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 1px;
   display: flex;
   justify-content: center;

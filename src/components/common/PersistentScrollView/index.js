@@ -31,7 +31,7 @@ const PersistentScrollView = ({ children, id, name = 'scrollPosition' }) => {
   }, [pathname])
 
   return (
-    <div id='scrollableDiv' ref={divRef} style={{ overflow: 'auto', height: '100%' }} onScroll={handleScroll}>
+    <div id={id} ref={divRef} style={{ overflow: 'auto', height: '100%' }} onScroll={handleScroll}>
       {children}
     </div>
   )

@@ -32,7 +32,6 @@ import { Comment } from '@/types/comment'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import EmojiPicker from '../common/EmojiPicker'
 import _ from 'lodash'
-import { QueryClient, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 
 // find the root of children comment
 function findRootComment(comments: Comment[], comment: Comment) {
@@ -70,7 +69,6 @@ interface pageOfReplyComments {
 
 const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
   const isMobile = useResponsive('down', 'sm')
-  const queryClient = new QueryClient()
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
   const [comments, setComments] = React.useState<Comment[]>((post.comments as unknown as Comment[]) || [])
@@ -79,97 +77,6 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
   const [page, setPage] = React.useState(1)
   const [loading, setLoading] = React.useState(false)
   const [totalComments, setTotalComments] = React.useState(0)
-
-  async function fetchComments1({ pageParam }: { pageParam: number }) {
-    const response = await axiosPrivate.get(`${urlConfig.posts.getComments(post._id)}?limit=10&page=${pageParam}`)
-    const comments = response.data.data as Comment[]
-    const { total } = response.data.total
-    return {
-      comments,
-      total,
-      prevPage: page
-    }
-  }
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['commentsData', post._id],
-    queryFn: fetchComments1,
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage?.prevPage === undefined) return undefined
-      if (lastPage?.prevPage * 10 > lastPage?.total) {
-        return undefined
-      }
-      return lastPage?.prevPage + 1
-    },
-    staleTime: 1000 * 60 * 10
-  })
-
-  const commentsData = data?.pages?.reduce<Comment[]>((acc, page) => {
-    return [...acc, ...page?.comments]
-  }, [])
-
-  async function addCommentApi() {
-    if (commentsData === undefined && commentReply === undefined) return
-    //@ts-ignore
-    const rootComment = findRootComment(commentsData, commentReply)
-    const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
-      content: comment,
-      parent: rootComment?._id
-    })
-    return response.data.data
-  }
-
-  //create comments mutation
-  const createCommentMutation = useMutation({
-    mutationFn: addCommentApi,
-    onSuccess: (data: any) => {
-      if (!commentReply) {
-        // If it's a new comment, update the query data for comments
-        queryClient.setQueryData(['commentsData', post._id], (oldData: any) => {
-          const newComments = [data, ...oldData.pages[0].comments]
-          return {
-            pages: [
-              {
-                comments: newComments,
-                total: oldData.pages[0].total + 1,
-                prevPage: oldData.pages[0].prevPage
-              }
-            ],
-            pageParams: oldData.pageParams
-          }
-        })
-      } else {
-        // If it's a reply to an existing comment, find the root comment and update the query data
-        queryClient.setQueryData(['commentsData', post._id], (oldData: any) => {
-          const newComments = oldData.pages[0].comments.map((comment: Comment) => {
-            if (comment._id === commentReply._id) {
-              return {
-                ...comment,
-                children: [data, ...(comment.children || [])],
-                numReplies: (comment.numReplies || 0) + 1
-              }
-            }
-            return comment
-          })
-          return {
-            pages: [
-              {
-                comments: newComments,
-                total: oldData.pages[0].total,
-                prevPage: oldData.pages[0].prevPage
-              }
-            ],
-            pageParams: oldData.pageParams
-          }
-        })
-        setCommentReply(undefined)
-      }
-    },
-    onError: (error: any) => {
-      // Handle errors
-    }
-  })
-
   const fetchComments = async () => {
     setLoading(true)
     const response = await axiosPrivate.get(`${urlConfig.posts.getComments(post._id)}?limit=10&page=${page}`)
@@ -186,26 +93,58 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
     setLoading(false)
   }
   const createComment = async () => {
-    createCommentMutation.mutate()
+    if (!commentReply) {
+      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+        content: comment
+      })
+      setComments([response.data.data, ...comments])
+    } else {
+      const rootComment = findRootComment(comments, commentReply)
+      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+        content: comment,
+        parent: rootComment._id
+      })
+      setComments((prev) => {
+        const newComments = _.cloneDeep(prev)
+        const rootCommentIndex = findRootCommentIndex(newComments, commentReply)
+
+        if (rootCommentIndex !== -1) {
+          const rootComment = newComments[rootCommentIndex]
+
+          if (!rootComment.children) {
+            rootComment.children = []
+          }
+
+          const childComment = response.data.data
+          childComment.key = childComment._id
+
+          rootComment.children = [childComment, ...rootComment.children]
+          rootComment.numReplies++
+        }
+        return newComments
+      })
+      setCommentReply(undefined)
+    }
   }
+  console.log(comments)
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)
     else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await fetchComments()
-  //     } catch (error) {
-  //       // Handle any errors that occur during the fetchComments() function
-  //     }
-  //   }
-  //   if (!post.comments) {
-  //     fetchData()
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchComments()
+      } catch (error) {
+        // Handle any errors that occur during the fetchComments() function
+      }
+    }
+    if (!post.comments) {
+      fetchData()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Modal open={open}>
@@ -247,7 +186,10 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
+                      <Stack
+                        direction={'row'}
+                        sx={{ alignItems: 'center', marginTop: '3px', marginBottom: '5px', minWidth: 'max-content' }}
+                      >
                         <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                           {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
                         </Typography>
@@ -363,13 +305,13 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               </Stack>
               <Divider variant='inset' />
               <Box sx={{ paddingRight: '15px' }}>
-                {commentsData?.map((comment: Comment, index: number) => (
+                {comments.map((comment: Comment, index: number) => (
                   <CommentCard key={comment._id} comment={comment} replyComment={replyComment} />
                 ))}
-                {hasNextPage && (
+                {comments.length >= 10 && comments.length < totalComments && (
                   <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '20px' }}>
                     <Typography
-                      onClick={() => fetchNextPage()}
+                      onClick={() => fetchComments()}
                       color='primary'
                       sx={{
                         fontWeight: 'bold',
@@ -381,7 +323,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                     >
                       Show more
                     </Typography>
-                    {isFetching && <CircularProgress size={14} sx={{ marginLeft: '20px' }} />}
+                    {loading && <CircularProgress size={14} sx={{ marginLeft: '20px' }} />}
                   </Stack>
                 )}
               </Box>

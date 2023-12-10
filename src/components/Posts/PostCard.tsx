@@ -31,11 +31,11 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
     borderRadius: '12px',
     objectFit: 'cover',
     width: '100%',
-    height: '100%',
-    maxHeight: '720px'
+    height: '100%'
   },
   '& .image-1': {
-    gridArea: '1 / 1 / 2 / 2'
+    gridArea: '1 / 1 / 2 / 2',
+    maxHeight: '720px'
   },
   '& .image-2': {
     gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'

@@ -28,7 +28,6 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
   const [openReply, setOpenReply] = React.useState(false)
   const [commentData, setCommentData] = React.useState<Comment>(comment)
-  const [children, setChildren] = React.useState<Comment[]>(comment.children || [])
   const [liked, setLiked] = React.useState(comment.isLiked || false)
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = React.useState(1)
