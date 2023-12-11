@@ -96,7 +96,7 @@ function Home() {
       <PostLayout>
         <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}></Box>
 
-        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}>
+        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden', paddingLeft: '150px' }}>
           <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
             Feeds
           </Typography>
