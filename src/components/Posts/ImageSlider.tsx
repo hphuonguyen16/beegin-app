@@ -47,7 +47,11 @@ const Slider = ({ images }: SliderProps) => {
             left: '20px',
             transform: 'translateY(-50%)',
             zIndex: 999,
-            color: '#ffffff'
+            color: '#ffffff',
+            backgroundColor: '#e1e1e199!important',
+            '&:hover': {
+              backgroundColor: '#7f7f7f85!important'
+            }
           }}
         >
           <ArrowBackIosNewRoundedIcon fontSize='small' />
@@ -62,7 +66,11 @@ const Slider = ({ images }: SliderProps) => {
             left: '87%',
             transform: 'translateY(-50%)',
             zIndex: 999,
-            color: '#ffffff'
+            color: '#ffffff',
+            backgroundColor: '#e1e1e199!important',
+            '&:hover': {
+              backgroundColor: '#7f7f7f85!important'
+            }
           }}
         >
           <ArrowForwardIosIcon fontSize='small' />

@@ -1,6 +1,20 @@
 'use client'
 
-import { FormGroup, Stack, TextField, Box, FormControl, InputLabel, Select, MenuItem, IconButton, FormControlLabel, Checkbox, ToggleButton, Button } from '@mui/material'
+import {
+  FormGroup,
+  Stack,
+  TextField,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
+  FormControlLabel,
+  Checkbox,
+  ToggleButton,
+  Button
+} from '@mui/material'
 import { Edit, Delete, Favorite, FavoriteBorder } from '@mui/icons-material'
 import { useState, ChangeEvent, useEffect } from 'react'
 import { Register } from '@/types/register'
@@ -47,18 +61,22 @@ const RegisterForms = ({
   }
   const axiosPrivate = useAxiosPrivate()
 
-  const [topics, setTopics] = useState<any>([]);
+  const [topics, setTopics] = useState<any>([])
   const getTopics = async () => {
     try {
       let response = await axiosPrivate.get(`${UrlConfig.categories.getCategories}`)
-      setTopics(response.data.data.data.map((topic: any) => { return { ...topic, isChecked: false } }))
-    } catch (err) { }
+      setTopics(
+        response.data.data.data.map((topic: any) => {
+          return { ...topic, isChecked: false }
+        })
+      )
+    } catch (err) {}
   }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getTopics();
+        await getTopics()
       } catch (error) {
         console.log(error)
       }
@@ -66,17 +84,20 @@ const RegisterForms = ({
     fetchData()
   }, [])
 
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(false)
 
   const handleCheckboxTick = (topic: any, index: number) => {
-    var changedTopics = [...topics];
-    changedTopics[index].isChecked = !changedTopics[index].isChecked;
+    var changedTopics = [...topics]
+    changedTopics[index].isChecked = !changedTopics[index].isChecked
     setTopics(changedTopics)
 
     if (formValues.preferences.includes(topic._id)) {
-      setFormValues({ ...formValues, ["preferences"]: formValues.preferences.splice(formValues.preferences.indexOf(topic._id), 1) });
+      setFormValues({
+        ...formValues,
+        ['preferences']: formValues.preferences.splice(formValues.preferences.indexOf(topic._id), 1)
+      })
     } else {
-      setFormValues({ ...formValues, ["preferences"]: [...formValues.preferences, topic._id] });
+      setFormValues({ ...formValues, ['preferences']: [...formValues.preferences, topic._id] })
     }
   }
 
@@ -241,10 +262,19 @@ const RegisterForms = ({
       </FormGroup>
       <FormGroup sx={{ display: step === 3 ? '' : 'none' }}>
         <Box className='w-full px-5 text-center'>
-          {topics.map((topic: any, index: number) => <Button sx={{ margin: "15px 0 0 15px", display: 'inline-block' }} variant={topic.isChecked ? "contained" : "outlined"} onClick={() => handleCheckboxTick(topic, index)}>{topic.name}</Button>)}
+          {topics.map((topic: any, index: number) => (
+            <Button
+              key={index}
+              sx={{ margin: '15px 0 0 15px', display: 'inline-block' }}
+              variant={topic.isChecked ? 'contained' : 'outlined'}
+              onClick={() => handleCheckboxTick(topic, index)}
+            >
+              {topic.name}
+            </Button>
+          ))}
         </Box>
       </FormGroup>
-    </form >
+    </form>
   )
 }
 

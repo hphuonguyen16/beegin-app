@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -65,7 +65,6 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
       // Handle errors
     }
   }
-
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
