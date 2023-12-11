@@ -40,7 +40,7 @@ const PostDetailPage = ({ params }: { params: { id: string } }) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(params.id))
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const handleClose = () => {
@@ -52,7 +52,8 @@ const PostDetailPage = ({ params }: { params: { id: string } }) => {
     getPost()
   }, [])
 
-  return post && <PostDetail open={true} post={post} handleLike={handleLike} handleClose={handleClose} />
+  return post && <>
+    <title>Post | Beegin</title><PostDetail open={true} post={post} handleLike={handleLike} handleClose={handleClose} /></>
 }
 
 export default PostDetailPage
