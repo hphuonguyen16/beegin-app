@@ -14,7 +14,7 @@ import { useAuth } from '@/context/AuthContext'
 const StyledSidebar = styled(Box)(({ theme }) => ({
   height: '100%',
   width: '310px',
-  paddingLeft: '10px',
+  // paddingLeft: '10px',
   backgroundColor: '#fff'
 }))
 
@@ -22,6 +22,7 @@ const StyledSidebar = styled(Box)(({ theme }) => ({
 const StyledLinkBox = styled('div')<{ isActive: boolean }>((props) => ({
   width: '100%',
   padding: '15px 0',
+  opacity: 0.7,
   '& a': {
     textDecoration: 'none',
     display: 'flex',
@@ -31,13 +32,15 @@ const StyledLinkBox = styled('div')<{ isActive: boolean }>((props) => ({
   '&:hover': {
     backdropFilter: 'blur(4px)', // Use 'backdropFilter' with a CSS value
     boxShadow: '-2px 5px 13px rgba(0, 0, 0, 0.06)',
+    opacity: 0.9,
     transition: 'background-color 0.3s ease-in-out' // Smooth background color transition on hover
   },
   // Conditional styles based on isActive
   ...(props.isActive && {
     backdropFilter: 'blur(4px)',
-    boxShadow: '-2px 5px 13px rgba(0, 0, 0, 0.06)',
-    transition: 'background-color 0.5s ease-in-out'
+    boxShadow: '-2px 5px 8px rgba(0, 0, 0, 0.06)',
+    transition: 'background-color 0.5s ease-in-out',
+    opacity: 1,
   })
 }))
 
@@ -45,7 +48,7 @@ const StyledStack = styled(Stack)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'center',
   alignItems: 'center',
-  marginLeft: '25px'
+  marginLeft: '35px'
 }))
 
 const StyledIconBox = styled('div')<{ isActive: boolean }>(({ theme, isActive }) => ({
@@ -53,7 +56,7 @@ const StyledIconBox = styled('div')<{ isActive: boolean }>(({ theme, isActive })
   '& svg': {
     fontSize: '28px',
     opacity: isActive ? 1 : 0.7,
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.dark,
     transition: 'opacity 0.3s, color 0.3s' // Add a transition for smoother changes
   }
 }))
@@ -83,7 +86,7 @@ const Sidebar = ({ menuItems }: SidebarProps) => {
             <Box>
               <Typography
                 variant='h4'
-                sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '22px', color: 'black' }}
+                sx={{ fontWeight: 'bold', marginTop: '20px', marginLeft: '32px', color: 'black' }}
               >
                 Menu
               </Typography>
@@ -98,7 +101,7 @@ const Sidebar = ({ menuItems }: SidebarProps) => {
                           }
                         </StyledIconBox>
                         <Typography
-                          color='primary'
+                          color='secondary.dark'
                           style={{
                             fontWeight: 'bold',
                             verticalAlign: 'middle',

@@ -10,6 +10,7 @@ import withAuth from '@/authorization/withAuth'
 function Page() {
   return (
     <PostLayout>
+    <title>Explore | Beegin</title>
       <TrendingList count={5} isFull={false} />
       <TrendingPostList />
     </PostLayout>

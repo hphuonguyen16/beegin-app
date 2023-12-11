@@ -1,7 +1,8 @@
 import React from 'react'
 
 function page() {
-  return <div>Hello, Settings page</div>
+  return <div>
+  <title>Settings | Beegin</title>Hello, Settings page</div>
 }
 
 export default page

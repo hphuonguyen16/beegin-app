@@ -74,6 +74,7 @@ function Home() {
 
   return (
     <>
+      <title>Home | Beegin</title>
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
