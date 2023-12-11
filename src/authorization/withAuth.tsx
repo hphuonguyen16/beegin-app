@@ -1,12 +1,9 @@
 /* eslint-disable react/display-name */
+'use client'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import routeConfig from './routeConfig'
-import { useAuth } from '@/context/AuthContext'
 import LoadingScreen from '@/components/common/Loader/Loader'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import UrlConfig from '@/config/urlConfig'
-import { User } from '@/types/user'
 
 const withAuth =
   //// eslint-disable-next-line react/display-name, react/display-name
