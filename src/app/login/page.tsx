@@ -224,8 +224,8 @@ export default function LoginPage() {
               variant='outlined'
               disabled={isLoggingIn ? true : false}
               sx={{
-                //@ts-ignore
                 background: isLoggingIn
+                //@ts-ignore
                   ? (theme) => `${theme.palette.disabled}!important`
                   : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
                 color: 'white !important',
