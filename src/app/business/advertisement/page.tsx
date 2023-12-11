@@ -15,6 +15,7 @@ import { CircularProgress } from '@mui/material'
 import axios from 'axios'
 import useSnackbar from '@/context/snackbarContext'
 import Snackbar from '@/components/common/Snackbar'
+import withAuth from '@/authorization/withAuth'
 
 const steps = ['Create advertisement', 'Customize delivery', 'Make payment']
 
@@ -56,7 +57,7 @@ async function handleFileUpload(files: any) {
   return uploadedUrls
 }
 
-export default function BussinessStepper() {
+function BussinessStepper() {
   const [activeStep, setActiveStep] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(false)
   const [skipped, setSkipped] = React.useState(new Set<number>())
@@ -212,3 +213,5 @@ export default function BussinessStepper() {
     </Box>
   )
 }
+
+export default withAuth(BussinessStepper)(['business', 'user'])

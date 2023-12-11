@@ -27,6 +27,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import React, { useEffect, useState } from 'react'
+import withAuth from '@/authorization/withAuth'
 
 function page() {
   const axiosPrivate = useAxiosPrivate()
@@ -182,4 +183,4 @@ function page() {
   )
 }
 
-export default page
+export default withAuth(page)(['admin'])

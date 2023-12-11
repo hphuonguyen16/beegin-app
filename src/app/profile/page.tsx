@@ -20,6 +20,7 @@ import DefaultBackground from '@/assets/default_background.jpg'
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
+import withAuth from '@/authorization/withAuth'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -355,4 +356,4 @@ function page() {
   )
 }
 
-export default page
+export default withAuth(page)(['user', 'business'])

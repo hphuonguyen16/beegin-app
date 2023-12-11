@@ -5,8 +5,9 @@ import { Stack } from '@mui/material'
 import TrendingList from '@/components/TrendingList/TrendingList'
 import PostLayout from '@/layouts/PostLayout'
 import TrendingPostList from '@/components/TrendingList/TrendingPostList'
+import withAuth from '@/authorization/withAuth'
 
-export default function Page() {
+function Page() {
   return (
     <PostLayout>
       <TrendingList count={5} isFull={false} />
@@ -14,3 +15,5 @@ export default function Page() {
     </PostLayout>
   )
 }
+
+export default withAuth(Page)(['business', 'user'])

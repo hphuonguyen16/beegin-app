@@ -17,6 +17,7 @@ import TableRow from '@mui/material/TableRow'
 // hooks
 
 import React, { useEffect, useState } from 'react'
+import withAuth from '@/authorization/withAuth'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -114,4 +115,4 @@ function page() {
   )
 }
 
-export default page
+export default withAuth(page)(['admin'])
