@@ -247,7 +247,10 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
+                      <Stack
+                        direction={'row'}
+                        sx={{ alignItems: 'center', marginTop: '3px', marginBottom: '5px', minWidth: 'max-content' }}
+                      >
                         <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                           {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
                         </Typography>

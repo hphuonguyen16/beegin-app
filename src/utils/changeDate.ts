@@ -3,28 +3,28 @@ export function timeSince(date: Date): string {
 
   let interval: number = seconds / 31536000
 
-  if (interval > 1) {
-    return Math.floor(interval) + ' years'
+  if (interval >= 1) {
+    return Math.floor(interval) + (Math.floor(interval) === 1 ? ' year' : ' years')
   }
 
   interval = seconds / 2592000
-  if (interval > 1) {
-    return Math.floor(interval) + ' months'
+  if (interval >= 1) {
+    return Math.floor(interval) + (Math.floor(interval) === 1 ? ' month' : ' months')
   }
 
   interval = seconds / 86400
-  if (interval > 1) {
-    return Math.floor(interval) + ' days'
+  if (interval >= 1) {
+    return Math.floor(interval) + (Math.floor(interval) === 1 ? ' day' : ' days')
   }
 
   interval = seconds / 3600
-  if (interval > 1) {
-    return Math.floor(interval) + ' hours'
+  if (interval >= 1) {
+    return Math.floor(interval) + (Math.floor(interval) === 1 ? ' hour' : ' hours')
   }
 
   interval = seconds / 60
-  if (interval > 1) {
-    return Math.floor(interval) + ' minutes'
+  if (interval >= 1) {
+    return Math.floor(interval) + (Math.floor(interval) === 1 ? ' minute' : ' minutes')
   }
 
   return 'Just now'

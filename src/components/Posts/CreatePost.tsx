@@ -13,8 +13,6 @@ import { useAuth } from '@/context/AuthContext'
 import Autocomplete from '@/components/common/AutoComplete'
 import { Category } from '@/types/category'
 import { Post } from '@/types/post'
-import Popover from '@mui/material/Popover'
-import Picker from 'emoji-picker-react'
 import PostLoader from '@/components/common/Loader/PostLoader'
 import EmojiPicker from '../common/EmojiPicker'
 import PostCard from './PostCard'
@@ -44,7 +42,8 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
     height: '100%'
   },
   '& .image-1': {
-    gridArea: '1 / 1 / 2 / 2'
+    gridArea: '1 / 1 / 2 / 2',
+    maxHeight: '720px'
   },
   '& .image-2': {
     gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'
@@ -113,7 +112,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
-    if (e.target.files && e.target.files.length > 0 && images.length < 4) {
+    if (e.target.files && e.target.files.length > 0 && images.length <= 4) {
       const newImages = [...images]
       for (let i = 0; i < e.target.files.length; i++) {
         newImages.push(e.target.files[i])
@@ -136,6 +135,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const createPostMutation = useMutation({
     mutationFn: addPostApi,
     onSuccess: (data: NewPostProps) => {
+      // Invalidates cache and refetch
+      // Add new post to the top of the list
       queryClient.setQueryData(['postsData'], (oldData: any) => {
         const newPosts = [...oldData.pages[0].posts]
         newPosts.unshift(data)

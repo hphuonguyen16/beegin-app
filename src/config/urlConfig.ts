@@ -67,6 +67,10 @@ const UrlConfig: any = {
     searchUsers: (q: string, limit: number | undefined = undefined) => `/api/v1/search/users?q=${q}&limit=${limit}`,
     searchPosts: (q: string, media: string | null = null, sort: string = '-createdAt', limit: number = 10) =>
       `/api/v1/search/posts?q=${q}&media=${media}&sort=${sort}&limit=${limit}`
+  },
+  bussiness: {
+    createAdvertisement: `/api/v1/transactions/create_payment_url`,
+    getUnitPrice: `/api/v1/prices`
   }
 }
 

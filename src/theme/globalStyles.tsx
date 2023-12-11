@@ -10,19 +10,19 @@ export default function GlobalStyles() {
       styles={{
         '*': {
           boxSizing: 'border-box',
-          // '&::-webkit-scrollbar': {
-          //   width: '10px',
-          //   backgroundColor: 'transparent'
-          // },
-          // '&::-webkit-scrollbar-track': {
-          //   webkitBoxShow: ' inset 0 0 6px rgba(0,0,0,0.3)',
-          //   backgroundColor: 'transparent'
-          // },
-          // '&::-webkit-scrollbar-thumb': {
-          //   backgroundColor: '#C4CDD5',
-          //   border: '2px solid #C4CDD5',
-          //   borderRadius: '5px'
-          // }
+          '&::-webkit-scrollbar': {
+            width: '10px',
+            backgroundColor: 'transparent'
+          },
+          '&::-webkit-scrollbar-track': {
+            webkitBoxShow: ' inset 0 0 6px rgba(0,0,0,0.3)',
+            backgroundColor: 'transparent'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#C4CDD5',
+            border: '2px solid #C4CDD5',
+            borderRadius: '5px'
+          }
         },
         html: {
           margin: 0,

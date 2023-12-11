@@ -19,7 +19,7 @@ const PostLayout = ({ children }: PostLayoutProps) => {
       <Grid
         sx={{
           width: isMobile ? '100%' : '80%',
-          padding: isMobile ? '12px' : '20px',
+          padding: isMobile ? '12px' : '0',
           borderRadius: '10px'
         }}
       >
