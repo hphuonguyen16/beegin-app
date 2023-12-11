@@ -135,6 +135,7 @@ export default function LoginPage() {
       setUser(resJson.data.user)
       //set local storage
       localStorage.setItem('persist', 'persist')
+      localStorage.setItem('role', resJson.data.user.role)
       router.push('/home')
     } else {
       setIsLoggingIn(false)

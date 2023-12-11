@@ -13,8 +13,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
+import withAuth from '@/authorization/withAuth'
 
-export default function Home() {
+function Home() {
   const isMobile = useResponsive('down', 'sm')
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -70,7 +71,6 @@ export default function Home() {
   const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
     return [...acc, ...page?.posts]
   }, [])
-
 
   return (
     <>
@@ -149,3 +149,5 @@ export default function Home() {
     </>
   )
 }
+
+export default withAuth(Home)(['business', 'user'])
