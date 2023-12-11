@@ -54,7 +54,7 @@ function findRootCommentIndex(comments: Comment[], comment: Comment) {
   return comments.findIndex((c) => c._id === comment._id)
 }
 
-function getNumComments(comments: Comment[]) { }
+function getNumComments(comments: Comment[]) {}
 
 interface PostDetailProps {
   post: Post
@@ -178,7 +178,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
             }}
             id='commentDiv'
           >
-            <Box sx={{ overflow: 'auto', width: '100%', height: '93%' }}>
+            <Box sx={{ overflow: 'auto', width: '100%', height: '93%', overflowX: 'hidden' }}>
               <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                 <ListItem alignItems='flex-start'>
                   <ListItemAvatar>
@@ -275,21 +275,32 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                           backgroundColor: 'rgba(0, 0, 0, 0.50)'
                         }}
                       ></Box>
-                      {post?.categories?.map((category: any, index: number) => (
-                        <Chip
-                          variant='outlined'
-                          key={index}
-                          label={category.name}
-                          sx={{
-                            fontSize: isMobile ? '10px' : '12px',
-                            fontWeight: 600,
-                            borderRadius: '10px',
-                            padding: '2px 10px',
-                            margin: '0 10px'
-                          }}
-                          color='secondary'
-                        />
-                      ))}
+                      <Stack
+                        direction={'row'}
+                        sx={{
+                          alignItems: 'center',
+                          overflow: 'scroll',
+                          '&::-webkit-scrollbar': {
+                            display: 'none'
+                          }
+                        }}
+                      >
+                        {post?.categories?.map((category: any, index: number) => (
+                          <Chip
+                            variant='outlined'
+                            key={index}
+                            label={category.name}
+                            sx={{
+                              fontSize: isMobile ? '10px' : '12px',
+                              fontWeight: 600,
+                              borderRadius: '10px',
+                              padding: '2px 10px',
+                              margin: '0 10px'
+                            }}
+                            color='secondary'
+                          />
+                        ))}
+                      </Stack>
                     </Stack>
                     <Box
                       sx={{
