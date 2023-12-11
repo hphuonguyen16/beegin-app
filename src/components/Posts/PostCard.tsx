@@ -158,7 +158,14 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
             src={post.user?.profile?.avatar}
           ></Avatar>
-          <Stack sx={{ minWidth: !isMobile ? '100%' : '85%' }}>
+          <Stack
+            sx={{
+              minWidth: !isMobile ? '100%' : '85%',
+              ...(isRepost && {
+                paddingRight: '48px'
+              })
+            }}
+          >
             <Stack
               direction={'row'}
               sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
