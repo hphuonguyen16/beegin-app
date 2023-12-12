@@ -12,10 +12,10 @@ const PostSkeleton = () => {
       spacing={isMobile ? 1 : 3}
       sx={{ width: '70%', marginBottom: '15px', justifyContent: 'center' }}
     >
-      <Grid item md={1} sx={{ paddingLeft: '0px !important' }}>
+      <Grid item md={2} sx={{ paddingLeft: '0px !important', display: 'flex', justifyContent: 'center' }}>
         <Skeleton animation='wave' variant='circular' width={60} height={60} />
       </Grid>
-      <Grid item md={11} sx={{ paddingLeft: '0px !important' }}>
+      <Grid item md={10} sx={{ paddingLeft: '0px !important' }}>
         <Skeleton animation='wave' variant='text' height={25} sx={{ width: '60%' }} />
         <Skeleton animation='wave' variant='text' height={35} />
         <Skeleton

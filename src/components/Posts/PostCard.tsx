@@ -135,7 +135,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       <Grid
         container
         direction={isMobile ? 'column' : 'row'}
-        spacing={isMobile ? 1 : 4}
+        spacing={isMobile ? 1 : 3}
         sx={{
           width: '70%',
           justifyContent: 'center',
@@ -150,7 +150,16 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           })
         }}
       >
-        <Grid item sx={{ paddingLeft: '0px !important', ...(isRepost && { display: 'none' }) }} md={1}>
+        <Grid
+          item
+          sx={{
+            paddingLeft: '0px !important',
+            display: 'flex',
+            justifyContent: 'center',
+            ...(isRepost && { display: 'none' })
+          }}
+          md={2}
+        >
           <Avatar
             sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
             src={post.user?.profile?.avatar}
@@ -159,7 +168,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         <Grid
           item
           xs={!isMobile ? 8 : 12}
-          md={isRepost ? 12 : 11}
+          md={isRepost ? 12 : 10}
           sx={{ paddingLeft: '0px !important', ...(isRepost && { paddingTop: '0px !important' }) }}
         >
           {' '}
