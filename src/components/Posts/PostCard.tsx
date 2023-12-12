@@ -1,5 +1,5 @@
 'use client'
-import { Avatar, Box, Stack, Typography, Button, Modal } from '@mui/material'
+import { Avatar, Box, Stack, Typography, Button, Modal, Grid } from '@mui/material'
 import Image from 'next/image'
 import { styled } from '@mui/material/styles'
 import React, { useEffect } from 'react'
@@ -132,153 +132,147 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         </Box>
       </Modal>
       <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} handleLike={handleLike} />
-      <Box
+      <Grid
+        container
+        direction={isMobile ? 'column' : 'row'}
+        spacing={isMobile ? 1 : 4}
         sx={{
+          width: '70%',
+          justifyContent: 'center',
           ...(isRepost && {
-            border: '1px solid #cdc6c6',
-            paddingTop: '10px',
-            paddingLeft: '10px',
+            border: '1px solid #dbd5d5',
             borderRadius: '12px',
             overflowX: 'hidden',
-            paddingBottom: '15px'
+            width: '100%',
+            marginTop: '10px',
+            marginLeft: '0px !important',
+            padding: '20px'
           })
         }}
       >
-        <Stack
-          direction={'row'}
-          gap={isMobile ? 1 : 3}
-          sx={{
-            width: '105%',
-            ...(isRepost && {
-              width: '117%'
-            })
-          }}
-        >
+        <Grid item sx={{ paddingLeft: '0px !important', ...(isRepost && { display: 'none' }) }} md={1}>
           <Avatar
             sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
             src={post.user?.profile?.avatar}
           ></Avatar>
+        </Grid>
+        <Grid
+          item
+          xs={!isMobile ? 8 : 12}
+          md={isRepost ? 12 : 11}
+          sx={{ paddingLeft: '0px !important', ...(isRepost && { paddingTop: '0px !important' }) }}
+        >
+          {' '}
           <Stack
-            sx={{
-              minWidth: !isMobile ? '100%' : '85%',
-              ...(isRepost && {
-                paddingRight: '48px'
-              })
-            }}
+            direction={'row'}
+            sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
+            onClick={() => redirectToProfile()}
           >
-            <Stack
-              direction={'row'}
-              sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
-              onClick={() => redirectToProfile()}
-            >
-              <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
-                {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
-              </Typography>
-              <Typography
-                sx={{
-                  color: 'rgba(0, 0, 0, 0.50)',
-                  fontSize: isMobile ? '10px' : '14px',
-                  fontWeight: 400,
-                  marginLeft: '7px'
-                }}
-              >
-                @{post.user?.profile?.slug}
-              </Typography>
-              <Box
-                sx={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  marginLeft: '15px',
-                  backgroundColor: 'rgba(0, 0, 0, 0.50)'
-                }}
-              ></Box>
-              <Typography
-                sx={{
-                  color: 'rgba(0, 0, 0, 0.50)',
-                  fontSize: isMobile ? '13px' : '13px',
-                  fontWeight: 400,
-                  wordWrap: 'break-word',
-                  marginLeft: '15px'
-                }}
-              >
-                {timeSince(new Date(post.createdAt))}
-              </Typography>
-            </Stack>
-            <Box
+            {isRepost && (
+              <Avatar
+                sx={{ width: isMobile ? '30px' : '45px', height: isMobile ? '30px' : '45px', marginRight: '10px' }}
+                src={post.user?.profile?.avatar}
+              ></Avatar>
+            )}
+            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
+              {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
+            </Typography>
+            <Typography
               sx={{
-                width: '70%',
-                minWidth: !isMobile ? '72%' : '100%'
+                color: 'rgba(0, 0, 0, 0.50)',
+                fontSize: isMobile ? '10px' : '14px',
+                fontWeight: 400,
+                marginLeft: '7px'
               }}
             >
-              <Box
-                sx={{
-                  margin: isMobile ? '5px 0' : '10px 0',
-                  fontSize: isMobile ? '13px' : '18px',
-                  overflow: 'hidden',
-                  maxHeight: '80px', // Set the maximum height for the text container
-                  whiteSpace: 'pre-line', // Preserve line breaks within the text
-                  textOverflow: 'ellipsis'
+              {post.user?.profile?.slug}
+            </Typography>
+            <Box
+              sx={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                marginLeft: '15px',
+                backgroundColor: 'rgba(0, 0, 0, 0.50)'
+              }}
+            ></Box>
+            <Typography
+              sx={{
+                color: 'rgba(0, 0, 0, 0.50)',
+                fontSize: isMobile ? '13px' : '13px',
+                fontWeight: 400,
+                wordWrap: 'break-word',
+                marginLeft: '15px'
+              }}
+            >
+              {timeSince(new Date(post.createdAt))}
+            </Typography>
+          </Stack>
+          <Box
+            sx={{
+              margin: isMobile ? '5px 0' : '10px 0',
+              fontSize: isMobile ? '13px' : '18px',
+              overflow: 'hidden',
+              maxHeight: '80px', // Set the maximum height for the text container
+              whiteSpace: 'pre-line', // Preserve line breaks within the text
+              textOverflow: 'ellipsis'
+            }}
+          >
+            {post.content && <HashtagWrapper text={post.content} length={200} />}
+          </Box>
+          <ImageContainerStyled
+            number={post.images ? post.images.length : 0}
+            onClick={() => {
+              openPostDetail()
+            }}
+          >
+            {post.images?.map((src, index) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
+            ))}
+          </ImageContainerStyled>
+          {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
+          {post?.images?.length === 0 && postParent && <PostCard post={postParent as Post} isRepost={true} />}
+          {!isRepost && (
+            <Stack
+              direction={'row'}
+              sx={{
+                margin: isMobile ? '7px 0px 30px 0px' : '10px 10px 30px 10px',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Button
+                onClick={() => {
+                  handleLike()
                 }}
               >
-                {post.content && <HashtagWrapper text={post.content} length={200} />}
-              </Box>
-              <ImageContainerStyled
-                number={post.images ? post.images.length : 0}
+                {post.isLiked ? (
+                  <FavoriteRoundedIcon color='secondary' />
+                ) : (
+                  <FavoriteBorderRoundedIcon color='secondary' />
+                )}
+                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
+              </Button>
+              <Button
                 onClick={() => {
                   openPostDetail()
                 }}
               >
-                {post.images?.map((src, index) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
-                ))}
-              </ImageContainerStyled>
-              {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
-              {post?.images?.length === 0 && postParent && <PostCard post={postParent as Post} isRepost={true} />}
-
-              {!isRepost && (
-                <Stack
-                  direction={'row'}
-                  sx={{
-                    margin: isMobile ? '7px 0px 30px 0px' : '10px 10px 30px 10px',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Button
-                    onClick={() => {
-                      handleLike()
-                    }}
-                  >
-                    {post.isLiked ? (
-                      <FavoriteRoundedIcon color='secondary' />
-                    ) : (
-                      <FavoriteBorderRoundedIcon color='secondary' />
-                    )}
-                    <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      openPostDetail()
-                    }}
-                  >
-                    <ChatBubbleOutlineIcon color='secondary' />{' '}
-                    <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setRepostOpen(true)
-                    }}
-                  >
-                    <ShareIcon color='secondary' />
-                  </Button>
-                </Stack>
-              )}
-            </Box>
-          </Stack>
-        </Stack>
-      </Box>
+                <ChatBubbleOutlineIcon color='secondary' />{' '}
+                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
+              </Button>
+              <Button
+                onClick={() => {
+                  setRepostOpen(true)
+                }}
+              >
+                <ShareIcon color='secondary' />
+              </Button>
+            </Stack>
+          )}
+        </Grid>
+      </Grid>
     </>
   )
 }

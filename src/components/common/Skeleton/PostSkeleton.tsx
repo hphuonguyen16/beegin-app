@@ -1,19 +1,21 @@
 import useResponsive from '@/hooks/useResponsive'
-import { Box, Card, CardHeader, Skeleton, Stack } from '@mui/material'
+import { Box, Card, CardHeader, Skeleton, Stack, Grid } from '@mui/material'
 import React from 'react'
 
 const PostSkeleton = () => {
   const isMobile = useResponsive('down', 'sm')
 
   return (
-    <Stack direction={'row'} gap={isMobile ? 1 : 3}>
-      <Skeleton animation='wave' variant='circular' width={60} height={60} />
-      <Box
-        sx={{
-          width: '75%',
-          minWidth: !isMobile ? '72%' : '100%'
-        }}
-      >
+    <Grid
+      container
+      direction={'row'}
+      spacing={isMobile ? 1 : 3}
+      sx={{ width: '70%', marginBottom: '15px', justifyContent: 'center' }}
+    >
+      <Grid item md={1} sx={{ paddingLeft: '0px !important' }}>
+        <Skeleton animation='wave' variant='circular' width={60} height={60} />
+      </Grid>
+      <Grid item md={11} sx={{ paddingLeft: '0px !important' }}>
         <Skeleton animation='wave' variant='text' height={25} sx={{ width: '60%' }} />
         <Skeleton animation='wave' variant='text' height={35} />
         <Skeleton
@@ -23,8 +25,8 @@ const PostSkeleton = () => {
             mt: 2
           }}
         />
-      </Box>
-    </Stack>
+      </Grid>
+    </Grid>
   )
 }
 
