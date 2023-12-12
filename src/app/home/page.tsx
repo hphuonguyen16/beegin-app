@@ -97,11 +97,11 @@ function Home() {
       <PostLayout>
         <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}></Box>
 
-        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden', paddingLeft: '150px' }}>
-          <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
+        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}>
+          {/* <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
             Feeds
-          </Typography>
-          <Stack direction={'row'} sx={{ marginTop: '25px' }} spacing={2}>
+          </Typography> */}
+          <Stack direction={'row'} sx={{ marginTop: '25px', justifyContent: 'center' }} spacing={2}>
             <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
             <TextField
               size='small'
@@ -129,7 +129,16 @@ function Home() {
             endMessage={<div>No more posts</div>}
             scrollableTarget='scrollableDiv'
           >
-            <Box sx={{ marginTop: '50px', overflowX: 'hidden' }}>
+            <Box
+              sx={{
+                marginTop: '50px',
+                overflowX: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
               {postsData?.map((post, index) => {
                 if (post && post.parent) {
                   return <PostCard key={post._id || index} post={post} postParent={post.parent} />
@@ -137,14 +146,14 @@ function Home() {
                   return <PostCard key={post._id || index} post={post} />
                 }
               })}
+              {/* {isFetching && ( */}
+              <>
+                <PostSkeleton />
+                <PostSkeleton />
+              </>
+              {/* )} */}
             </Box>
           </InfiniteScroll>
-          {isFetching && (
-            <Stack direction='column' spacing={3}>
-              <PostSkeleton />
-              <PostSkeleton />
-            </Stack>
-          )}
         </Box>
       </PostLayout>
     </>
