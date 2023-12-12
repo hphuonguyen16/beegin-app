@@ -123,7 +123,7 @@ const Sidebar = ({ menuItems }: SidebarProps) => {
                   <AvatarCard
                     avatar={user ? user?.profile.avatar : null}
                     name={user?.profile.firstname + ' ' + user?.profile.lastname}
-                    subtitle={user?.profile.slug}
+                    subtitle={user ? '@' + user?.profile.slug : null}
                     vertical={false}
                   />
                   {/* <ListItemAvatar>

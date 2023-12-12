@@ -89,7 +89,7 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
                   marginLeft: '7px'
                 }}
               >
-                {comment.user.profile?.slug}
+                @{comment.user.profile?.slug}
               </Typography>
             </Stack>
           }

@@ -70,7 +70,7 @@ const ReplyPostCard = ({ post }: ReplyPostCardProps) => {
             marginLeft: '7px'
           }}
         >
-          {post.user.profile?.slug}
+          @{post.user.profile?.slug}
         </Typography>
         <Box
           sx={{
@@ -100,7 +100,7 @@ const ReplyPostCard = ({ post }: ReplyPostCardProps) => {
         <Box sx={{ width: '85%' }}>
           <Typography sx={{ fontSize: '16px' }}>
             {/* {post.user.profile?.firstname + ' ' + post.user.profile?.lastname} */}
-            {`Replying to ${post.user.profile?.slug}`}
+            {`Replying to @${post.user.profile?.slug}`}
           </Typography>
           <Box
             sx={{

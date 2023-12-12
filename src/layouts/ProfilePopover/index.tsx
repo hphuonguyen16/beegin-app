@@ -190,7 +190,7 @@ const ProfilePopover = () => {
 										</Typography>
 
 										<Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-											{user?.profile.slug}
+										@{user?.profile.slug}
 										</Typography>
 									</Box>
 								</Box>

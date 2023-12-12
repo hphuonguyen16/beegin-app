@@ -70,7 +70,7 @@ const RegisterForms = ({
           return { ...topic, isChecked: false }
         })
       )
-    } catch (err) {}
+    } catch (err) { }
   }
 
   useEffect(() => {
@@ -168,7 +168,7 @@ const RegisterForms = ({
             onChange={handleTextFieldChange}
           />
           <FormControl fullWidth>
-            <InputLabel id='demo-simple-select-label'>Age</InputLabel>
+            <InputLabel id='demo-simple-select-label'>Gender</InputLabel>
             <Select
               labelId='demo-simple-select-label'
               id='demo-simple-select'
@@ -253,7 +253,7 @@ const RegisterForms = ({
           {editMode && (
             <Stack direction={'column'} sx={{ ml: 2 }} spacing={1}>
               {/* <IconButton><Edit /></IconButton> */}
-              <IconButton onClick={() => setEditMode(false)}>
+              <IconButton onClick={() => { setEditMode(false); setCropper(null); }}>
                 <Delete />
               </IconButton>
             </Stack>
