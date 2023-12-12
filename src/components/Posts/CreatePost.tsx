@@ -230,7 +230,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                 fontWeight: 400
               }}
             >
-              {user?.profile?.slug}
+              @{user?.profile?.slug}
             </Typography>
           </Box>
         </Stack>

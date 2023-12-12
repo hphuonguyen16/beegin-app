@@ -177,7 +177,7 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture', 'Prefer
 
 export default function Register() {
   let redirectUrl = ''
-  const [cropper, setCropper] = useState<any>()
+  const [cropper, setCropper] = useState<any>(null)
   const getCropData = async () => {
     if (cropper) {
       const file = await fetch(cropper.getCroppedCanvas().toDataURL())
@@ -214,7 +214,7 @@ export default function Register() {
     passwordConfirm: '',
     firstname: '',
     lastname: '',
-    slug: '@',
+    slug: '',
     gender: true,
     preferences: []
   })
@@ -356,7 +356,7 @@ export default function Register() {
                   <Button type='submit' variant='contained' color='primary' disabled={isSubmitting ? true : false} onClick={_handleSubmit}
                     //@ts-ignore
                     sx={{ background: isSubmitting ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`, }}>
-                    {isLastStep ? (isSubmitting ? <CircularProgress size={15} sx={{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next'}
+                    {activeStep === 2 && cropper === null ? "Skip" : ( isLastStep?(isSubmitting? <CircularProgress size = { 15} sx = {{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next')}
                   </Button>
                 </div>
               </Stack>

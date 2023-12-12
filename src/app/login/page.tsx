@@ -189,8 +189,8 @@ export default function LoginPage() {
             </Typography>
             <Stack spacing={3} className='w-full'>
               <TextField
-                name='username'
-                label='Username'
+                name='email'
+                label='Email'
                 className='mt-6'
                 onChange={(e) => {
                   setUsername(e.target.value)

@@ -192,11 +192,11 @@ function BussinessStepper() {
                 Back
               </Button>
               <Box sx={{ flex: '1 1 auto' }} />
-              {isStepOptional(activeStep) && (
+              {/* {isStepOptional(activeStep) && (
                 <Button color='inherit' onClick={handleSkip} sx={{ mr: 1 }}>
                   Skip
                 </Button>
-              )}
+              )} */}
               {/* <Button onClick={handleNext}>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Button> */}
               {activeStep === 1 ? (
                 <Button onClick={createBussinessPost}>
@@ -214,4 +214,4 @@ function BussinessStepper() {
   )
 }
 
-export default withAuth(BussinessStepper)(['business', 'user'])
+export default withAuth(BussinessStepper)(['business'])
