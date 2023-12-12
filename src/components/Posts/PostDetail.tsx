@@ -190,7 +190,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
   }
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
-    if (commentReply.user.profile?.slug) setComment(`${commentReply.user.profile?.slug} `)
+    if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)
     else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
   // React.useEffect(() => {
@@ -262,7 +262,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                             marginLeft: '7px'
                           }}
                         >
-                          {post.user?.profile?.slug}
+                          @{post.user?.profile?.slug}
                         </Typography>
                         <Box
                           sx={{
@@ -313,7 +313,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                           marginLeft: '7px'
                         }}
                       >
-                        {post.user?.profile?.slug}
+                        @{post.user?.profile?.slug}
                       </Typography>
                       <Typography
                         sx={{

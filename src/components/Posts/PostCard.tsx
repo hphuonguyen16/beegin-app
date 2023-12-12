@@ -182,7 +182,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   marginLeft: '7px'
                 }}
               >
-                {post.user?.profile?.slug}
+                @{post.user?.profile?.slug}
               </Typography>
               <Box
                 sx={{
