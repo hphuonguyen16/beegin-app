@@ -1,4 +1,4 @@
-import { Box, Typography, Stack } from '@mui/material'
+import { Box, Typography, Stack, Skeleton } from '@mui/material'
 import SuggestFollowCard from './SuggestFollowCard'
 
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
@@ -48,11 +48,16 @@ function SuggestFollow() {
           Show more
         </Typography>
       </Stack>
-      <Box sx={{ marginLeft: '-13px' }}>
+      <Box sx={{ marginLeft: '-10px' }}>
         {displayedData && displayedData.length > 0 ? (
           displayedData.map((item: any, index: number) => <SuggestFollowCard key={index} user={item} />)
         ) : (
-          <Box></Box>
+          [...Array(3)].map((elementInArray, index) => (
+            <Stack key={index} direction={"row"} alignItems={"center"} sx={{ padding: "20px" }}>
+              <Skeleton variant='circular' width={60} height={60} />
+              <Stack spacing={1} justifyContent={"center"} sx={{ marginLeft: "26px" }} ><Skeleton variant='rounded' height={15} width={90} /><Skeleton variant='rounded' height={15} width={50} /><Skeleton variant='rounded' height={15} width={150} /></Stack>
+              <Skeleton variant='rounded' sx={{ marginLeft: "32px", borderRadius: "18px" }} width={85} height={40} />
+            </Stack>))
         )}
       </Box>
     </Box>

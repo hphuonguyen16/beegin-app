@@ -13,8 +13,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
+import withAuth from '@/authorization/withAuth'
 
-export default function Home() {
+function Home() {
   const isMobile = useResponsive('down', 'sm')
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -71,9 +72,9 @@ export default function Home() {
     return [...acc, ...page?.posts]
   }, [])
 
-
   return (
     <>
+      <title>Home | Beegin</title>
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
@@ -96,7 +97,7 @@ export default function Home() {
       <PostLayout>
         <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}></Box>
 
-        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden' }}>
+        <Box sx={{ overflowX: 'hidden', overflowY: 'hidden', paddingLeft: '150px' }}>
           <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
             Feeds
           </Typography>
@@ -149,3 +150,5 @@ export default function Home() {
     </>
   )
 }
+
+export default withAuth(Home)(['business', 'user'])

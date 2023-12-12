@@ -27,6 +27,7 @@ export default function Page() {
   }, [value, searchParams])
   return (
     <PostLayout>
+    <title>Search | Beegin</title>
       <Box sx={{ width: '100%', typography: 'body1' }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

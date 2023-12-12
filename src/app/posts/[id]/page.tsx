@@ -2,16 +2,58 @@
 import React from 'react'
 import useResponsive from '@/hooks/useResponsive'
 import PostDetail from '@/components/Posts/PostDetail'
-
-const images = [
-  'https://images.pexels.com/photos/6422029/pexels-photo-6422029.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/6588618/pexels-photo-6588618.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/4480156/pexels-photo-4480156.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/5836625/pexels-photo-5836625.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-]
-const PostDetailPage = () => {
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import UrlConfig from '@/config/urlConfig'
+import { Post } from '@/types/post'
+import { useRouter } from 'next/navigation'
+const PostDetailPage = ({ params }: { params: { id: string } }) => {
   const isMobile = useResponsive('down', 'sm')
-  return <>{/* <PostDetail  /> */}</>
+  const router = useRouter()
+  const [open, setOpen] = React.useState(true)
+  const [post, setPost] = React.useState<Post>()
+  const [like, setLike] = React.useState<boolean>(false)
+  const axiosPrivate = useAxiosPrivate()
+  async function getPost() {
+    const response = await axiosPrivate.get(`${UrlConfig.posts.getPosts}/${params.id}`)
+    setPost(response.data.data)
+  }
+  console.log(post)
+
+  const handleLike = async () => {
+    try {
+      if (!like) {
+        setLike(true)
+        setPost((prevPost) => {
+          if (prevPost) {
+            return { ...prevPost, isLiked: true, numLikes: prevPost.numLikes + 1 }
+          }
+          return prevPost // Handle the case when prevPost is undefined
+        })
+        await axiosPrivate.post(UrlConfig.posts.likePost(params.id))
+      } else {
+        setLike(false)
+        setPost((prevPost) => {
+          if (prevPost) {
+            return { ...prevPost, isLiked: false, numLikes: prevPost.numLikes - 1 }
+          }
+          return prevPost // Handle the case when prevPost is undefined
+        })
+        await axiosPrivate.delete(UrlConfig.posts.unlikePost(params.id))
+      }
+    } catch (err) { }
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+    router.back()
+  }
+
+  React.useEffect(() => {
+    getPost()
+  }, [])
+
+  return post && <>
+    <title>Post | Beegin</title><PostDetail open={true} post={post} handleLike={handleLike} handleClose={handleClose} /></>
 }
 
 export default PostDetailPage

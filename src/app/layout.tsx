@@ -20,19 +20,12 @@ import PeopleOutlineOutlinedIcon from '@mui/icons-material/PeopleOutlineOutlined
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined'
 import SummarizeIcon from '@mui/icons-material/Summarize'
-import { HomeOutlined, TextsmsOutlined, Person2Outlined, SettingsOutlined, ExploreOutlined } from '@mui/icons-material'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import TanstackProvider from '@/providers/TanstackProvider'
-
-import { BsHouse } from "react-icons/bs";
-import { FaHouseChimney, FaRegUser, FaUser, FaCircleUser, FaRegCircleUser } from "react-icons/fa6";
-import { FaCompass, FaRegCompass } from "react-icons/fa";
-import { BiSolidMessageSquareDetail } from "react-icons/bi";
-import { BiMessageSquareDetail } from "react-icons/bi";
-import { IoHome, IoHomeOutline } from "react-icons/io5";
-import { AiOutlineHome, AiFillHome } from "react-icons/ai";
-import { TiHomeOutline, TiHome } from "react-icons/ti";
-
+import { FaHouseChimney, FaRegUser, FaUser, FaCircleUser, FaRegCircleUser } from 'react-icons/fa6'
+import { FaCompass, FaRegCompass } from 'react-icons/fa'
+import { BiSolidMessageSquareDetail } from 'react-icons/bi'
+import { BiMessageSquareDetail } from 'react-icons/bi'
+import { AiOutlineHome, AiFillHome } from 'react-icons/ai'
 
 const poppins = Poppins({
   weight: '400',
@@ -41,11 +34,11 @@ const poppins = Poppins({
   variable: '--font-poppins'
 })
 
-// export const metadata = {
-//   title: 'Beegin app',
-//   description:
-//     'A new next generation social media application!',
-// };
+const metadata = {
+  title: 'Beegin',
+  description:
+    'A new next generation social media application! Where your stories beegin.',
+};
 const menuItems = [
   {
     icon: <AiOutlineHome />,
@@ -54,8 +47,7 @@ const menuItems = [
     path: '/home'
   },
   {
-    icon: <FaRegCompass />
-    ,
+    icon: <FaRegCompass />,
     iconActive: <FaCompass />,
     label: 'Explore',
     path: '/explore'
@@ -71,7 +63,7 @@ const menuItems = [
     iconActive: <FaCircleUser />,
     label: 'Profile',
     path: '/profile'
-  },
+  }
   // {
   //   icon: <SettingsOutlined />,
   //   iconActive: <SettingsRoundedIcon />,
@@ -107,65 +99,78 @@ const menuAdminItems = [
   }
 ]
 
+const menuBusinessItems = [
+  {
+    icon: <AnalyticsOutlinedIcon />,
+    iconActive: <AnalyticsIcon />,
+    label: 'Analytics',
+    path: '/business/analytics'
+  },
+  {
+    icon: <ArticleOutlinedIcon />,
+    iconActive: <ArticleIcon />,
+    label: 'Transactions',
+    path: '/business/transactions'
+  },
+  {
+    icon: <SummarizeOutlinedIcon />,
+    iconActive: <SummarizeIcon />,
+    label: 'Advertisements',
+    path: '/business/advertisements'
+  },
+  {
+    icon: <BiMessageSquareDetail />,
+    iconActive: <BiSolidMessageSquareDetail />,
+    label: 'Messages',
+    path: '/messages'
+  },
+  {
+    icon: <FaRegCircleUser />,
+    iconActive: <FaCircleUser />,
+    label: 'Profile',
+    path: '/profile'
+  }
+]
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
   const noLayoutPaths = ['/login', '/register', '/verify']
   const isAdminPath = pathname.startsWith('/admin')
-  if (noLayoutPaths.includes(pathname)) {
-    return (
-      <html lang='en'>
-        <Head>
-          <link rel='icon' href='/favicon.ico' sizes='any' />
-          {/* <meta name="description" content={metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:title" content={metadata.title} /> */}
-        </Head>
-        <body className={poppins.variable}>
-          <AuthProvider>
-            <TanstackProvider>
-              <SnackbarContextProvider>
-                <SessionProvider session={session}>
-                  <PostProvider>
-                    <ThemeProvider>{children}</ThemeProvider>
-                  </PostProvider>
-                </SessionProvider>
-              </SnackbarContextProvider>
-            </TanstackProvider>
-          </AuthProvider>
-        </body>
-      </html>
-    )
-  } else {
-    return (
-      <html lang='en'>
-        <Head>
-          <link rel='icon' href='/favicon.ico' sizes='any' />
-          {/* <meta name="description" content={metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:title" content={metadata.title} /> */}
-        </Head>
-        <body className={poppins.variable}>
-          <AuthProvider>
-            <TanstackProvider>
-              <SnackbarContextProvider>
-                <SessionProvider session={session}>
-                  <PostProvider>
+  const isBusinessPath = pathname.startsWith('/business')
+  return (
+    <html lang='en'>
+      <head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <meta name="description" content={metadata.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={metadata.title} />
+      </head>
+      <body className={poppins.variable}>
+        <AuthProvider>
+          <TanstackProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <PostProvider>
+                  {noLayoutPaths.includes(pathname) ?
+                    <ThemeProvider>{children}</ThemeProvider> :
                     <ThemeProvider>
                       {isAdminPath ? (
-                        // Use menuAdminItems for admin path
                         <Layout menuItems={menuAdminItems}>{children}</Layout>
+                      ) : isBusinessPath ? (
+                        <Layout menuItems={menuBusinessItems}>{children}</Layout>
                       ) : (
-                        // Use menuItems for other paths
                         <Layout menuItems={menuItems}>{children}</Layout>
                       )}
-                    </ThemeProvider>
-                  </PostProvider>
-                </SessionProvider>
-              </SnackbarContextProvider>
-            </TanstackProvider>
-          </AuthProvider>
-        </body>
-      </html>
-    )
-  }
+                    </ThemeProvider>}
+
+                </PostProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
+          </TanstackProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  )
 }

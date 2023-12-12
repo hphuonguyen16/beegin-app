@@ -20,6 +20,7 @@ import DefaultBackground from '@/assets/default_background.jpg'
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
+import withAuth from '@/authorization/withAuth'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -143,6 +144,7 @@ function page() {
   }
   return (
     <StyledProfile>
+    <title>Profile | Beegin</title>
       <Grid container spacing={2} sx={{ paddingX: '20px' }}>
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
@@ -355,4 +357,4 @@ function page() {
   )
 }
 
-export default page
+export default withAuth(page)(['user', 'business'])

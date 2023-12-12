@@ -135,6 +135,7 @@ export default function LoginPage() {
       setUser(resJson.data.user)
       //set local storage
       localStorage.setItem('persist', 'persist')
+      localStorage.setItem('role', resJson.data.user.role)
       router.push('/home')
     } else {
       setIsLoggingIn(false)
@@ -225,8 +226,8 @@ export default function LoginPage() {
               disabled={isLoggingIn ? true : false}
               sx={{
                 background: isLoggingIn
-                //@ts-ignore
-                  ? (theme) => `${theme.palette.disabled}!important`
+                  ? //@ts-ignore
+                    (theme) => `${theme.palette.disabled}!important`
                   : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
                 color: 'white !important',
                 width: '100%'
