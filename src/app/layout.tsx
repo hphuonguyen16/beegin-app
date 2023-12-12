@@ -34,11 +34,11 @@ const poppins = Poppins({
   variable: '--font-poppins'
 })
 
-// export const metadata = {
-//   title: 'Beegin app',
-//   description:
-//     'A new next generation social media application!',
-// };
+const metadata = {
+  title: 'Beegin',
+  description:
+    'A new next generation social media application! Where your stories beegin.',
+};
 const menuItems = [
   {
     icon: <AiOutlineHome />,
@@ -136,64 +136,41 @@ export default function RootLayout({ children, session }: { children: React.Reac
   const noLayoutPaths = ['/login', '/register', '/verify']
   const isAdminPath = pathname.startsWith('/admin')
   const isBusinessPath = pathname.startsWith('/business')
-  if (noLayoutPaths.includes(pathname)) {
-    return (
-      <html lang='en'>
-        <Head>
-          <link rel='icon' href='/favicon.ico' sizes='any' />
-          {/* <meta name="description" content={metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:title" content={metadata.title} /> */}
-        </Head>
-        <body className={poppins.variable}>
-          <AuthProvider>
-            <TanstackProvider>
-              <SnackbarContextProvider>
-                <SessionProvider session={session}>
-                  <PostProvider>
-                    <ThemeProvider>{children}</ThemeProvider>
-                  </PostProvider>
-                </SessionProvider>
-              </SnackbarContextProvider>
-            </TanstackProvider>
-          </AuthProvider>
-        </body>
-      </html>
-    )
-  } else {
-    return (
-      <html lang='en'>
-        <Head>
-          <link rel='icon' href='/favicon.ico' sizes='any' />
-          {/* <meta name="description" content={metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:title" content={metadata.title} /> */}
-        </Head>
-        <body className={poppins.variable}>
-          <AuthProvider>
-            <TanstackProvider>
-              <SnackbarContextProvider>
-                <SessionProvider session={session}>
-                  <PostProvider>
+  return (
+    <html lang='en'>
+      <head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <meta name="description" content={metadata.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={metadata.title} />
+      </head>
+      <body className={poppins.variable}>
+        <AuthProvider>
+          <TanstackProvider>
+            <SnackbarContextProvider>
+              <SessionProvider session={session}>
+                <PostProvider>
+                  {noLayoutPaths.includes(pathname) ?
+                    <ThemeProvider>{children}</ThemeProvider> :
                     <ThemeProvider>
                       {isAdminPath ? (
-                        // Use menuAdminItems for admin path
                         <Layout menuItems={menuAdminItems}>{children}</Layout>
                       ) : isBusinessPath ? (
-                        // Use menuBusinessItems for business path
                         <Layout menuItems={menuBusinessItems}>{children}</Layout>
                       ) : (
-                        // Use menuItems for other paths
                         <Layout menuItems={menuItems}>{children}</Layout>
                       )}
-                    </ThemeProvider>
-                  </PostProvider>
-                </SessionProvider>
-              </SnackbarContextProvider>
-            </TanstackProvider>
-          </AuthProvider>
-        </body>
-      </html>
-    )
-  }
+                    </ThemeProvider>}
+
+                </PostProvider>
+              </SessionProvider>
+            </SnackbarContextProvider>
+          </TanstackProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  )
 }

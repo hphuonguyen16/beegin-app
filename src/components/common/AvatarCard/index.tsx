@@ -3,6 +3,7 @@ import { Grid, Box, Stack, Typography, styled, Badge, Avatar, Skeleton } from '@
 
 const AvatarCard = ({ name, subtitle, avatar, vertical = false }: { name: string, subtitle: string | null, avatar: string, vertical: boolean }) => {
     const isMobile = useResponsive('down', 'sm')
+    console.log(subtitle);
 
     return <Stack direction={vertical ? "column" : "row"} alignItems={"center"}>
         {avatar !== null ?
@@ -13,7 +14,7 @@ const AvatarCard = ({ name, subtitle, avatar, vertical = false }: { name: string
                 <Typography component="div" variant="h4" sx={{ marginY: vertical ? "10px" : 0, lineHeight: 1, marginBottom: "2px" }}>{name}</Typography>
                 : <Skeleton width={150} />}
             {subtitle ?
-                <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ lineHeight: 1, padding: vertical ? "0 20px" : 0, textAlign: vertical ? "center" : "initial" }}>
+                <Typography variant="body2" color="text.secondary" component="div" sx={{ lineHeight: 1, padding: vertical ? "0 20px" : 0, textAlign: vertical ? "center" : "initial", textTransform: 'initial' }}>
                     {subtitle}
                 </Typography>
                 : <Skeleton width={100} />

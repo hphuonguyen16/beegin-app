@@ -45,6 +45,7 @@ function Page() {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
+      <title>Messages | Beegin</title>
       <Grid sx={{ width: '100%', height: '100%' }} container spacing={3}>
         {friends?.length === 0 ? (
           <Grid item xs={12} sx={{ height: '100%' }}>

@@ -150,6 +150,7 @@ function page() {
 
   return (
     <StyledProfile>
+    <title>Profile | Beegin</title>
       <Grid container spacing={2} sx={{ paddingX: '20px' }}>
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
