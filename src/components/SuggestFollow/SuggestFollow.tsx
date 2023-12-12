@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 
 function SuggestFollow() {
   const axiosPrivate = useAxiosPrivate()
-  const [data, setData] = useState([])
+  const [data, setData] = useState<any>(null)
 
   const [showAll, setShowAll] = useState(false)
 
@@ -28,7 +28,7 @@ function SuggestFollow() {
   const handleShowMore = () => {
     setShowAll(!showAll)
   }
-  const displayedData = showAll === true ? data : data.slice(0, 3)
+  const displayedData = showAll === true ? data : data?.slice(0, 3)
   return (
     <Box>
       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
@@ -49,7 +49,7 @@ function SuggestFollow() {
         </Typography>
       </Stack>
       <Box sx={{ marginLeft: '-10px' }}>
-        {displayedData && displayedData.length > 0 ? (
+        {data != null && displayedData.length >= 0 ? (
           displayedData.map((item: any, index: number) => <SuggestFollowCard key={index} user={item} />)
         ) : (
           [...Array(3)].map((elementInArray, index) => (

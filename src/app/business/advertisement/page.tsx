@@ -214,4 +214,4 @@ function BussinessStepper() {
   )
 }
 
-export default withAuth(BussinessStepper)(['business', 'user'])
+export default withAuth(BussinessStepper)(['business'])
