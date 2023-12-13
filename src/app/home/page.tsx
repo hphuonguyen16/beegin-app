@@ -4,6 +4,7 @@ import { Box, Typography, Stack, TextField, Avatar, Modal } from '@mui/material'
 import PostLayout from '@/layouts/PostLayout'
 import useResponsive from '@/hooks/useResponsive'
 import { Post } from '@/types/post'
+import { Feed } from '@/types/feed'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { useState } from 'react'
 import urlConfig from '@/config/urlConfig'
@@ -14,6 +15,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import withAuth from '@/authorization/withAuth'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 
 function Home() {
   const isMobile = useResponsive('down', 'sm')
@@ -25,23 +27,25 @@ function Home() {
   async function fetchPosts({ pageParam }: { pageParam?: number }) {
     try {
       // Fetch posts
-      const response = await axios.get(`${urlConfig.posts.getPosts}?limit=5&page=${pageParam}`)
-      let posts = response.data.data.data
+      const response = await axios.get(`${urlConfig.feeds.getFeeds}?limit=5&page=${pageParam}`)
+      let feeds = response.data.data as Feed[]
+      console.log('-----', response.data)
       let { total } = response.data
 
-      posts = posts.map(async (post: Post) => {
-        const likeResponse = await axios.get(urlConfig.posts.checkLikePost(post._id))
+      let posts = feeds.map((feed: Feed) => {
+        return feed.post
+      })
+
+      const postsPromises = posts.map(async (post: Post) => {
         const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=5`)
         const comments = commentResponse.data.data as Comment[]
-        const isLiked = likeResponse.data.data
         return {
           ...post,
-          isLiked,
           comments
         }
       })
-      posts = await Promise.allSettled(posts)
-      posts = posts.map((post: any) => {
+      const postsCurrent = await Promise.allSettled(postsPromises)
+      posts = postsCurrent.map((post: any) => {
         if (post.status === 'fulfilled') {
           return post.value
         }
@@ -69,9 +73,11 @@ function Home() {
     staleTime: 1000 * 60 * 10 // 10 minutes
   })
   const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
+    console.log(page)
+    //@ts-ignore
     return [...acc, ...page?.posts]
   }, [])
-
+  console.log(hasNextPage)
   return (
     <>
       <title>Home | Beegin</title>
@@ -146,12 +152,18 @@ function Home() {
                   return <PostCard key={post._id || index} post={post} />
                 }
               })}
-              {/* {isFetching && ( */}
-              <>
-                <PostSkeleton />
-                <PostSkeleton />
-              </>
-              {/* )} */}
+              {isFetching ? (
+                <>
+                  <PostSkeleton />
+                  <PostSkeleton />
+                </>
+              ) : (
+                <>
+                  <Box sx={{ height: '200px' }}>
+                    <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
+                  </Box>
+                </>
+              )}
             </Box>
           </InfiniteScroll>
         </Box>

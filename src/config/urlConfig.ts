@@ -40,6 +40,9 @@ const UrlConfig: any = {
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`
   },
+  feeds: {
+    getFeeds: `/api/v1/feed`
+  },
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
