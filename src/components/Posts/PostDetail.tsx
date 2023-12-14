@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Box,
   Chip,
@@ -68,6 +68,7 @@ interface pageOfReplyComments {
 }
 
 const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
+  console.log('start')
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
@@ -93,6 +94,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
     setLoading(false)
   }
   const createComment = async () => {
+    console.log('create comment')
     if (!commentReply) {
       const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
         content: comment
@@ -105,6 +107,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
         parent: rootComment._id
       })
       setComments((prev) => {
+        console.log('setcomment reply')
         const newComments = _.cloneDeep(prev)
         const rootCommentIndex = findRootCommentIndex(newComments, commentReply)
 
@@ -130,7 +133,9 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)
-    else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
+    else {
+      setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
+    }
   }
   React.useEffect(() => {
     const fetchData = async () => {
@@ -405,6 +410,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               <Box sx={{ padding: '0 13px', marginTop: '15px' }}>
                 <FormControl sx={{ width: '100%' }}>
                   <TextField
+                    inputRef={(input) => input && input.focus()}
                     multiline
                     size='small'
                     variant='outlined'

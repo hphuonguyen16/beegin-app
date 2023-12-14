@@ -65,7 +65,9 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
       // Handle errors
     }
   }
-
+  useEffect(() => {
+    setCommentData(comment)
+  }, [comment])
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
       <ListItem
