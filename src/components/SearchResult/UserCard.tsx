@@ -4,17 +4,20 @@ import searchProfile from '@/types/searchProfile'
 import { last } from 'lodash'
 import FollowSearchButton from '../ButtonFollow/FollowSearchButton'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
 interface UserCardProps {
   profile: searchProfile
 }
 export default function UserCard({ profile }: UserCardProps) {
-  const { id, avatar, firstname, lastname, user, bio } = profile
+  const { user } = useAuth();
+  const { id, avatar, firstname, lastname, bio } = profile
   const router = useRouter()
   const redirectToProfile = () => {
-    if (user) {
-      console.log(user)
-      router.push(`/profile/${user}`)
+    if (profile.user !== user?._id) {
+      router.push(`/profile/${profile.user}`)
+    } else {
+      router.push('/profile');
     }
   }
   return (
@@ -49,7 +52,7 @@ export default function UserCard({ profile }: UserCardProps) {
               </Typography>
               <Typography>@{firstname + lastname}</Typography>
             </Stack>
-            <FollowSearchButton userId={user} />
+            <FollowSearchButton userId={profile.user} myId={user?._id} />
           </Stack>
         </Grid>
         <Grid item xs={1}></Grid>
