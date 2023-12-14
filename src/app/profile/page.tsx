@@ -28,7 +28,7 @@ import { BsPeople } from "react-icons/bs";
 import { TbCell } from "react-icons/tb";
 
 //component-style
-export const StyledProfile = styled('div')(({ theme }) => ({
+const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
   color: '#FFFFFF',
@@ -36,14 +36,14 @@ export const StyledProfile = styled('div')(({ theme }) => ({
   position: 'relative'
 }))
 
-export const Information = styled(Card)(({ theme }) => ({
+const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
   minWidth: '300px'
 }))
 
-export const Posts = styled(Card)(({ theme }) => ({
+const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
@@ -58,7 +58,7 @@ const ButtonCustom = styled(Button)(({ theme }) => ({
   border: '1px solid #D9D9D9'
 }))
 
-export const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
   backgroundColor: 'white',
   boxShadow: '0 6px 12px -4px rgba(145, 158, 171, 0.1)',
@@ -79,7 +79,7 @@ export const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => 
   },
 }));
 
-export const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   fontSize: '25px', padding: '10px 35px', color: theme.palette.grey[600],
   display: 'flex', flexDirection: 'column',
   '&:disabled': {

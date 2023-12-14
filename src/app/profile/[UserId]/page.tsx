@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card, ToggleButtonGroup, ToggleButton } from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
@@ -19,13 +19,66 @@ import { useEffect, useState } from 'react'
 import React from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
-import { Information, Posts, StyledProfile, StyledToggleButton, StyledToggleButtonGroup } from '../page';
 import DefaultBackground from '@/assets/default_background.jpg'
 
 //icons
 import { IoMdImages } from "react-icons/io";
 import { BsPeople } from "react-icons/bs";
 import { TbCell } from "react-icons/tb";
+
+
+const StyledProfile = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: '100%',
+  color: '#FFFFFF',
+  overflow: 'auto',
+  position: 'relative'
+}))
+
+const Information = styled(Card)(({ theme }) => ({
+  height: '100%',
+  borderRadius: '15px',
+  backgroundColor: 'white',
+  minWidth: '300px'
+}))
+
+const Posts = styled(Card)(({ theme }) => ({
+  height: '100%',
+  minHeight: '730px',
+  borderRadius: '15px',
+  backgroundColor: 'white',
+}))
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+
+  backgroundColor: 'white',
+  boxShadow: '0 6px 12px -4px rgba(145, 158, 171, 0.1)',
+  padding: '2px',
+  // border: '1px solid #D9D9D9A5',
+  '& .MuiToggleButtonGroup-grouped': {
+    margin: theme.spacing(0.5),
+    border: 0,
+    '&.Mui-disabled': {
+      border: 0,
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
+
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+  fontSize: '25px', padding: '10px 35px', color: theme.palette.grey[600],
+  display: 'flex', flexDirection: 'column',
+  '&:disabled': {
+    color: theme.palette.secondary.dark,
+    //@ts-ignore
+    backgroundColor: theme.palette.secondary.lighter + 'aa',
+  }
+}))
 
 
 function page() {
