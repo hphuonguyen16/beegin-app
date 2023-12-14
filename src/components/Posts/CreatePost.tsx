@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Typography, Stack, Avatar, TextField, IconButton, Button } from '@mui/material'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import EmojiEmotionsOutlinedIcon from '@mui/icons-material/EmojiEmotionsOutlined'
+import { MdVideoLibrary } from "react-icons/md";
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import useResponsive from '@/hooks/useResponsive'
@@ -317,7 +317,22 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
               {' '}
               Add to your post
             </Typography>
-            <Stack direction={'row'} gap={2} sx={{ width: '55%' }}>
+            <Stack direction={'row'} gap={2} sx={{ width: '55%', justifyContent: "end" }}>
+              <>
+                <input
+                  accept='*'
+                  type='file'
+                  id='icon-button-video'
+                  multiple
+                  onChange={handleImageChange}
+                  className='hidden'
+                />
+                <label htmlFor='icon-button-video'>
+                  <IconButton component='span' sx={{ color: (theme: any) => theme.palette.secondary.main, fontSize: "35px" }}>
+                    <MdVideoLibrary />
+                  </IconButton>
+                </label>
+              </>
               <>
                 <input
                   accept='image/*'
@@ -325,7 +340,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                   id='icon-button-file'
                   multiple
                   onChange={handleImageChange}
-                  style={{ visibility: 'hidden' }}
+                  className='hidden'
                 />
                 <label htmlFor='icon-button-file'>
                   <IconButton component='span'>
@@ -333,9 +348,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                   </IconButton>
                 </label>
               </>
-              <>
-                <EmojiPicker content={content} setContent={setContent} sizeMedium={false} />
-              </>
+              <EmojiPicker content={content} setContent={setContent} sizeMedium={false} />
             </Stack>
           </Box>
           <Button
