@@ -38,7 +38,7 @@ const Slider = ({ images }: SliderProps) => {
           width: '100%'
           // animation: 'slideInLeft 0.2s ease-in-out'
         }}
-      /> : <Video src={images[currentSlide]} autoPlay={true} loop={true} />}
+      /> : <Video src={images[currentSlide]} autoPlay={true} loop={true} accentColor='#E078D8' />}
       {images.length > 1 && (
         <IconButton
           onClick={prevSlide}
