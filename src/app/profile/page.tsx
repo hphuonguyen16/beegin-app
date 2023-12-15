@@ -165,14 +165,14 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
   const getNumberOfFollow = async () => {
     try {
       const url = UrlConfig.me.getMyNumberOfFollows
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -233,96 +233,107 @@ function page() {
         <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
           <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
-        {data.firstname != '' ? (
-              <Information>
-                <Stack spacing={2} alignItems='center' sx={{ padding: '15px 20px' }}>
-                  <Avatar src={data.avatar} sx={{ width: '150px', height: '150px', marginTop: '15px' }}></Avatar>
-                  <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
-                  <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
-                    {`@${data.slug}`}
-                  </Typography>
-                  <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
-                    <LocationOnIcon fontSize='medium' /> {data.address}
-                  </Typography>
-                  <Typography
-                    variant='h6'
-                    sx={{
-                      fontWeight: 'light',
-                      textAlign: 'center',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      margin: '0 15px'
-                    }}
-                  >
-                    {data.bio}
-                  </Typography>
-                  <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={4} paddingRight='16px'>
-                        <Stack spacing={2}>
-                          <Typography
-                            variant='h4'
-                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                          >
-                            Posts
-                          </Typography>
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              fontWeight: 'medium',
-                              textAlign: 'center',
-                              fontSize: '15px',
-                              fontFamily: 'Inter',
-                              marginTop: '6px !important'
-                            }}
-                          >
-                            {numberPost}
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item xs={4} paddingRight='16px'>
-                        <Stack spacing={2} paddingBottom={2}>
-                          <Typography
-                            variant='h4'
-                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                          >
-                            Followers
-                          </Typography>
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              fontWeight: 'medium',
-                              textAlign: 'center',
-                              fontSize: '15px',
-                              fontFamily: 'Inter',
-                              marginTop: '6px !important'
-                            }}
-                          >
-                            {number.NumberOfFollower}
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item xs={4} paddingRight='16px'>
-                        <Stack spacing={2}>
-                          <Typography
-                            variant='h4'
-                            sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                          >
-                            Following
-                          </Typography>
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              fontWeight: 'medium',
-                              textAlign: 'center',
-                              fontSize: '15px',
-                              fontFamily: 'Inter',
-                              marginTop: '6px !important'
-                            }}
-                          >
-                            {number.NumberOfFollowing}
-                          </Typography>
-                        </Stack>
+              {data.firstname != '' ? (
+                <Information>
+                  <Stack spacing={2} alignItems='center'>
+                    <Paper style={{ backgroundColor: 'white' }}>
+                      <Avatar src={data.avatar} sx={{ width: '150px', height: '150px', marginTop: '25px' }}></Avatar>
+                    </Paper>
+                    <Paper style={{ backgroundColor: 'white' }}>
+                      <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
+                    </Paper>
+                    <Paper style={{ backgroundColor: 'white' }}>
+                      <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
+                        {`@${data.slug}`}
+                      </Typography>
+                    </Paper>
+                    <Paper style={{ backgroundColor: 'white' }}>
+                      <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
+                        <LocationOnIcon fontSize='medium' /> {data.address}
+                      </Typography>
+                    </Paper>
+                    <Paper style={{ backgroundColor: 'white' }}>
+                      <Typography
+                        variant='h6'
+                        sx={{
+                          fontWeight: 'light',
+                          textAlign: 'center',
+                          fontSize: '15px',
+                          fontFamily: 'Inter',
+                          margin: '0 15px'
+                        }}
+                      >
+                        {data.bio}
+                      </Typography>
+                    </Paper>
+                    <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={4} paddingRight='16px'>
+                          <Stack spacing={2}>
+                            <Typography
+                              variant='h4'
+                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                            >
+                              Posts
+                            </Typography>
+                            <Typography
+                              variant='h4'
+                              sx={{
+                                fontWeight: 'medium',
+                                textAlign: 'center',
+                                fontSize: '15px',
+                                fontFamily: 'Inter',
+                                marginTop: '6px !important'
+                              }}
+                            >
+                              {numberPost}
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={4} paddingRight='16px'>
+                          <Stack spacing={2} paddingBottom={2}>
+                            <Typography
+                              variant='h4'
+                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                            >
+                              Followers
+                            </Typography>
+                            <Typography
+                              variant='h4'
+                              sx={{
+                                fontWeight: 'medium',
+                                textAlign: 'center',
+                                fontSize: '15px',
+                                fontFamily: 'Inter',
+                                marginTop: '6px !important'
+                              }}
+                            >
+                              {number.NumberOfFollower}
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={4} paddingRight='16px'>
+                          <Stack spacing={2}>
+                            <Typography
+                              variant='h4'
+                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
+                            >
+                              Following
+                            </Typography>
+                            <Typography
+                              variant='h4'
+                              sx={{
+                                fontWeight: 'medium',
+                                textAlign: 'center',
+                                fontSize: '15px',
+                                fontFamily: 'Inter',
+                                marginTop: '6px !important'
+                              }}
+                            >
+                              {number.NumberOfFollowing}
+                            </Typography>
+                          </Stack>
+                        </Grid>
                       </Grid>
                     </Box>
                   </Stack>
@@ -375,11 +386,11 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {posts?.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) : 
-                                                <>
+                  {posts && posts.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) :
+                    <>
                       <PostSkeleton />
                       <PostSkeleton />
-                    </> }
+                    </>}
                 </Box>
               ) : (
                 <Friends userId='me'></Friends>
