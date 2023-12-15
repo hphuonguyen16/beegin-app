@@ -28,4 +28,9 @@ const nextConfig = {
   }
 }
 
-module.exports = withNextVideo(nextConfig);
+module.exports = withNextVideo(nextConfig, {
+  provider: 'cloudinary',
+  providerConfig: {
+    cloudinary: { endpoint: 'https://res.cloudinary.com' }
+  }
+});
