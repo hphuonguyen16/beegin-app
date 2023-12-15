@@ -39,7 +39,6 @@ import Snackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
 import Loader from '@/components/common/Loader/Loader'
 import { User } from '@/types/user'
-import { User } from '@/types/user'
 
 //----------------------------------------------------------------
 
@@ -132,7 +131,6 @@ export default function LoginPage() {
     const resJson = await res.json()
     if (resJson.status === 'success') {
       // redirect to '/'
-      const user = resJson.data.user as User
       const user = resJson.data.user as User
       setIsAuthenticated(true)
       setAccessToken(resJson.token)

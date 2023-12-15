@@ -19,7 +19,6 @@ import UrlConfig from '@/config/urlConfig'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import { usePosts } from '@/context/PostContext'
-import { usePosts } from '@/context/PostContext'
 
 interface CommentCardProps {
   postId: string

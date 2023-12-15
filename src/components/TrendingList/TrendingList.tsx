@@ -16,7 +16,6 @@ export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
   const axios = useAxiosPrivate()
   const router = useRouter()
   const fetchData = async (newCount: number) => {
-  const fetchData = async (newCount: number) => {
     try {
       const response = await axios.get(UrlConfig.trending.getTrendingHashtags(newCount))
       return response.data.data
