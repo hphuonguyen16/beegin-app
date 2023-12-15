@@ -30,7 +30,6 @@ function Home() {
       // Fetch posts
       const response = await axios.get(`${urlConfig.feeds.getFeeds}?limit=5&page=${pageParam}`)
       let feeds = response.data.data as Feed[]
-      console.log(feeds)
       let { total } = response.data
 
       let posts = feeds.map((feed: Feed) => {
@@ -88,7 +87,6 @@ function Home() {
 
   
 
-  console.log(postsReducer)
   return (
     <>
       <title>Home | Beegin</title>
