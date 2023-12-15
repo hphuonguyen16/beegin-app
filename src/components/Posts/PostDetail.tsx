@@ -112,7 +112,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
       })
     } catch (error) {}
   }
-
+  
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)

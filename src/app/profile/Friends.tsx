@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment, Skeleton } from '@mui/material'
 import CardUser from './UserCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
@@ -44,12 +45,12 @@ function Friends({ userId }: { userId: string }) {
         await getListFollower(userId)
         await getListFollowing(userId)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }
     fetchData()
   }, [onFollowTab])
-
   const filteredData = onFollowTab
     ? listFollowing.filter(
         (user: any) =>
@@ -67,7 +68,7 @@ function Friends({ userId }: { userId: string }) {
             .toLowerCase()
             .includes(searchValue.toLowerCase())
       )
-
+  console.log(listFollower)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -137,28 +138,47 @@ function Friends({ userId }: { userId: string }) {
           id='outlined-basic'
           label='Search'
           variant='outlined'
-          sx={{ width: '94%', margin: '20px 30px 5px 30px ' }}
+          sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {onFollowTab === true
-          ? filteredData.map((user: any, index) => (
-              <CardUser
-                key={index}
-                userId={user.following._id}
-                profile={user.following.profile}
-                status={userId === 'me' ? true : undefined}
-                isVisible={true}
-              />
-            ))
-          : filteredData.map((user: any, index) => (
-              <CardUser
-                key={index}
-                userId={user.follower._id}
-                profile={user.follower.profile}
-                status={user.follower.status}
-                isVisible={true}
-              />
-            ))}
+        {filteredData !== null && filteredData.length > 0
+          ? onFollowTab === true
+            ? filteredData.map((user: any, index) => (
+                <CardUser
+                  key={index}
+                  userId={user.following._id}
+                  profile={user.following.profile}
+                  status={userId === 'me' ? true : undefined}
+                  isVisible={true}
+                />
+              ))
+            : filteredData.map((user: any, index) => (
+                <CardUser
+                  key={index}
+                  userId={user.follower._id}
+                  profile={user.follower.profile}
+                  status={user.follower.status}
+                  isVisible={true}
+                />
+              ))
+          : (() => {
+              console.log('Rendering Skeletons...')
+              return [...Array(5)].map((elementInArray, index) => (
+                <Stack key={index} direction={'row'} alignItems={'center'} sx={{ padding: '25px' }}>
+                  <Skeleton variant='circular' width={60} height={60} />
+                  <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
+                    <Skeleton variant='rounded' height={20} width={130} />
+                    <Skeleton variant='rounded' height={15} width={50} />
+                  </Stack>
+                  <Skeleton
+                    variant='rounded'
+                    sx={{ marginLeft: '720px', borderRadius: '18px' }}
+                    width={105}
+                    height={40}
+                  />
+                </Stack>
+              ))
+            })()}
       </Box>
     </Stack>
   )

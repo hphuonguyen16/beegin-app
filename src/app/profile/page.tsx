@@ -14,7 +14,7 @@ import {
   Card,
   ToggleButtonGroup,
   ToggleButton,
-  alpha
+  Skeleton
 } from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
@@ -28,7 +28,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import Scrollbar from '@/components/common/Scrollbar'
 import DefaultBackground from '@/assets/default_background.jpg'
-
+import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 // hooks
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
@@ -56,7 +56,16 @@ const Information = styled(Card)(({ theme }) => ({
   backgroundColor: 'white',
   minWidth: '300px'
 }))
-
+const SkeletonBox = styled(Box)(({ theme }) => ({
+  backgroundColor: 'white',
+  borderRadius: '15px',
+  marginBottom: '30px',
+  padding: '24px 48px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center'
+}))
 const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
@@ -186,16 +195,23 @@ function page() {
   return (
     <StyledProfile>
       <title>Profile | Beegin</title>
+      <title>Profile | Beegin</title>
       <Grid container spacing={2} sx={{ paddingX: '20px' }}>
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
-            <Image
-              src={data.background ?? DefaultBackground}
-              alt='Background'
-              width={720}
-              height={280}
-              style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: 'cover' }}
-            />
+            {data.background !== '' ? (
+              <Image
+                src={data.background ?? DefaultBackground}
+                alt='Background'
+                width={720}
+                height={280}
+                style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: 'cover' }}
+                loading='lazy'
+              />
+            ) : (
+              <Skeleton variant='rectangular' width='100%' height='280px' />
+            )}
+
             <Button
               variant={'outlined'}
               sx={{
@@ -217,6 +233,7 @@ function page() {
         <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
           <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
+        {data.firstname != '' ? (
               <Information>
                 <Stack spacing={2} alignItems='center' sx={{ padding: '15px 20px' }}>
                   <Avatar src={data.avatar} sx={{ width: '150px', height: '150px', marginTop: '15px' }}></Avatar>
@@ -307,10 +324,19 @@ function page() {
                           </Typography>
                         </Stack>
                       </Grid>
-                    </Grid>
-                  </Box>
-                </Stack>
-              </Information>
+                    </Box>
+                  </Stack>
+                </Information>
+              ) : (
+                <SkeletonBox>
+                  <Skeleton variant='circular' width={150} height={150} />
+                  <Skeleton variant='text' width={120} height={20} />
+                  <Skeleton variant='text' width={80} height={16} />
+                  <Skeleton variant='text' width={150} height={16} />
+                  <Skeleton variant='text' width={200} height={60} />
+                  <Skeleton variant='rectangular' width={250} height={40} />
+                </SkeletonBox>
+              )}
             </Box>
             <Box>
               <StyledToggleButtonGroup
@@ -330,46 +356,6 @@ function page() {
                   <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Socials</Typography>
                 </StyledToggleButton>
               </StyledToggleButtonGroup>
-              {/* <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
-                <Grid item xs={6}>
-                  <ButtonCustom onClick={() => setAction(true)}>
-                    <Stack spacing={2} textAlign='center' alignItems='center'>
-                      <BoltOutlinedIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
-                      <Typography
-                        variant='h4'
-                        sx={{
-                          fontWeight: '200',
-                          textAlign: 'center',
-                          fontSize: '15px',
-                          marginTop: '3px !important',
-                          color: (theme) => theme.palette.primary.main
-                        }}
-                      >
-                        Activities
-                      </Typography>
-                    </Stack>
-                  </ButtonCustom>
-                </Grid>
-                <Grid item xs={6}>
-                  <ButtonCustom onClick={() => setAction(false)}>
-                    <Stack spacing={2} textAlign='center' alignItems='center'>
-                      <PeopleIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
-                      <Typography
-                        variant='h4'
-                        sx={{
-                          fontWeight: '200',
-                          textAlign: 'center',
-                          fontSize: '15px',
-                          marginTop: '3px !important',
-                          color: (theme) => theme.palette.primary.main
-                        }}
-                      >
-                        Socials
-                      </Typography>
-                    </Stack>
-                  </ButtonCustom>
-                </Grid>
-              </Grid> */}
             </Box>
           </Stack>
         </Grid>
@@ -389,7 +375,11 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {posts?.map((post, index) => <PostCard key={index} post={post} />)}
+                  {posts.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) : 
+                                                <>
+                      <PostSkeleton />
+                      <PostSkeleton />
+                    </> }
                 </Box>
               ) : (
                 <Friends userId='me'></Friends>
