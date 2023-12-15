@@ -13,27 +13,21 @@ interface TrendingListProps {
   isFull: boolean
 }
 export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
-  // const [loading, setLoading] = useState<boolean>(true)
-  // const [trendingHashtags, setTrendingHashtags] = useState<TrendingHashtag[]>([])
   const axios = useAxiosPrivate()
   const router = useRouter()
-  const fetchData = async () => {
+  const fetchData = async (newCount: number) => {
     try {
-      const response = await axios.get(UrlConfig.trending.getTrendingHashtags(count))
+      const response = await axios.get(UrlConfig.trending.getTrendingHashtags(newCount))
       return response.data.data
     } catch (error) {}
   }
-  const {
-    data: trendingHashtags,
-    error,
-    isLoading,
-    status
-  } = useQuery<TrendingHashtag[]>({
-    queryKey: ['trendingHashtags'],
-    queryFn: fetchData,
+  const { data: trendingHashtags, isLoading } = useQuery<TrendingHashtag[]>({
+    queryKey: ['trendingHashtags', count],
+    queryFn: () => fetchData(count),
     staleTime: 1000 * 60 * 5 // 5 minutes
   })
-  const handleShowMore = () => {
+
+  const handleShowMore = async () => {
     router.push('/trends')
   }
   return (
