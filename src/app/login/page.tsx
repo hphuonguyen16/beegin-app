@@ -136,7 +136,13 @@ export default function LoginPage() {
       //set local storage
       localStorage.setItem('persist', 'persist')
       localStorage.setItem('role', resJson.data.user.role)
-      router.push('/home')
+      if (resJson.data.user.role === 'business') {
+        router.push('/business/advertisement')
+      } else if (resJson.data.user.role === 'admin') {
+        router.push('/admin/overview')
+      } else {
+        router.push('/home')
+      }
     } else {
       setIsLoggingIn(false)
       setSnack({ open: true, type: 'error', message: resJson.message })

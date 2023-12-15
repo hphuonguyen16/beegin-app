@@ -36,9 +36,8 @@ const poppins = Poppins({
 
 const metadata = {
   title: 'Beegin',
-  description:
-    'A new next generation social media application! Where your stories beegin.',
-};
+  description: 'A new next generation social media application! Where your stories beegin.'
+}
 const menuItems = [
   {
     icon: <AiOutlineHome />,
@@ -133,19 +132,19 @@ const menuBusinessItems = [
 ]
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
-  const noLayoutPaths = ['/login', '/register', '/verify']
+  const noLayoutPaths = ['/login', '/register', '/verify', '/register/business']
   const isAdminPath = pathname.startsWith('/admin')
   const isBusinessPath = pathname.startsWith('/business')
   return (
     <html lang='en'>
       <head>
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <meta name="description" content={metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={metadata.title} />
+        <link rel='shortcut icon' href='/favicon.ico' />
+        <link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
+        <link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+        <link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
+        <meta name='description' content={metadata.description} />
+        <meta property='og:type' content='website' />
+        <meta property='og:title' content={metadata.title} />
       </head>
       <body className={poppins.variable}>
         <AuthProvider>
@@ -153,8 +152,9 @@ export default function RootLayout({ children, session }: { children: React.Reac
             <SnackbarContextProvider>
               <SessionProvider session={session}>
                 <PostProvider>
-                  {noLayoutPaths.includes(pathname) ?
-                    <ThemeProvider>{children}</ThemeProvider> :
+                  {noLayoutPaths.includes(pathname) ? (
+                    <ThemeProvider>{children}</ThemeProvider>
+                  ) : (
                     <ThemeProvider>
                       {isAdminPath ? (
                         <Layout menuItems={menuAdminItems}>{children}</Layout>
@@ -163,8 +163,8 @@ export default function RootLayout({ children, session }: { children: React.Reac
                       ) : (
                         <Layout menuItems={menuItems}>{children}</Layout>
                       )}
-                    </ThemeProvider>}
-
+                    </ThemeProvider>
+                  )}
                 </PostProvider>
               </SessionProvider>
             </SnackbarContextProvider>

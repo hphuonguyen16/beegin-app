@@ -73,7 +73,8 @@ const UrlConfig: any = {
   },
   bussiness: {
     createAdvertisement: `/api/v1/transactions/create_payment_url`,
-    getUnitPrice: `/api/v1/prices`
+    getUnitPrice: `/api/v1/prices`,
+    signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/business/signup`
   }
 }
 
