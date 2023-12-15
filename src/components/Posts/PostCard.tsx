@@ -1,6 +1,5 @@
 'use client'
 import { Avatar, Box, Stack, Typography, Button, Modal, Grid } from '@mui/material'
-import Image from 'next/image'
 import { styled } from '@mui/material/styles'
 import React, { useEffect } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
@@ -11,6 +10,7 @@ import useResponsive from '@/hooks/useResponsive'
 import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { Post } from '@/types/post'
+import { Comment } from '@/types/comment'
 import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
@@ -65,6 +65,7 @@ interface PostCardProps {
 
 const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const [newPost, setNewPost] = React.useState<Post | null>(null)
+  const { postsReducer, postsDispatch } = usePosts()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
@@ -88,8 +89,11 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     } catch (err) {}
   }
 
-  const openPostDetail = () => {
+  const openPostDetail = async () => {
     setOpen(true)
+    const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
+    const comments = commentResponse.data.data as Comment[]
+    postsDispatch({ type: 'ADD_MULTIPLE_COMMENTS', payload: { postId: post._id, comments, totalComments: commentResponse.data.total } })
   }
   const closePostDetail = () => {
     setOpen(false)

@@ -15,7 +15,6 @@ interface PostListProps {
 function PostList({ f }: PostListProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState<boolean>(true)
-  const { postsState, postsDispatch } = usePosts()
   const axios = useAxiosPrivate()
   const searchParams = useSearchParams()
   useEffect(() => {
@@ -47,7 +46,7 @@ function PostList({ f }: PostListProps) {
             }
           })
           posts = await Promise.all(posts)
-          postsDispatch({ type: 'SET_POSTS', payload: posts })
+          setPosts(posts)
           setLoading(false)
         }
       } catch (error) {}
@@ -55,15 +54,15 @@ function PostList({ f }: PostListProps) {
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
-      postsDispatch({ type: 'SET_POSTS', payload: [] })
+      setPosts([])
     }
   }, [searchParams])
   return (
     <Stack>
       {loading ? (
         <CircularProgress color='primary' sx={{ alignSelf: 'center' }} />
-      ) : postsState.posts.length > 0 ? (
-        postsState.posts.map((post, index) => <PostCard key={index} post={post} />)
+      ) : posts.length > 0 ? (
+        posts.map((post, index) => <PostCard key={index} post={post} />)
       ) : (
         <NotFound q={searchParams.get('q')} />
       )}

@@ -1,4 +1,6 @@
+import { Comment } from './comment'
 export interface Post {
+  _feedId: string
   _id: string
   content: string
   images?: string[]
@@ -13,4 +15,5 @@ export interface Post {
   isLiked?: boolean
   parent?: Post
   comments: Comment[]
+  totalComments: number
 }

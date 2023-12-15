@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useRe
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import { Post } from '@/types/post'
-import { PostState, PostAction, postReducer } from './postReducer'
+import { PostState, PostAction } from './types'
+import { postReducer } from './postReducer'
 import { useAuth } from '../AuthContext'
 
 export enum ActionType {
@@ -21,11 +22,19 @@ const PostContext = createContext<PostContextType | undefined>(undefined)
 
 // Custom hook to access the context
 export function usePosts() {
-  const context = useContext(PostContext)
+  const context = useContext(PostContext);
+  
   if (context === undefined) {
-    throw new Error('useContext must be used within an PostProvider')
+    throw new Error('useContext must be used within a PostProvider');
   }
-  return context
+
+  const { postsState, postsDispatch } = context;
+  const { posts } = postsState;
+
+  return {
+    postsReducer: posts,
+    postsDispatch
+  }
 }
 
 // Create a provider component
@@ -39,8 +48,6 @@ export function PostProvider({ children }: PostProviderProps) {
     posts: []
   }
   const [postsState, postsDispatch] = useReducer(postReducer, initialState)
-  const { accessToken } = useAuth()
-  const axios = useAxiosPrivate()
 
   // Provide user, login, and logout values to the context
   const contextValues: PostContextType = {
