@@ -32,7 +32,7 @@ export default function SuggestFollowCard(props: any) {
           <>
             <Typography variant='subtitle1'>{firstname + ' ' + lastname}</Typography>
             <Typography variant='body2' color='textSecondary'>
-              {slug}
+              @{slug}
             </Typography>
           </>
         }

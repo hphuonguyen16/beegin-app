@@ -1,10 +1,12 @@
+/* eslint-disable no-console */
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment, Skeleton } from '@mui/material'
 import CardUser from './UserCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import SearchIcon from '@mui/icons-material/Search'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
@@ -13,6 +15,7 @@ function Friends({ userId }: { userId: string }) {
   const [buttonFollow, setButtonFollow] = useState(true)
   const [isVisible, setIsVisible] = useState(userId === 'me' ? true : false)
   const [searchValue, setSearchValue] = useState('')
+  const [visibleUsers, setVisibleUsers] = useState(6)
 
   const getListFollowing = async (userId: any) => {
     try {
@@ -44,12 +47,15 @@ function Friends({ userId }: { userId: string }) {
         await getListFollower(userId)
         await getListFollowing(userId)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }
     fetchData()
   }, [buttonFollow])
-
+  const handleFetchMore = () => {
+    setVisibleUsers((prev) => prev + 6);
+  };
   const filteredData = buttonFollow
     ? listFollowing.filter(
         (user: any) =>
@@ -132,7 +138,7 @@ function Friends({ userId }: { userId: string }) {
               <InputAdornment position='start'>
                 <SearchIcon />
               </InputAdornment>
-            )
+            ),
           }}
           id='outlined-basic'
           label='Search'
@@ -140,25 +146,36 @@ function Friends({ userId }: { userId: string }) {
           sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {buttonFollow === true
-          ? filteredData.map((user: any, index) => (
+
+        {filteredData !== null && filteredData.length > 0 ? (
+          <InfiniteScroll
+            dataLength={visibleUsers}
+            next={handleFetchMore}
+            hasMore={visibleUsers < filteredData.length}
+            loader={<Skeleton variant='circular' width={60} height={60} />}
+          >
+            {filteredData.slice(0, visibleUsers).map((user: any, index) => (
               <CardUser
                 key={index}
-                userId={user.following._id}
-                profile={user.following.profile}
-                status={true}
-                isVisible={isVisible}
-              />
-            ))
-          : filteredData.map((user: any, index) => (
-              <CardUser
-                key={index}
-                userId={user.follower._id}
-                profile={user.follower.profile}
-                status={user.follower.status}
+                userId={buttonFollow ? user.following._id : user.follower._id}
+                profile={buttonFollow ? user.following.profile : user.follower.profile}
+                status={buttonFollow ? true : user.follower.status}
                 isVisible={isVisible}
               />
             ))}
+          </InfiniteScroll>
+        ) : (
+          [...Array(5)].map((elementInArray, index) => (
+            <Stack key={index} direction={'row'} alignItems={'center'} sx={{ padding: '25px' }}>
+              <Skeleton variant='circular' width={60} height={60} />
+              <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
+                <Skeleton variant='rounded' height={20} width={130} />
+                <Skeleton variant='rounded' height={15} width={50} />
+              </Stack>
+              <Skeleton variant='rounded' sx={{ marginLeft: '720px', borderRadius: '18px' }} width={105} height={40} />
+            </Stack>
+          ))
+        )}
       </Box>
     </Stack>
   )

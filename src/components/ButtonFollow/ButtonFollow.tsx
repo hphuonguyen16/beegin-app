@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardHeader, Avatar, Button, Box } from '@mui/material'
+import { Button, Skeleton } from '@mui/material'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
-import { useRouter } from 'next/navigation'
 
-export default function ButtonFollow(props: any) {
+const ButtonFollow = (props: any) => {
   const { userId } = props
   const axiosPrivate = useAxiosPrivate()
-  const [follow, setFollow] = useState<boolean>(props.status !== undefined ? props.status : true)
+  const [follow, setFollow] = useState<boolean>(props.status !== undefined ? props.status : undefined)
+  // const [loading, setLoading] = useState<boolean>(false)
   const isFollowing = async (id: any) => {
     try {
       const url = UrlConfig.me.isFollowing.replace(':id', id)
@@ -15,18 +15,21 @@ export default function ButtonFollow(props: any) {
       setFollow(response.data.data)
     } catch (err) {}
   }
+
   const followingOtherUser = async (id: any) => {
     try {
       const url = UrlConfig.me.followingOtherUser
       await axiosPrivate.post(url, { id: id })
     } catch (err) {}
   }
+
   const unfollow = async (id: any) => {
     try {
       const url = UrlConfig.me.unfollow.replace(':id', id)
       await axiosPrivate.delete(url)
     } catch (err) {}
   }
+
   useEffect(() => {
     if (props.status === undefined) {
       isFollowing(userId)
@@ -35,9 +38,11 @@ export default function ButtonFollow(props: any) {
       setFollow(props.status)
     }
   }, [props.status])
+
   const sendDataToParent = (data: string) => {
     props.sendDataToParent(data)
   }
+
   const handleFollow = () => {
     if (follow === true) {
       unfollow(userId)
@@ -48,6 +53,7 @@ export default function ButtonFollow(props: any) {
     }
     setFollow((prev: boolean) => !prev)
   }
+
   return (
     <Button
       variant={follow ? 'outlined' : 'contained'}
@@ -62,7 +68,15 @@ export default function ButtonFollow(props: any) {
       }}
       onClick={handleFollow}
     >
-      {follow === true ? 'Following' : 'Follow'}
+      {follow === undefined ? (
+        <Skeleton variant='text' width={80} height={20} /> // Replace with your desired skeleton
+      ) : follow === true ? (
+        'Following'
+      ) : (
+        'Follow'
+      )}
     </Button>
   )
 }
+
+export default ButtonFollow

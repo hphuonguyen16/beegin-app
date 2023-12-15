@@ -41,7 +41,7 @@ export default function CardUser(props: any) {
           />
         }
         title={firstname + ' ' + lastname}
-        subheader={slug !== '' ? slug : `@username`}
+        subheader={slug !== '' ? `@${slug}` : `@username`}
         action={
           props.isVisible === true ? (
             <ButtonFollow
