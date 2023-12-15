@@ -16,10 +16,11 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import withAuth from '@/authorization/withAuth'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import { usePosts } from '@/context/PostContext'
 
 function Home() {
   const isMobile = useResponsive('down', 'sm')
-  const pathname = usePathname()
+  const { postsReducer, postsDispatch } = usePosts()
   const [open, setOpen] = useState(false)
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
@@ -29,27 +30,34 @@ function Home() {
       // Fetch posts
       const response = await axios.get(`${urlConfig.feeds.getFeeds}?limit=5&page=${pageParam}`)
       let feeds = response.data.data as Feed[]
-      console.log('-----', response.data)
+      console.log(feeds)
       let { total } = response.data
 
       let posts = feeds.map((feed: Feed) => {
-        return feed.post
+        return {
+          ...feed.post,
+          _feedId: feed._id,
+          comments: []
+        }
       })
 
-      const postsPromises = posts.map(async (post: Post) => {
-        const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=5`)
-        const comments = commentResponse.data.data as Comment[]
-        return {
-          ...post,
-          comments
-        }
-      })
-      const postsCurrent = await Promise.allSettled(postsPromises)
-      posts = postsCurrent.map((post: any) => {
-        if (post.status === 'fulfilled') {
-          return post.value
-        }
-      })
+      // const postsPromises = posts.map(async (post: Post) => {
+      //   const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=5`)
+      //   const comments = commentResponse.data.data as Comment[]
+      //   return {
+      //     ...post,
+      //     totalComments: commentResponse.data.total,
+      //     comments
+      //   }
+      // })
+      // const postsCurrent = await Promise.allSettled(postsPromises)
+      // posts = postsCurrent.map((post: any) => {
+      //   if (post.status === 'fulfilled') {
+      //     //call postsDispatch
+      //     return post.value
+      //   }
+      // })
+      postsDispatch({type: 'ADD_MULTIPLE_POSTS', payload: posts})
       return {
         posts,
         total,
@@ -72,12 +80,15 @@ function Home() {
     },
     staleTime: 1000 * 60 * 10 // 10 minutes
   })
-  const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
-    console.log(page)
-    //@ts-ignore
-    return [...acc, ...page?.posts]
-  }, [])
-  console.log(hasNextPage)
+
+  // const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
+  //   //@ts-ignore
+  //   return [...acc, ...page?.posts]
+  // }, [])
+
+  
+
+  console.log(postsReducer)
   return (
     <>
       <title>Home | Beegin</title>
@@ -126,7 +137,7 @@ function Home() {
             />
           </Stack>
           <InfiniteScroll
-            dataLength={postsData ? postsData.length : 0}
+            dataLength={postsReducer ? postsReducer.length : 0}
             next={() => {
               fetchNextPage()
             }}
@@ -145,11 +156,11 @@ function Home() {
                 alignItems: 'center'
               }}
             >
-              {postsData?.map((post, index) => {
+              {postsReducer?.map((post: Post, index: number) => {
                 if (post && post.parent) {
-                  return <PostCard key={post._id || index} post={post} postParent={post.parent} />
+                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
                 } else if (post) {
-                  return <PostCard key={post._id || index} post={post} />
+                  return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
               {isFetching ? (

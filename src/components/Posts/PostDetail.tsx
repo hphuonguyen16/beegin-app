@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Box,
   Chip,
@@ -32,29 +32,21 @@ import { Comment } from '@/types/comment'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import EmojiPicker from '../common/EmojiPicker'
 import _ from 'lodash'
+import { usePosts } from '@/context/PostContext'
 
 // find the root of children comment
-function findRootComment(comments: Comment[], comment: Comment) {
+function findRootComment(comments: Comment[], comment: Comment | null | undefined): Comment | null {
+  if (!comment) return null;
   if (comment.parent) {
-    const parentComment = comments.find((c) => c._id === comment.parent)
+    const parentComment = comments.find((c) => c._id === comment.parent);
     if (parentComment) {
-      return findRootComment(comments, parentComment)
+      return findRootComment(comments, parentComment);
     }
   }
-  return comment
+  return comment;
 }
 
-function findRootCommentIndex(comments: Comment[], comment: Comment) {
-  if (comment.parent) {
-    const parentComment = comments.find((c) => c._id === comment.parent)
-    if (parentComment) {
-      return findRootCommentIndex(comments, parentComment)
-    }
-  }
-  return comments.findIndex((c) => c._id === comment._id)
-}
 
-function getNumComments(comments: Comment[]) {}
 
 interface PostDetailProps {
   post: Post
@@ -63,70 +55,63 @@ interface PostDetailProps {
   handleClose: () => void
 }
 
-interface pageOfReplyComments {
-  [key: string]: number
-}
-
 const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
+  const {postsDispatch} = usePosts()
   const isMobile = useResponsive('down', 'sm')
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
-  const [comments, setComments] = React.useState<Comment[]>((post.comments as unknown as Comment[]) || [])
   const [comment, setComment] = React.useState('')
   const [commentReply, setCommentReply] = React.useState<Comment>()
-  const [page, setPage] = React.useState(1)
+  const [page, setPage] = React.useState(2)
   const [loading, setLoading] = React.useState(false)
-  const [totalComments, setTotalComments] = React.useState(0)
+  const inputRef = useRef()
+
   const fetchComments = async () => {
     setLoading(true)
     const response = await axiosPrivate.get(`${urlConfig.posts.getComments(post._id)}?limit=10&page=${page}`)
-    setTotalComments(response.data.total)
-    setComments([...comments, ...response.data.data])
-    post.comments = [...comments, ...response.data.data]
-    let numComments = comments.length
-    comments.forEach((comment) => {
-      if (comment.children) {
-        numComments += comment.children.length
-      }
-    })
+    postsDispatch({type:'ADD_MULTIPLE_COMMENTS', payload:{
+      postId: post._id,
+      comments: response.data.data,
+      totalComments: response.data.total
+    }})
+   
     setPage(page + 1)
     setLoading(false)
   }
   const createComment = async () => {
-    if (!commentReply) {
-      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
-        content: comment
-      })
-      setComments([response.data.data, ...comments])
-    } else {
-      const rootComment = findRootComment(comments, commentReply)
-      const response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
-        content: comment,
-        parent: rootComment._id
-      })
-      setComments((prev) => {
-        const newComments = _.cloneDeep(prev)
-        const rootCommentIndex = findRootCommentIndex(newComments, commentReply)
-
-        if (rootCommentIndex !== -1) {
-          const rootComment = newComments[rootCommentIndex]
-
-          if (!rootComment.children) {
-            rootComment.children = []
-          }
-
-          const childComment = response.data.data
-          childComment.key = childComment._id
-
-          rootComment.children = [childComment, ...rootComment.children]
-          rootComment.numReplies++
+    let response;
+    let rootComment
+    try {
+      if (!commentReply) {
+        response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+          content: comment
+        });
+      } else {
+        rootComment = findRootComment(post.comments, commentReply);
+        response = await axiosPrivate.post(urlConfig.comments.createComment(post._id), {
+          content: comment,
+          parent: rootComment?._id
+        });
+        setCommentReply(undefined);
+      }
+  
+      const createdComment = response.data.data;
+  
+      postsDispatch({
+        type: 'ADD_COMMENT',
+        // @ts-ignore
+        payload: {
+          postId: post._id,
+          comment: createdComment,
+          parentId: rootComment?._id,
         }
-        return newComments
-      })
-      setCommentReply(undefined)
+      });
+    } catch (error) {
+      // Handle error if necessary
+      console.error('Error creating comment:', error);
     }
-  }
-  console.log(comments)
+  };
+  
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)
@@ -143,6 +128,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
     if (!post.comments) {
       fetchData()
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -316,10 +302,10 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               </Stack>
               <Divider variant='inset' />
               <Box sx={{ paddingRight: '15px' }}>
-                {comments.map((comment: Comment, index: number) => (
-                  <CommentCard key={comment._id} comment={comment} replyComment={replyComment} />
+                {post?.comments?.map((comment: Comment, index: number) => (
+                  <CommentCard key={comment._id} comment={comment} replyComment={replyComment} postId={post._id} />
                 ))}
-                {comments.length >= 10 && comments.length < totalComments && (
+                { post.comments?.length < post.totalComments && (
                   <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '20px' }}>
                     <Typography
                       onClick={() => fetchComments()}
@@ -405,6 +391,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
               <Box sx={{ padding: '0 13px', marginTop: '15px' }}>
                 <FormControl sx={{ width: '100%' }}>
                   <TextField
+                  inputRef ={(input) => input && input.focus()}
                     multiline
                     size='small'
                     variant='outlined'
