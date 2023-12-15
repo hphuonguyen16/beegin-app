@@ -1,6 +1,5 @@
 
 import { io } from 'socket.io-client'
-import { getMessages } from '@/api/message';
 import Message from '@/types/message';
 
 const socket = io(`${process.env.NEXT_APP_BEEGIN_DOMAIN}`);
