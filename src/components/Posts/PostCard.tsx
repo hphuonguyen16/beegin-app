@@ -1,6 +1,5 @@
 'use client'
 import { Avatar, Box, Stack, Typography, Button, Modal, Grid } from '@mui/material'
-import Image from 'next/image'
 import { styled } from '@mui/material/styles'
 import React, { useEffect } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
@@ -11,6 +10,7 @@ import useResponsive from '@/hooks/useResponsive'
 import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { Post } from '@/types/post'
+import { Comment } from '@/types/comment'
 import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
@@ -65,6 +65,7 @@ interface PostCardProps {
 
 const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const [newPost, setNewPost] = React.useState<Post | null>(null)
+  const { postsState, postsDispatch } = usePosts()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
@@ -76,19 +77,37 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     try {
       if (!like) {
         setLike(true)
-        post.isLiked = true
         post.numLikes++
+        postsDispatch({
+          type: 'SET_LIKED_POST',
+          payload: {
+            postId: post._id,
+            isLiked: true
+          }
+        })
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
         setLike(false)
-        post.isLiked = false
         post.numLikes--
+        postsDispatch({
+          type: 'SET_LIKED_POST',
+          payload: {
+            postId: post._id,
+            isLiked: false
+          }
+        })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
     } catch (err) {}
   }
 
-  const openPostDetail = () => {
+  const openPostDetail = async () => {
+    const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
+    const comments = commentResponse.data.data as Comment[]
+    postsDispatch({
+      type: 'SELECT_POST',
+      payload: { ...post, comments, totalComments: commentResponse.data.total }
+    })
     setOpen(true)
   }
   const closePostDetail = () => {
@@ -114,8 +133,8 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             //   width: isMobile ? '80vw' : width ? width : '100vw',
-            width: isMobile ? '80vw' : '40vw',
-            height: isMobile ? '80vh' : '80vh',
+            width: isMobile ? '80%' : '40%',
+            height: isMobile ? '80%' : '80%',
             bgcolor: 'background.paper',
             boxShadow: 24,
             borderRadius: 2,
@@ -131,7 +150,16 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           />
         </Box>
       </Modal>
-      <PostDetail key={post._id} post={post} open={open} handleClose={closePostDetail} handleLike={handleLike} />
+      {postsState.selectedPost && (
+        <PostDetail
+          key={post._id}
+          post={postsState.selectedPost}
+          postParent={postParent}
+          open={open}
+          handleClose={closePostDetail}
+          handleLike={handleLike}
+        />
+      )}
       <Grid
         container
         direction={isMobile ? 'column' : 'row'}
@@ -256,11 +284,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   handleLike()
                 }}
               >
-                {post.isLiked ? (
-                  <FavoriteRoundedIcon color='secondary' />
-                ) : (
-                  <FavoriteBorderRoundedIcon color='secondary' />
-                )}
+                {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
                 <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
               </Button>
               <Button
@@ -277,6 +301,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 }}
               >
                 <ShareIcon color='secondary' />
+                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numShares}</span>
               </Button>
             </Stack>
           )}

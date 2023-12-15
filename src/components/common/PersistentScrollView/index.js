@@ -19,7 +19,6 @@ const PersistentScrollView = ({ children, id, name = 'scrollPosition' }) => {
 
   // Handle scroll event to update scroll position
   const handleScroll = (event) => {
-    console.log(event)
     localStorage.setItem(pathname, event.target.scrollTop)
   }
 

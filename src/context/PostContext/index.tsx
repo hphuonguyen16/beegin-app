@@ -1,9 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useReducer } from 'react'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import urlConfig from '@/config/urlConfig'
-import { Post } from '@/types/post'
-import { PostState, PostAction, postReducer } from './postReducer'
-import { useAuth } from '../AuthContext'
+import { PostState, PostAction } from './types'
+import { postReducer } from './postReducer'
 
 export enum ActionType {
   FETCH_POSTS = 'FETCH_POSTS',
@@ -22,10 +19,17 @@ const PostContext = createContext<PostContextType | undefined>(undefined)
 // Custom hook to access the context
 export function usePosts() {
   const context = useContext(PostContext)
+
   if (context === undefined) {
-    throw new Error('useContext must be used within an PostProvider')
+    throw new Error('useContext must be used within a PostProvider')
   }
-  return context
+
+  const { postsState, postsDispatch } = context
+
+  return {
+    postsState,
+    postsDispatch
+  }
 }
 
 // Create a provider component
@@ -34,15 +38,14 @@ interface PostProviderProps {
 }
 
 export function PostProvider({ children }: PostProviderProps) {
-  // post data comment data and children data and store the post and comment which user like
   const initialState: PostState = {
-    posts: []
+    posts: [],
+    selectedPost: null
   }
-  const [postsState, postsDispatch] = useReducer(postReducer, initialState)
-  const { accessToken } = useAuth()
-  const axios = useAxiosPrivate()
 
-  // Provide user, login, and logout values to the context
+  //@ts-ignore
+  const [postsState, postsDispatch] = useReducer(postReducer, initialState)
+
   const contextValues: PostContextType = {
     postsState,
     postsDispatch

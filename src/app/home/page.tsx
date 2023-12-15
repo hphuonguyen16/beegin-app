@@ -16,10 +16,11 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import withAuth from '@/authorization/withAuth'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import { usePosts } from '@/context/PostContext'
 
 function Home() {
   const isMobile = useResponsive('down', 'sm')
-  const pathname = usePathname()
+  const { postsState, postsDispatch } = usePosts()
   const [open, setOpen] = useState(false)
   const [newPost, setNewPost] = useState<Post | null>(null)
   const axios = useAxiosPrivate()
@@ -29,27 +30,16 @@ function Home() {
       // Fetch posts
       const response = await axios.get(`${urlConfig.feeds.getFeeds}?limit=5&page=${pageParam}`)
       let feeds = response.data.data as Feed[]
-      console.log('-----', response.data)
       let { total } = response.data
 
       let posts = feeds.map((feed: Feed) => {
-        return feed.post
-      })
-
-      const postsPromises = posts.map(async (post: Post) => {
-        const commentResponse = await axios.get(`${urlConfig.posts.getComments(post._id)}?limit=5`)
-        const comments = commentResponse.data.data as Comment[]
         return {
-          ...post,
-          comments
+          ...feed.post,
+          _feedId: feed._id,
+          comments: []
         }
       })
-      const postsCurrent = await Promise.allSettled(postsPromises)
-      posts = postsCurrent.map((post: any) => {
-        if (post.status === 'fulfilled') {
-          return post.value
-        }
-      })
+      postsDispatch({ type: 'ADD_MULTIPLE_POSTS', payload: posts })
       return {
         posts,
         total,
@@ -59,7 +49,7 @@ function Home() {
       // Handle errors if necessary
     }
   }
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery({
+  const { fetchNextPage, isFetching } = useInfiniteQuery({
     queryKey: ['postsData'],
     queryFn: fetchPosts,
     initialPageParam: 1,
@@ -70,14 +60,14 @@ function Home() {
       }
       return lastPage?.prevPage + 1
     },
-    staleTime: 1000 * 60 * 10 // 10 minutes
+    staleTime: 1000 * 60 * 15 // 10 minutes
   })
-  const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
-    console.log(page)
-    //@ts-ignore
-    return [...acc, ...page?.posts]
-  }, [])
-  console.log(hasNextPage)
+
+  // const postsData = data?.pages?.reduce<Post[]>((acc, page) => {
+  //   //@ts-ignore
+  //   return [...acc, ...page?.posts]
+  // }, [])
+
   return (
     <>
       <title>Home | Beegin</title>
@@ -89,8 +79,8 @@ function Home() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             //   width: isMobile ? '80vw' : width ? width : '100vw',
-            width: isMobile ? '80vw' : '40vw',
-            height: isMobile ? '80vh' : '80vh',
+            width: isMobile ? '80%' : '40%',
+            height: isMobile ? '80%' : '80%',
             bgcolor: 'background.paper',
             boxShadow: 24,
             borderRadius: 2,
@@ -126,7 +116,7 @@ function Home() {
             />
           </Stack>
           <InfiniteScroll
-            dataLength={postsData ? postsData.length : 0}
+            dataLength={postsState.posts ? postsState.posts.length : 0}
             next={() => {
               fetchNextPage()
             }}
@@ -145,11 +135,13 @@ function Home() {
                 alignItems: 'center'
               }}
             >
-              {postsData?.map((post, index) => {
+              {postsState?.posts?.map((post: Post, index: number) => {
                 if (post && post.parent) {
-                  return <PostCard key={post._id || index} post={post} postParent={post.parent} />
+                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
+                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
                 } else if (post) {
-                  return <PostCard key={post._id || index} post={post} />
+                  return <PostCard key={post._feedId || index} post={post} />
+                  return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
               {isFetching ? (

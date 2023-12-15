@@ -14,7 +14,6 @@ import {
   Card,
   ToggleButtonGroup,
   ToggleButton,
-  alpha,
   Skeleton
 } from '@mui/material'
 import Image from 'next/image'
@@ -35,6 +34,7 @@ import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
 import withAuth from '@/authorization/withAuth'
+import { useQuery } from '@tanstack/react-query'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
@@ -139,11 +139,25 @@ function page() {
     gender: true,
     slug: ''
   })
-  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
+  })
+  const fetchPosts = async () => {
+    try {
+      const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
+      let posts = response.data.data
+      setNumberPost(response.data.results)
+      return posts
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const { data: posts, isLoading } = useQuery<Post[]>({
+    queryKey: ['profilePosts'],
+    queryFn: () => fetchPosts(), // Ensure fetchPosts is called when useQuery executes
+    staleTime: Infinity
   })
 
   const getUsers = async () => {
@@ -151,41 +165,15 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
   const getNumberOfFollow = async () => {
     try {
       const url = UrlConfig.me.getMyNumberOfFollows
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
-        let posts = response.data.data
-        posts = posts.map(async (post: Post) => {
-          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
-          const isLiked = likeResponse.data.data
-          return {
-            ...post,
-            isLiked
-          }
-        })
-        posts = await Promise.all(posts)
-        postsDispatch({ type: 'SET_POSTS', payload: posts })
-        setNumberPost(response.data.results)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchPosts()
-    return () => {
-      postsDispatch({ type: 'SET_POSTS', payload: [] })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -398,14 +386,11 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {postsState.posts.length > 0 ? (
-                    postsState.posts.map((post, index) => <PostCard key={index} post={post} />)
-                  ) : (
+                  {posts && posts.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) :
                     <>
                       <PostSkeleton />
                       <PostSkeleton />
-                    </>
-                  )}
+                    </>}
                 </Box>
               ) : (
                 <Friends userId='me'></Friends>
