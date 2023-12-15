@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation'
 import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import ReplyPostCard from './ReplyPostCard'
+import Video from 'next-video';
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -98,7 +99,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const openPostDetail = async () => {
@@ -121,7 +122,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) {}
+    } catch (error) { }
   }
   return (
     <>
@@ -265,7 +266,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           >
             {post.images?.map((src, index) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
+              src.split('/')[4] === 'image' ? <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' /> : <Video src={src} autoPlay={true} />
             ))}
           </ImageContainerStyled>
           {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
