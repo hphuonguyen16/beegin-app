@@ -14,6 +14,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import { useRouter } from 'next/navigation'
 // hooks
 
 import React, { useEffect, useState } from 'react'
@@ -37,6 +38,7 @@ const BoxStyle = styled(Card)(({ theme }) => ({
 function page() {
   const axiosPrivate = useAxiosPrivate()
   const [data, setData] = useState<any[]>([])
+  const router = useRouter()
   const handleProcessing = async (status: string, reportId: string) => {
     try {
       const currentDate = new Date()
@@ -51,6 +53,13 @@ function page() {
       )
       setData(updatedData)
       await axiosPrivate.post(UrlConfig.admin.reportProcessing, { status, reportId })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const redirectToPosts = async (id: String) => {
+    try {
+      router.push(`/posts/${id}`)
     } catch (error) {
       console.log(error)
     }
@@ -86,7 +95,9 @@ function page() {
                 <TableCell style={{ textAlign: 'center' }}>
                   {report.reporter.profile.firstname} {report.reporter.profile.lastname}
                 </TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{report.post}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
+                  <Button onClick={() => redirectToPosts(report.post)}>View detail</Button>
+                </TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{report.reason}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{new Date(report.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>
