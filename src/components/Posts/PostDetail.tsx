@@ -32,6 +32,7 @@ import { Comment } from '@/types/comment'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
 import EmojiPicker from '../common/EmojiPicker'
 import _ from 'lodash'
+import { QueryClient, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 import { usePosts } from '@/context/PostContext'
 
 // find the root of children comment
@@ -58,6 +59,7 @@ interface PostDetailProps {
 const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) => {
   const {postsDispatch} = usePosts()
   const isMobile = useResponsive('down', 'sm')
+  const queryClient = new QueryClient()
   const hasImages = post.images?.length === 0 ? false : true
   const axiosPrivate = useAxiosPrivate()
   const [comment, setComment] = React.useState('')
@@ -308,7 +310,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                 { post.comments?.length < post.totalComments && (
                   <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '20px' }}>
                     <Typography
-                      onClick={() => fetchComments()}
+                      onClick={() => fetchNextPage()}
                       color='primary'
                       sx={{
                         fontWeight: 'bold',
@@ -320,7 +322,7 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
                     >
                       Show more
                     </Typography>
-                    {loading && <CircularProgress size={14} sx={{ marginLeft: '20px' }} />}
+                    {isFetching && <CircularProgress size={14} sx={{ marginLeft: '20px' }} />}
                   </Stack>
                 )}
               </Box>
