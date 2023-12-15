@@ -260,13 +260,10 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           </Box>
           <ImageContainerStyled
             number={post.images ? post.images.length : 0}
-            onClick={() => {
-              openPostDetail()
-            }}
           >
             {post.images?.map((src, index) => (
               // eslint-disable-next-line @next/next/no-img-element
-              src.split('/')[4] === 'image' ? <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' /> : <Video src={src} autoPlay={true} />
+              src.split('/')[4] === 'image' ? <img onClick={openPostDetail} className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' /> : <Video src={src} autoPlay={false} />
             ))}
           </ImageContainerStyled>
           {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
