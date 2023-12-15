@@ -52,7 +52,7 @@ export const postReducer = (state: PostState, action: PostAction) => {
     case 'ADD_POST': {
       return { ...state, posts: [action.payload, ...state.posts] }
     }
-   
+
     case 'ADD_COMMENT': {
       const { postId, comment, parentId } = action.payload
 
