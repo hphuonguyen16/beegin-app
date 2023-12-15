@@ -375,7 +375,7 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {posts.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) : 
+                  {posts?.length > 0 ? posts?.map((post, index) => <PostCard key={index} post={post} />) : 
                                                 <>
                       <PostSkeleton />
                       <PostSkeleton />
