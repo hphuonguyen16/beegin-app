@@ -28,9 +28,4 @@ const nextConfig = {
   }
 }
 
-module.exports = withNextVideo(nextConfig, {
-  provider: 'backblaze',
-  providerConfig: {
-    backblaze: { endpoint: 'https://res.cloudinary.com' }
-  }
-});
+module.exports = nextConfig;
