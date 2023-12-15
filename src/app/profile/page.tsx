@@ -2,7 +2,20 @@
 /* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card, ToggleButtonGroup, ToggleButton, alpha } from '@mui/material'
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Stack,
+  styled,
+  Button,
+  Avatar,
+  Card,
+  ToggleButtonGroup,
+  ToggleButton,
+  alpha
+} from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
@@ -21,11 +34,12 @@ import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
 import withAuth from '@/authorization/withAuth'
+import { useQuery } from '@tanstack/react-query'
 
 //icons
-import { IoMdImages } from "react-icons/io";
-import { BsPeople } from "react-icons/bs";
-import { TbCell } from "react-icons/tb";
+import { IoMdImages } from 'react-icons/io'
+import { BsPeople } from 'react-icons/bs'
+import { TbCell } from 'react-icons/tb'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -47,7 +61,7 @@ const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
-  backgroundColor: 'white',
+  backgroundColor: 'white'
 }))
 
 const ButtonCustom = styled(Button)(({ theme }) => ({
@@ -59,7 +73,6 @@ const ButtonCustom = styled(Button)(({ theme }) => ({
 }))
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-
   backgroundColor: 'white',
   boxShadow: '0 6px 12px -4px rgba(145, 158, 171, 0.1)',
   padding: '2px',
@@ -68,28 +81,29 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     margin: theme.spacing(0.5),
     border: 0,
     '&.Mui-disabled': {
-      border: 0,
+      border: 0
     },
     '&:not(:first-of-type)': {
-      borderRadius: theme.shape.borderRadius,
+      borderRadius: theme.shape.borderRadius
     },
     '&:first-of-type': {
-      borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
-
-const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-  fontSize: '25px', padding: '10px 35px', color: theme.palette.grey[600],
-  display: 'flex', flexDirection: 'column',
-  '&:disabled': {
-    color: theme.palette.secondary.dark,
-    //@ts-ignore
-    backgroundColor: theme.palette.secondary.lighter + 'aa',
+      borderRadius: theme.shape.borderRadius
+    }
   }
 }))
 
-
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+  fontSize: '25px',
+  padding: '10px 35px',
+  color: theme.palette.grey[600],
+  display: 'flex',
+  flexDirection: 'column',
+  '&:disabled': {
+    color: theme.palette.secondary.dark,
+    //@ts-ignore
+    backgroundColor: theme.palette.secondary.lighter + 'aa'
+  }
+}))
 
 function page() {
   const axiosPrivate = useAxiosPrivate()
@@ -116,11 +130,25 @@ function page() {
     gender: true,
     slug: ''
   })
-  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
+  })
+  const fetchPosts = async () => {
+    try {
+      const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
+      let posts = response.data.data
+      setNumberPost(response.data.results)
+      return posts
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const { data: posts, isLoading } = useQuery<Post[]>({
+    queryKey: ['profilePosts'],
+    queryFn: () => fetchPosts(), // Ensure fetchPosts is called when useQuery executes
+    staleTime: Infinity
   })
 
   const getUsers = async () => {
@@ -128,41 +156,15 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
   const getNumberOfFollow = async () => {
     try {
       const url = UrlConfig.me.getMyNumberOfFollows
       const response = await axiosPrivate.get(url)
       setNumber(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
-        let posts = response.data.data
-        posts = posts.map(async (post: Post) => {
-          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
-          const isLiked = likeResponse.data.data
-          return {
-            ...post,
-            isLiked
-          }
-        })
-        posts = await Promise.all(posts)
-        postsDispatch({ type: 'SET_POSTS', payload: posts })
-        setNumberPost(response.data.results)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchPosts()
-    return () => {
-      postsDispatch({ type: 'SET_POSTS', payload: [] })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -212,11 +214,11 @@ function page() {
             <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
           </Box>
         </Grid>
-        <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)', }}>
+        <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
           <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
               <Information>
-                <Stack spacing={2} alignItems='center' sx={{ padding: "15px 20px" }}>
+                <Stack spacing={2} alignItems='center' sx={{ padding: '15px 20px' }}>
                   <Avatar src={data.avatar} sx={{ width: '150px', height: '150px', marginTop: '15px' }}></Avatar>
                   <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
                   <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
@@ -316,16 +318,16 @@ function page() {
                 value={showPosts}
                 exclusive
                 onChange={() => setShowPosts(!showPosts)}
-                aria-label="text alignment"
+                aria-label='text alignment'
               >
-                <StyledToggleButton size='large' value={true} aria-label="left aligned" disabled={showPosts === true}>
+                <StyledToggleButton size='large' value={true} aria-label='left aligned' disabled={showPosts === true}>
                   <IoMdImages />
-                  <Typography sx={{ fontSize: "13px", lineHeight: 1, mt: '4px' }}>Posts</Typography>
+                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Posts</Typography>
                 </StyledToggleButton>
                 <Paper sx={{ margin: '0 1.5px !important' }}></Paper>
-                <StyledToggleButton size='large' value={false} aria-label="centered" disabled={showPosts === false}>
+                <StyledToggleButton size='large' value={false} aria-label='centered' disabled={showPosts === false}>
                   <TbCell />
-                  <Typography sx={{ fontSize: "13px", lineHeight: 1, mt: '4px' }}>Socials</Typography>
+                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Socials</Typography>
                 </StyledToggleButton>
               </StyledToggleButtonGroup>
               {/* <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
@@ -371,7 +373,7 @@ function page() {
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)', }}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)' }}>
           <Paper>
             <Posts>
               {showPosts === true ? (
@@ -387,9 +389,7 @@ function page() {
                   >
                     Posts
                   </Typography>
-                  {postsState.posts.map((post, index) => (
-                    <PostCard key={index} post={post} />
-                  ))}
+                  {posts?.map((post, index) => <PostCard key={index} post={post} />)}
                 </Box>
               ) : (
                 <Friends userId='me'></Friends>

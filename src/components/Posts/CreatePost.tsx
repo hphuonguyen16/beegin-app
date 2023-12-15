@@ -109,6 +109,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const [isLoad, setIsLoad] = React.useState(false)
   const axiosPrivate = useAxiosPrivate()
   const { setSnack } = useSnackbar()
+  const { postsState, postsDispatch } = usePosts()
   const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
@@ -140,6 +141,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       queryClient.setQueryData(['postsData'], (oldData: any) => {
         const newPosts = [...oldData.pages[0].posts]
         newPosts.unshift(data)
+        //@ts-ignore
+        postsDispatch({ type: 'ADD_POST', payload: data })
         return {
           pages: [
             {
@@ -150,6 +153,12 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
           ],
           pageParams: oldData.pageParams
         }
+      })
+
+      queryClient.setQueryData(['profilePosts'], (oldData: any) => {
+        const newPosts = [...oldData]
+        newPosts.unshift(data)
+        return newPosts
       })
       setIsLoad(false)
       setIsSuccess(true)

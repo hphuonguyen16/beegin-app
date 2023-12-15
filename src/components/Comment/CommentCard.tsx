@@ -21,14 +21,14 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import { usePosts } from '@/context/PostContext'
 
 interface CommentCardProps {
-  postId: string,
+  postId: string
   comment: Comment
   replyComment: (comment: Comment) => void
 }
 
-const CommentCard = ({ postId,comment, replyComment }: CommentCardProps) => {
+const CommentCard = ({ postId, comment, replyComment }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
-  const {postsReducer, postsDispatch} = usePosts();
+  const { postsState, postsDispatch } = usePosts()
   const [openReply, setOpenReply] = React.useState(false)
   const [liked, setLiked] = React.useState(comment.isLiked || false)
   const axiosPrivate = useAxiosPrivate()
@@ -56,11 +56,14 @@ const CommentCard = ({ postId,comment, replyComment }: CommentCardProps) => {
         `${UrlConfig.comments.getReplyComments(comment.post, comment._id, page)}?limit=5&page=${page}`
       )
       const comments = res.data.data as Comment[]
-      postsDispatch({type: 'ADD_REPLY_COMMENTS', payload:{
-        postId,
-        commentId: comment._id,
-        comments
-      }})
+      postsDispatch({
+        type: 'ADD_REPLY_COMMENTS',
+        payload: {
+          postId,
+          commentId: comment._id,
+          comments
+        }
+      })
       setPage((prev) => prev + 1)
       setLoading(false)
     } catch (err) {
@@ -203,7 +206,12 @@ const CommentCard = ({ postId,comment, replyComment }: CommentCardProps) => {
                   {openReply && (
                     <>
                       {comment.children?.map((childComment) => (
-                        <CommentCard key={childComment._id} comment={childComment} replyComment={replyComment} postId={postId} />
+                        <CommentCard
+                          key={childComment._id}
+                          comment={childComment}
+                          replyComment={replyComment}
+                          postId={postId}
+                        />
                       ))}
                       {/* {!endOfPage && comment?.children?.length && comment.children.length >= 3 && ( */}
                       {comment.children?.length && comment.numReplies > comment.children?.length && (
