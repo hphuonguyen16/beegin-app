@@ -3,7 +3,8 @@ const UrlConfig: any = {
     getOverview: (year: number) => `/api/v1/users/overview/${year}`,
     getAllReports: `/api/v1/reports/getAllReports`,
     reportProcessing: `/api/v1/reports/reportProcessing`,
-    getAllUsers: `/api/v1/users`
+    getAllUsers: `/api/v1/users`,
+    getBusinessRequest: `/api/v1/users/business/requests`
   },
 
   user: {

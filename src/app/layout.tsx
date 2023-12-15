@@ -20,6 +20,8 @@ import PeopleOutlineOutlinedIcon from '@mui/icons-material/PeopleOutlineOutlined
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined'
 import SummarizeIcon from '@mui/icons-material/Summarize'
+import ContactPageIcon from '@mui/icons-material/ContactPage'
+import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined'
 import TanstackProvider from '@/providers/TanstackProvider'
 import { FaHouseChimney, FaRegUser, FaUser, FaCircleUser, FaRegCircleUser } from 'react-icons/fa6'
 import { FaCompass, FaRegCompass } from 'react-icons/fa'
@@ -89,6 +91,12 @@ const menuAdminItems = [
     iconActive: <PeopleAltIcon />,
     label: 'User Management',
     path: '/admin/user-management'
+  },
+  {
+    icon: <ContactPageOutlinedIcon />,
+    iconActive: <ContactPageIcon />,
+    label: 'Business Management',
+    path: '/admin/business-management'
   },
   {
     icon: <SummarizeOutlinedIcon />,
