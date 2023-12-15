@@ -11,6 +11,7 @@ import UrlConfig from '@/config/urlConfig'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { Post } from '@/types/post'
 import { Comment } from '@/types/comment'
+import { Comment } from '@/types/comment'
 import { timeSince } from '@/utils/changeDate'
 import PostDetail from './PostDetail'
 import HashtagWrapper from '@/components/common/HashtagWrapper'
@@ -109,6 +110,9 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       payload: { ...post, comments, totalComments: commentResponse.data.total }
     })
     setOpen(true)
+    const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
+    const comments = commentResponse.data.data as Comment[]
+    postsDispatch({ type: 'ADD_MULTIPLE_COMMENTS', payload: { postId: post._id, comments, totalComments: commentResponse.data.total } })
   }
   const closePostDetail = () => {
     setOpen(false)

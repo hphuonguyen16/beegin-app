@@ -17,6 +17,7 @@ import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import withAuth from '@/authorization/withAuth'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import { usePosts } from '@/context/PostContext'
+import { usePosts } from '@/context/PostContext'
 
 function Home() {
   const isMobile = useResponsive('down', 'sm')
@@ -34,6 +35,9 @@ function Home() {
 
       let posts = feeds.map((feed: Feed) => {
         return {
+          ...feed.post,
+          _feedId: feed._id,
+          comments: []
           ...feed.post,
           _feedId: feed._id,
           comments: []
@@ -138,7 +142,9 @@ function Home() {
               {postsState?.posts?.map((post: Post, index: number) => {
                 if (post && post.parent) {
                   return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
+                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
                 } else if (post) {
+                  return <PostCard key={post._feedId || index} post={post} />
                   return <PostCard key={post._feedId || index} post={post} />
                 }
               })}

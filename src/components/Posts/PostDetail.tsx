@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Box,
   Chip,
@@ -39,12 +40,12 @@ import CreatePost from './CreatePost'
 function findRootComment(comments: Comment[], comment: Comment | null | undefined): Comment | null {
   if (!comment) return null
   if (comment.parent) {
-    const parentComment = comments.find((c) => c._id === comment.parent)
+    const parentComment = comments.find((c) => c._id === comment.parent);
     if (parentComment) {
-      return findRootComment(comments, parentComment)
+      return findRootComment(comments, parentComment);
     }
   }
-  return comment
+  return comment;
 }
 
 interface PostDetailProps {
@@ -63,6 +64,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
   const axiosPrivate = useAxiosPrivate()
   const [comment, setComment] = React.useState('')
   const [commentReply, setCommentReply] = React.useState<Comment>()
+  const [page, setPage] = React.useState(2)
   const [page, setPage] = React.useState(2)
   const [loading, setLoading] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
@@ -127,6 +129,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
     if (!post.comments) {
       fetchData()
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
