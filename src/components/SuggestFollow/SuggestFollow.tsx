@@ -24,7 +24,9 @@ function SuggestFollow() {
 
     fetchPosts()
   }, [])
-
+  const handleFollow = (userId: string) => {
+    setData((prevData: any) => prevData.filter((item: any) => item.user._id !== userId))
+  }
   const handleShowMore = () => {
     setShowAll(!showAll)
   }
@@ -50,7 +52,9 @@ function SuggestFollow() {
       </Stack>
       <Box sx={{ marginLeft: '-10px' }}>
         {data != null && displayedData.length >= 0
-          ? displayedData.map((item: any, index: number) => <SuggestFollowCard key={index} user={item} />)
+          ? displayedData.map((item: any, index: number) => (
+              <SuggestFollowCard key={index} user={item} onFollow={handleFollow} />
+            ))
           : [...Array(3)].map((elementInArray, index) => (
               <Stack key={index} direction={'row'} alignItems={'center'} sx={{ padding: '20px' }}>
                 <Skeleton variant='circular' width={60} height={60} />

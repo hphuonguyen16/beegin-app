@@ -15,6 +15,7 @@ export default function SuggestFollowCard(props: any) {
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setIsVisible(false)
+      props.onFollow(props.user.user._id)
     }
   }
   return isVisible ? (

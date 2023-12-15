@@ -4,9 +4,11 @@ import ButtonFollow from '../../components/ButtonFollow/ButtonFollow'
 import { useRouter } from 'next/navigation'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
+import { useAuth } from '@/context/AuthContext'
 
 export default function CardUser(props: any) {
   const { firstname, lastname, avatar, slug } = props.profile
+  const { user } = useAuth()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const redirectToProfile = async () => {
@@ -23,7 +25,7 @@ export default function CardUser(props: any) {
   }
   const handleDataFromChild = (data: string) => {}
   return (
-    <Card sx={{ position: 'relative', padding: '0 20px !important', width: '100%', boxShadow: '2px' }}>
+    <Card sx={{ position: 'relative', padding: '0 20px !important', width: '100%', boxShadow: 0 }}>
       <CardHeader
         sx={{
           padding: '20px',
@@ -31,6 +33,11 @@ export default function CardUser(props: any) {
           '&:hover': {
             color: '#9747FF',
             fontWeight: 'bold'
+          },
+          '& .MuiCardHeader-action': {
+            top: '11px',
+            right: '10px',
+            position: 'relative'
           }
         }}
         avatar={
@@ -43,14 +50,13 @@ export default function CardUser(props: any) {
         title={firstname + ' ' + lastname}
         subheader={slug !== '' ? `@${slug}` : `@username`}
         action={
-          props.isVisible === true ? (
+          props.isVisible === true &&
+          props.userId !== user?._id && (
             <ButtonFollow
               userId={props.userId}
               sendDataToParent={handleDataFromChild}
               status={props.status}
             ></ButtonFollow>
-          ) : (
-            <></>
           )
         }
       />

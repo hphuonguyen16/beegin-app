@@ -7,7 +7,6 @@ const ButtonFollow = (props: any) => {
   const { userId } = props
   const axiosPrivate = useAxiosPrivate()
   const [follow, setFollow] = useState<boolean>(props.status !== undefined ? props.status : undefined)
-  // const [loading, setLoading] = useState<boolean>(false)
   const isFollowing = async (id: any) => {
     try {
       const url = UrlConfig.me.isFollowing.replace(':id', id)
@@ -37,7 +36,7 @@ const ButtonFollow = (props: any) => {
     if (props.status !== follow) {
       setFollow(props.status)
     }
-  }, [props.status])
+  }, [userId])
 
   const sendDataToParent = (data: string) => {
     props.sendDataToParent(data)
@@ -61,9 +60,9 @@ const ButtonFollow = (props: any) => {
         padding: '10px 20px',
         width: '100px',
         borderRadius: '18px',
-        position: 'absolute',
-        right: '10px',
-        top: '19%',
+        // position: 'absolute',
+        // right: '35px',
+        // top: '25px',
         backgroundColor: follow ? 'white !important' : 'initial'
       }}
       onClick={handleFollow}

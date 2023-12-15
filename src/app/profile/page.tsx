@@ -2,7 +2,21 @@
 /* eslint-disable no-console */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { Grid, Paper, Typography, Box, Stack, styled, Button, Avatar, Card, Skeleton } from '@mui/material'
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Stack,
+  styled,
+  Button,
+  Avatar,
+  Card,
+  ToggleButtonGroup,
+  ToggleButton,
+  alpha,
+  Skeleton
+} from '@mui/material'
 import Image from 'next/image'
 import background from '@/assets/background1.jpg'
 import PeopleIcon from '@mui/icons-material/People'
@@ -17,11 +31,15 @@ import Scrollbar from '@/components/common/Scrollbar'
 import DefaultBackground from '@/assets/default_background.jpg'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 // hooks
-
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import { usePosts } from '@/context/PostContext'
 import withAuth from '@/authorization/withAuth'
+
+//icons
+import { IoMdImages } from 'react-icons/io'
+import { BsPeople } from 'react-icons/bs'
+import { TbCell } from 'react-icons/tb'
 
 //component-style
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -36,7 +54,6 @@ const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  transform: 'translateY(-80px)',
   minWidth: '300px'
 }))
 const SkeletonBox = styled(Box)(({ theme }) => ({
@@ -47,16 +64,15 @@ const SkeletonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
-  transform: 'translateY(-80px)'
+  justifyContent: 'center'
 }))
 const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
-  backgroundColor: 'white',
-  transform: 'translateY(-80px)'
+  backgroundColor: 'white'
 }))
+
 const ButtonCustom = styled(Button)(({ theme }) => ({
   width: '120px',
   height: '80px',
@@ -64,9 +80,43 @@ const ButtonCustom = styled(Button)(({ theme }) => ({
   backgroundColor: 'white',
   border: '1px solid #D9D9D9'
 }))
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  backgroundColor: 'white',
+  boxShadow: '0 6px 12px -4px rgba(145, 158, 171, 0.1)',
+  padding: '2px',
+  // border: '1px solid #D9D9D9A5',
+  '& .MuiToggleButtonGroup-grouped': {
+    margin: theme.spacing(0.5),
+    border: 0,
+    '&.Mui-disabled': {
+      border: 0
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius
+    }
+  }
+}))
+
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+  fontSize: '25px',
+  padding: '10px 35px',
+  color: theme.palette.grey[600],
+  display: 'flex',
+  flexDirection: 'column',
+  '&:disabled': {
+    color: theme.palette.secondary.dark,
+    //@ts-ignore
+    backgroundColor: theme.palette.secondary.lighter + 'aa'
+  }
+}))
+
 function page() {
   const axiosPrivate = useAxiosPrivate()
-  const [action, setAction] = useState(true)
+  const [showPosts, setShowPosts] = useState(true)
   const [open, setOpen] = useState(false)
   const [data, setData] = useState<{
     firstname: string
@@ -157,6 +207,7 @@ function page() {
   return (
     <StyledProfile>
       <title>Profile | Beegin</title>
+      <title>Profile | Beegin</title>
       <Grid container spacing={2} sx={{ paddingX: '20px' }}>
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
           <Box>
@@ -191,7 +242,7 @@ function page() {
             <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
           </Box>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
           <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
             <Box>
               {data.firstname != '' ? (
@@ -311,53 +362,30 @@ function page() {
               )}
             </Box>
             <Box>
-              <Grid container spacing={2} sx={{ marginBottom: '30px' }}>
-                <Grid item xs={6}>
-                  <ButtonCustom onClick={() => setAction(true)}>
-                    <Stack spacing={2} textAlign='center' alignItems='center'>
-                      <BoltOutlinedIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
-                      <Typography
-                        variant='h4'
-                        sx={{
-                          fontWeight: '200',
-                          textAlign: 'center',
-                          fontSize: '15px',
-                          marginTop: '3px !important',
-                          color: (theme) => theme.palette.primary.main
-                        }}
-                      >
-                        Activities
-                      </Typography>
-                    </Stack>
-                  </ButtonCustom>
-                </Grid>
-                <Grid item xs={6}>
-                  <ButtonCustom onClick={() => setAction(false)}>
-                    <Stack spacing={2} textAlign='center' alignItems='center'>
-                      <PeopleIcon color='primary' fontSize='medium' style={{ marginTop: '10px' }} />
-                      <Typography
-                        variant='h4'
-                        sx={{
-                          fontWeight: '200',
-                          textAlign: 'center',
-                          fontSize: '15px',
-                          marginTop: '3px !important',
-                          color: (theme) => theme.palette.primary.main
-                        }}
-                      >
-                        Socials
-                      </Typography>
-                    </Stack>
-                  </ButtonCustom>
-                </Grid>
-              </Grid>
+              <StyledToggleButtonGroup
+                size='large'
+                value={showPosts}
+                exclusive
+                onChange={() => setShowPosts(!showPosts)}
+                aria-label='text alignment'
+              >
+                <StyledToggleButton size='large' value={true} aria-label='left aligned' disabled={showPosts === true}>
+                  <IoMdImages />
+                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Posts</Typography>
+                </StyledToggleButton>
+                <Paper sx={{ margin: '0 1.5px !important' }}></Paper>
+                <StyledToggleButton size='large' value={false} aria-label='centered' disabled={showPosts === false}>
+                  <TbCell />
+                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Socials</Typography>
+                </StyledToggleButton>
+              </StyledToggleButtonGroup>
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={9} sx={{ paddingRight: '48px' }}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)' }}>
           <Paper>
             <Posts>
-              {action === true ? (
+              {showPosts === true ? (
                 <Box sx={{ padding: '24px 48px' }}>
                   {' '}
                   <Typography
@@ -365,7 +393,6 @@ function page() {
                     sx={{
                       fontWeight: 'medium',
                       fontSize: '25px',
-                      fontFamily: 'Inter',
                       marginBottom: '25px !important'
                     }}
                   >

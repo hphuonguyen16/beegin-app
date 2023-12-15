@@ -104,7 +104,7 @@ function page() {
                     marginTop: '20px !important'
                   }}
                 >
-                  {data.numOfAccount}
+                  {data.numOfPost}
                 </Typography>
               </Stack>
             </BoxStyle>
@@ -127,7 +127,7 @@ function page() {
                     marginTop: '20px !important'
                   }}
                 >
-                  {data.numOfPost}
+                  {data.numOfAccount}
                 </Typography>
               </Stack>
             </BoxStyle>

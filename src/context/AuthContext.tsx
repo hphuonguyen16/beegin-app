@@ -60,6 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       !localStorage.getItem('persist') &&
       pathname !== '/login' &&
       pathname !== '/register' &&
+      pathname !== '/register/business' &&
       !pathname.startsWith('/verify')
     ) {
       router.push('/login')

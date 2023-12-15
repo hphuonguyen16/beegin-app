@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Box, Typography, Modal, Button, Input, styled, Grid, TextField, Avatar } from '@mui/material'
+import { Box, Typography, Modal, Button, Input, styled, Grid, TextField, Avatar, CircularProgress } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -13,6 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
+import { useRouter } from 'next/navigation'
 
 const style = {
   top: '50%',
@@ -47,6 +48,8 @@ interface ModalProps {
 
 const ModalComponent = (props: ModalProps) => {
   const { onClose, data, open } = props
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const [cropper, setCropper] = useState<any>()
   const axiosPrivate = useAxiosPrivate()
   const [formValues, setFormValues] = useState({
@@ -104,9 +107,13 @@ const ModalComponent = (props: ModalProps) => {
       const updatedData = {
         ...formValues
       }
+      setLoading(true)
       await axiosPrivate.patch(url, updatedData)
+      router.refresh()
+      setLoading(false)
     } catch (err) {
       console.error('API Error:', err)
+      setLoading(false)
     }
   }
   const handleInputChange = (event: any) => {
@@ -268,16 +275,22 @@ const ModalComponent = (props: ModalProps) => {
                 margin: '20px auto',
                 width: '100px',
                 marginLeft: '20px',
-                backgroundColor: '#E078D8 !important',
+                //@ts-ignore
+                backgroundColor: loading ? (theme) => `${theme.palette.disabled}!important` : '#E078D8 !important',
                 color: 'white',
                 border: 'none'
               }}
+              disabled={loading}
               onClick={() => {
                 onClose()
                 updateProfile()
               }}
             >
-              Save
+              {loading ? (
+                <CircularProgress size={20} sx={{ color: (theme) => theme.palette.secondary.dark }} />
+              ) : (
+                'Save'
+              )}
             </Button>
           </Grid>
         </Grid>
