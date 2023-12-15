@@ -10,7 +10,7 @@ function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
   const [listFollowing, setFollowing] = useState([])
   const [listFollower, setFollower] = useState([])
-  const [buttonFollow, setButtonFollow] = useState(true)
+  const [onFollowTab, setOnFollowTab] = useState(true)
   const [isVisible, setIsVisible] = useState(userId === 'me' ? true : false)
   const [searchValue, setSearchValue] = useState('')
 
@@ -48,9 +48,9 @@ function Friends({ userId }: { userId: string }) {
       }
     }
     fetchData()
-  }, [buttonFollow])
+  }, [onFollowTab])
 
-  const filteredData = buttonFollow
+  const filteredData = onFollowTab
     ? listFollowing.filter(
         (user: any) =>
           user.following &&
@@ -75,7 +75,7 @@ function Friends({ userId }: { userId: string }) {
           item
           xs={6}
           style={{
-            borderBottom: buttonFollow === true ? '2px solid #9747FF' : 'none',
+            borderBottom: onFollowTab === true ? '2px solid #9747FF' : 'none',
             paddingBottom: '15px',
             borderTopLeftRadius: '10px'
           }}
@@ -87,13 +87,13 @@ function Friends({ userId }: { userId: string }) {
               fontSize: '16px',
               cursor: 'pointer',
               fontWeight: 'bold',
-              color: buttonFollow === true ? '#9747FF' : 'black',
+              color: onFollowTab === true ? '#9747FF' : 'black',
               '&:hover': {
                 color: '#9747FF',
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButtonFollow(true)}
+            onClick={() => setOnFollowTab(true)}
           >
             Following
           </Typography>
@@ -102,7 +102,7 @@ function Friends({ userId }: { userId: string }) {
           item
           xs={6}
           style={{
-            borderBottom: buttonFollow === false ? '2px solid #9747FF' : 'none',
+            borderBottom: onFollowTab === false ? '2px solid #9747FF' : 'none',
             paddingBottom: '15px'
           }}
         >
@@ -113,13 +113,13 @@ function Friends({ userId }: { userId: string }) {
               fontSize: '16px',
               cursor: 'pointer',
               fontWeight: 'bold',
-              color: buttonFollow === false ? '#9747FF' : 'black',
+              color: onFollowTab === false ? '#9747FF' : 'black',
               '&:hover': {
                 color: '#9747FF',
                 fontWeight: 'bold'
               }
             }}
-            onClick={() => setButtonFollow(false)}
+            onClick={() => setOnFollowTab(false)}
           >
             Follower
           </Typography>
@@ -137,17 +137,17 @@ function Friends({ userId }: { userId: string }) {
           id='outlined-basic'
           label='Search'
           variant='outlined'
-          sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
+          sx={{ width: '94%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {buttonFollow === true
+        {onFollowTab === true
           ? filteredData.map((user: any, index) => (
               <CardUser
                 key={index}
                 userId={user.following._id}
                 profile={user.following.profile}
-                status={true}
-                isVisible={isVisible}
+                status={userId === 'me' ? true : undefined}
+                isVisible={true}
               />
             ))
           : filteredData.map((user: any, index) => (
@@ -156,7 +156,7 @@ function Friends({ userId }: { userId: string }) {
                 userId={user.follower._id}
                 profile={user.follower.profile}
                 status={user.follower.status}
-                isVisible={isVisible}
+                isVisible={true}
               />
             ))}
       </Box>

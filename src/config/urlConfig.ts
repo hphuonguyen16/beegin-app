@@ -40,6 +40,9 @@ const UrlConfig: any = {
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`
   },
+  feeds: {
+    getFeeds: `/api/v1/feed`
+  },
   comments: {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
@@ -70,7 +73,8 @@ const UrlConfig: any = {
   },
   bussiness: {
     createAdvertisement: `/api/v1/transactions/create_payment_url`,
-    getUnitPrice: `/api/v1/prices`
+    getUnitPrice: `/api/v1/prices`,
+    signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/business/signup`
   }
 }
 
