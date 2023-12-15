@@ -126,7 +126,6 @@ const PostDetail = ({ post, open, handleClose, handleLike }: PostDetailProps) =>
       setCommentReply(undefined)
     }
   }
-  console.log(comments)
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)

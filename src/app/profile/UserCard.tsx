@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 
 export default function CardUser(props: any) {
   const { firstname, lastname, avatar, slug } = props.profile
-  const { user } = useAuth();
+  const { user } = useAuth()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const redirectToProfile = async () => {
@@ -23,8 +23,7 @@ export default function CardUser(props: any) {
       console.log(error)
     }
   }
-  const handleDataFromChild = (data: string) => { }
-  console.log(props.status);
+  const handleDataFromChild = (data: string) => {}
   return (
     <Card sx={{ position: 'relative', padding: '0 20px !important', width: '100%', boxShadow: 0 }}>
       <CardHeader
@@ -49,9 +48,10 @@ export default function CardUser(props: any) {
           />
         }
         title={firstname + ' ' + lastname}
-        subheader={slug !== '' ? slug : `@username`}
+        subheader={slug !== '' ? `@${slug}` : `@username`}
         action={
-          props.isVisible === true && (props.userId !== user?._id) && (
+          props.isVisible === true &&
+          props.userId !== user?._id && (
             <ButtonFollow
               userId={props.userId}
               sendDataToParent={handleDataFromChild}
