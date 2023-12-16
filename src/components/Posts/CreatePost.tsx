@@ -228,7 +228,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       {isLoad && <PostLoader />}
 
       <div>
-        <Snackbar />
+        {isSuccess && <Snackbar />}
         <Stack direction={'row'} sx={{ alignItems: 'center' }} gap={2}>
           <Avatar alt='Remy Sharp' src={user?.profile?.avatar} sx={{ width: 60, height: 60 }} />
           <Box>
@@ -367,8 +367,14 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
           </Box>
           <Button
             variant='contained'
-            sx={{ width: '100%', marginTop: '20px', padding: '12px 0' }}
+            sx={{
+              width: '100%',
+              marginTop: '20px',
+              padding: '12px 0',
+              color: 'white !important'
+            }}
             onClick={() => createPost()}
+            disabled={!content && images.length === 0 && !repost ? true : false}
           >
             Create Post
           </Button>

@@ -138,9 +138,7 @@ function Home() {
               {postsState?.posts?.map((post: Post, index: number) => {
                 if (post && post.parent) {
                   return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
-                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
                 } else if (post) {
-                  return <PostCard key={post._feedId || index} post={post} />
                   return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
