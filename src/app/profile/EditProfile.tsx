@@ -48,8 +48,8 @@ interface ModalProps {
 
 const ModalComponent = (props: ModalProps) => {
   const { onClose, data, open } = props
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const [cropper, setCropper] = useState<any>()
   const axiosPrivate = useAxiosPrivate()
   const [formValues, setFormValues] = useState({
@@ -107,14 +107,13 @@ const ModalComponent = (props: ModalProps) => {
       const updatedData = {
         ...formValues
       }
-      setLoading(true);
-      await axiosPrivate.patch(url, updatedData);
-      router.refresh();
-      setLoading(false);
-
+      setLoading(true)
+      await axiosPrivate.patch(url, updatedData)
+      router.refresh()
+      setLoading(false)
     } catch (err) {
-      console.error('API Error:', err);
-      setLoading(false);
+      console.error('API Error:', err)
+      setLoading(false)
     }
   }
   const handleInputChange = (event: any) => {
@@ -283,7 +282,7 @@ const ModalComponent = (props: ModalProps) => {
               }}
               disabled={loading}
               onClick={() => {
-                // onClose()
+                onClose()
                 updateProfile()
               }}
             >

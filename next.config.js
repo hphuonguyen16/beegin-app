@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextTranslate = require('next-translate-plugin')
+const { withNextVideo } = require('next-video/process');
 
 const nextConfig = {
   eslint: {
@@ -27,4 +28,9 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+module.exports = withNextVideo(nextConfig, {
+  provider: 'cloudinary',
+  providerConfig: {
+    cloudinary: { endpoint: 'https://res.cloudinary.com' }
+  }
+});

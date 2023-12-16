@@ -9,4 +9,5 @@ export interface Comment {
   children?: Comment[]
   parent?: string
   isLiked?: boolean
+  total: number
 }

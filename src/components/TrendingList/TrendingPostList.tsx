@@ -22,6 +22,7 @@ export default function TrendingPostList() {
     queryFn: fetchData,
     staleTime: 1000 * 60 * 5 // 5 minutes
   })
+
   async function fetchData() {
     try {
       const preferences =

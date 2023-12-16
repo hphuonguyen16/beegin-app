@@ -15,6 +15,7 @@ export default function SuggestFollowCard(props: any) {
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setIsVisible(false)
+      props.onFollow(props.user.user._id)
     }
   }
   return isVisible ? (
@@ -32,7 +33,7 @@ export default function SuggestFollowCard(props: any) {
           <>
             <Typography variant='subtitle1'>{firstname + ' ' + lastname}</Typography>
             <Typography variant='body2' color='textSecondary'>
-              {slug}
+              @{slug}
             </Typography>
           </>
         }

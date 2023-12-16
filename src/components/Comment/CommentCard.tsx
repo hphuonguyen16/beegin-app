@@ -18,17 +18,18 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
+import { usePosts } from '@/context/PostContext'
 
 interface CommentCardProps {
+  postId: string
   comment: Comment
   replyComment: (comment: Comment) => void
 }
 
-const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
+const CommentCard = ({ postId, comment, replyComment }: CommentCardProps) => {
   const isMobile = useResponsive('down', 'sm')
+  const { postsState, postsDispatch } = usePosts()
   const [openReply, setOpenReply] = React.useState(false)
-  const [commentData, setCommentData] = React.useState<Comment>(comment)
-  const [children, setChildren] = React.useState<Comment[]>(comment.children || [])
   const [liked, setLiked] = React.useState(comment.isLiked || false)
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = React.useState(1)
@@ -54,11 +55,14 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
       const res = await axiosPrivate.get(
         `${UrlConfig.comments.getReplyComments(comment.post, comment._id, page)}?limit=5&page=${page}`
       )
-
-      setCommentData((prevCommentData) => {
-        const childrenArray = prevCommentData?.children || [] // Use an empty array if children is undefined
-        //modify comment children
-        return { ...prevCommentData, children: [...childrenArray, ...res.data.data] }
+      const comments = res.data.data as Comment[]
+      postsDispatch({
+        type: 'ADD_REPLY_COMMENTS',
+        payload: {
+          postId,
+          commentId: comment._id,
+          comments
+        }
       })
       setPage((prev) => prev + 1)
       setLoading(false)
@@ -182,9 +186,9 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
                     onClick={() => {
                       if (!openReply) {
                         setOpenReply(true)
-                        if (!commentData.children && !loading) {
+                        if (!comment.children && !loading) {
                           getReplyComments()
-                        } else if (commentData?.children?.length === 0 && !loading) {
+                        } else if (comment?.children?.length === 0 && !loading) {
                           getReplyComments()
                         }
                       } else {
@@ -201,11 +205,16 @@ const CommentCard = ({ comment, replyComment }: CommentCardProps) => {
                   </Typography>
                   {openReply && (
                     <>
-                      {commentData.children?.map((childComment) => (
-                        <CommentCard key={childComment._id} comment={childComment} replyComment={replyComment} />
+                      {comment.children?.map((childComment) => (
+                        <CommentCard
+                          key={childComment._id}
+                          comment={childComment}
+                          replyComment={replyComment}
+                          postId={postId}
+                        />
                       ))}
                       {/* {!endOfPage && comment?.children?.length && comment.children.length >= 3 && ( */}
-                      {commentData.children?.length && commentData.numReplies > commentData.children?.length && (
+                      {comment.children?.length && comment.numReplies > comment.children?.length && (
                         <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '5px' }}>
                           <Typography
                             onClick={() => getReplyComments()}

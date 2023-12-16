@@ -1,72 +1,160 @@
+import { PostState, PostAction } from './types'
 import { Post } from '@/types/post'
 import { Comment } from '@/types/comment'
 
-interface SetPostsAction {
-  type: 'SET_POSTS'
-  payload: Post[]
-}
-interface MarkPostAsLikedAction {
-  type: 'MARK_POST_AS_LIKED'
-  payload: string // Post ID
-}
-interface MarkPostAsUnlikedAction {
-  type: 'MARK_POST_AS_UNLIKED'
-  payload: string // Post ID
-}
-interface AddPostAction {
-  type: 'ADD_POST'
-  payload: Post
-}
-interface SetLikedPostsAction {
-  type: 'SET_LIKED_POSTS'
-  payload: {
-    postId: string
-    isLiked: boolean
+const addCommentToPost = (post: Post, comment: Comment, parentId: string) => {
+  if (!parentId) {
+    return {
+      ...post,
+      comments: [comment, ...post.comments],
+      numComments: post.numComments + 1
+    }
+  } else {
+    return {
+      ...post,
+      numComments: post.numComments + 1,
+      comments: post.comments.map((parentComment) => {
+        if (parentComment._id === parentId) {
+          return {
+            ...parentComment,
+            numReplies: parentComment.numReplies + 1,
+            children: [...(parentComment.children || []), comment]
+          }
+        } else {
+          return parentComment
+        }
+      })
+    }
   }
 }
 
-export interface PostState {
-  posts: Post[]
+const addReplyCommentsToParentComment = (parentComment: Comment, commentId: string, comments: Comment[]) => {
+  if (parentComment._id === commentId) {
+    // Add the new reply comments to the parent comment
+    const updatedParentComment = {
+      ...parentComment,
+      children: [...(parentComment.children || []), ...comments]
+    }
+    return updatedParentComment
+  } else {
+    return parentComment
+  }
 }
-
-export type PostAction =
-  | SetPostsAction
-  | MarkPostAsLikedAction
-  | MarkPostAsUnlikedAction
-  | AddPostAction
-  | SetLikedPostsAction
 
 export const postReducer = (state: PostState, action: PostAction) => {
   switch (action.type) {
+    case 'SELECT_POST': {
+      return { ...state, selectedPost: action.payload }
+    }
     case 'SET_POSTS': {
       return { ...state, posts: action.payload }
     }
     case 'ADD_POST': {
       return { ...state, posts: [action.payload, ...state.posts] }
     }
-    case 'MARK_POST_AS_LIKED': {
-      const postId = action.payload
+    case 'ADD_MULTIPLE_POSTS': {
+      const { payload: multiplePosts } = action
+
+      const updatedPosts = [...state.posts, ...multiplePosts]
+
+      const uniquePostsSet = new Set(updatedPosts.map((post) => post._id))
+
+      const uniquePostsArray = Array.from(uniquePostsSet)
+
+      const uniquePosts = uniquePostsArray.map((postId) => updatedPosts.find((post) => post._id === postId))
+
       return {
         ...state,
+        posts: uniquePosts
+      }
+    }
+    case 'ADD_MULTIPLE_COMMENTS': {
+      const { postId, comments, totalComments } = action.payload
+      return {
+        ...state,
+        selectedPost:
+          state.selectedPost?._id === postId
+            ? {
+                ...state.selectedPost,
+                comments: Array.from(new Set([...state.selectedPost.comments, ...comments])),
+                totalComments
+              }
+            : state.selectedPost,
         posts: state.posts.map((post) =>
-          post._id === postId ? { ...post, isLiked: true, numLikes: post.numLikes + 1 } : post
+          post._id === postId
+            ? {
+                ...post,
+                comments: Array.from(new Set([...post.comments, ...comments])),
+                totalComments
+              }
+            : post
         )
       }
     }
-    case 'MARK_POST_AS_UNLIKED': {
-      const postId = action.payload
+    case 'ADD_COMMENT': {
+      const { postId, comment, parentId } = action.payload
+
+      const updatedSelectedPost =
+        state.selectedPost?._id === postId
+          ? addCommentToPost(state.selectedPost, comment, parentId)
+          : state.selectedPost
+
+      const updatedPosts = state.posts.map((post) => {
+        if (post._id === postId) {
+          return addCommentToPost(post, comment, parentId)
+        } else {
+          return post
+        }
+      })
+
       return {
         ...state,
-        posts: state.posts.map((post) =>
-          post._id === postId ? { ...post, isLiked: false, numLikes: post.numLikes - 1 } : post
-        )
+        selectedPost: updatedSelectedPost,
+        posts: updatedPosts
       }
     }
-    case 'SET_LIKED_POSTS': {
+
+    case 'ADD_REPLY_COMMENTS': {
+      const { postId, commentId, comments } = action.payload
+
+      const updatedSelectedPost = {
+        ...state.selectedPost,
+        comments: state.selectedPost?.comments.map((parentComment) =>
+          addReplyCommentsToParentComment(parentComment, commentId, comments)
+        )
+      }
+
+      const updatedPosts = state.posts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: post.comments.map((parentComment) =>
+              addReplyCommentsToParentComment(parentComment, commentId, comments)
+            )
+          }
+        } else {
+          return post
+        }
+      })
+
+      return {
+        ...state,
+        selectedPost: updatedSelectedPost,
+        posts: updatedPosts
+      }
+    }
+    case 'SET_LIKED_POST': {
       const { postId, isLiked } = action.payload
       return {
         ...state,
-        posts: state.posts.map((post) => (post._id === postId ? { ...post, isLiked } : post))
+        selectedPost:
+          state.selectedPost?._id === postId
+            ? {
+                ...state.selectedPost,
+                isLiked,
+                numLikes: isLiked ? state.selectedPost.numLikes + 1 : state.selectedPost.numLikes - 1
+              }
+            : state.selectedPost
       }
     }
     default:
