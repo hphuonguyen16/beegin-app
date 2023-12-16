@@ -25,7 +25,7 @@ function Friends({ userId }: { userId: string }) {
         response = await axiosPrivate.get(url)
       }
       setFollowing(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
   const getListFollower = async (userId: any) => {
     try {
@@ -37,7 +37,7 @@ function Friends({ userId }: { userId: string }) {
         response = await axiosPrivate.get(url)
       }
       setFollower(response.data.data)
-    } catch (err) { }
+    } catch (err) {}
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -53,22 +53,21 @@ function Friends({ userId }: { userId: string }) {
   }, [onFollowTab])
   const filteredData = onFollowTab
     ? listFollowing.filter(
-      (user: any) =>
-        user.following &&
-        user.following.profile &&
-        `${user.following.profile.firstname} ${user.following.profile.lastname}`
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())
-    )
+        (user: any) =>
+          user.following &&
+          user.following.profile &&
+          `${user.following.profile.firstname} ${user.following.profile.lastname}`
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())
+      )
     : listFollower.filter(
-      (user: any) =>
-        user.follower &&
-        user.follower.profile &&
-        `${user.follower.profile.firstname} ${user.follower.profile.lastname}`
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())
+        (user: any) =>
+          user.follower &&
+          user.follower.profile &&
+          `${user.follower.profile.firstname} ${user.follower.profile.lastname}`
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())
     )
-  console.log(listFollower)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -141,32 +140,35 @@ function Friends({ userId }: { userId: string }) {
           sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {
-          filteredData !== null && filteredData.length > 0
-            ? onFollowTab === true
-              ? filteredData.map((user: any, index) => (
+        {filteredData !== null && filteredData.length > 0
+          ? onFollowTab === true
+            ? filteredData.map((user: any, index) => (
                 <CardUser
                   key={index}
                   userId={user.following._id}
                   profile={user.following.profile}
-                  status={userId === 'me' ? true : undefined}
+                  status={userId === 'me' ? true : user.status}
                   isVisible={true}
                 />
               ))
-              : filteredData.map((user: any, index) => (
+            : filteredData.map((user: any, index) => (
                 <CardUser
                   key={index}
                   userId={user.follower._id}
                   profile={user.follower.profile}
-                  status={user.follower.status}
+                  status={user.status}
                   isVisible={true}
                 />
               ))
-            :
-            (() => {
+          : (() => {
               console.log('Rendering Skeletons...')
               return [...Array(5)].map((elementInArray, index) => (
-                <Stack key={index} direction={'row'} alignItems={'center'} sx={{ margin: '15px 40px', padding: '10px' }}>
+                <Stack
+                  key={index}
+                  direction={'row'}
+                  alignItems={'center'}
+                  sx={{ margin: '15px 40px', padding: '10px' }}
+                >
                   <Skeleton variant='circular' width={60} height={60} />
                   <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
                     <Skeleton variant='rounded' height={20} width={130} />
@@ -180,8 +182,7 @@ function Friends({ userId }: { userId: string }) {
                   />
                 </Stack>
               ))
-            })()
-        }
+            })()}
       </Box>
     </Stack>
   )

@@ -56,7 +56,9 @@ const SkeletonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  width: '300px',
+  height: '410px'
 }))
 
 const Posts = styled(Card)(({ theme }) => ({
@@ -184,7 +186,7 @@ function page() {
     }
     fetchData()
   }, [])
-
+  console.log(data.firstname)
   return (
     <StyledProfile>
       <PersistentScrollView id={'scrollProfile'}>
@@ -213,7 +215,7 @@ function page() {
             <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
               <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
                 <Box>
-                  {data.firstname != '' && number.NumberOfFollowing != 0 ? (
+                  {data.firstname != '' ? (
                     <Information>
                       <Stack spacing={2} alignItems='center'>
                         <Paper style={{ backgroundColor: 'white' }}>
@@ -373,10 +375,10 @@ function page() {
                 </Box>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)' }}>
+            <Grid item xs={12} md={9} sx={{ paddingRight: '50px', transform: 'translateY(-80px)' }}>
               <Posts>
                 {showPosts === true ? (
-                  <Box sx={{ padding: '24px 48px' }}>
+                  <Box sx={{ marginLeft: '55px', marginTop: '25px' }}>
                     {' '}
                     <Typography
                       variant='h3'
