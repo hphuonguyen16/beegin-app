@@ -8,6 +8,7 @@ import { Post } from '@/types/post'
 import { Comment } from '@/types/comment'
 import { useRouter } from 'next/navigation'
 import { usePosts } from '@/context/PostContext'
+
 const PostDetailPage = ({ params }: { params: { id: string } }) => {
   const isMobile = useResponsive('down', 'sm')
   const { postsState, postsDispatch } = usePosts()

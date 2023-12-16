@@ -17,28 +17,22 @@ import {
   Skeleton
 } from '@mui/material'
 import Image from 'next/image'
-import background from '@/assets/background1.jpg'
-import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
-import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from './Friends'
 import EditProfile from './EditProfile'
 import PostCard from '../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
-import Scrollbar from '@/components/common/Scrollbar'
 import DefaultBackground from '@/assets/default_background.jpg'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 // hooks
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
-import { usePosts } from '@/context/PostContext'
 import withAuth from '@/authorization/withAuth'
 import { useQuery } from '@tanstack/react-query'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
-import { BsPeople } from 'react-icons/bs'
 import { TbCell } from 'react-icons/tb'
 
 //component-style

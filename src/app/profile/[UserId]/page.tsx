@@ -17,10 +17,7 @@ import {
   Skeleton
 } from '@mui/material'
 import Image from 'next/image'
-import background from '@/assets/background1.jpg'
-import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
-import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from '../Friends'
 import PostCard from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
@@ -30,12 +27,9 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import { Post } from '@/types/post'
-import { usePosts } from '@/context/PostContext'
-import DefaultBackground from '@/assets/default_background.jpg'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
-import { BsPeople } from 'react-icons/bs'
 import { TbCell } from 'react-icons/tb'
 
 const StyledProfile = styled('div')(({ theme }) => ({
@@ -50,8 +44,7 @@ const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  minWidth: '300px',
-
+  minWidth: '300px'
 }))
 const SkeletonBox = styled(Box)(({ theme }) => ({
   backgroundColor: 'white',
@@ -110,6 +103,7 @@ function page() {
   const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
   const [showPosts, setShowPosts] = useState(true)
+  const [posts, setPosts] = useState<Post[]>([])
   const [data, setData] = useState<{
     firstname: string
     lastname: string
@@ -131,7 +125,6 @@ function page() {
     gender: true,
     slug: ''
   })
-  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
@@ -164,37 +157,25 @@ function page() {
       setNumber(response.data.data)
     } catch (err) {}
   }
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
-        let posts = response.data.data
-        posts = posts.map(async (post: Post) => {
-          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
-          const isLiked = likeResponse.data.data
-          return {
-            ...post,
-            isLiked
-          }
-        })
-        posts = await Promise.all(posts)
-        postsDispatch({ type: 'SET_POSTS', payload: posts })
-        setNumberPost(response.data.results)
-      } catch (error) {
-        console.log(error)
-      }
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
+      let posts = response.data.data as Post[]
+      setPosts(posts)
+      setNumberPost(response.data.results)
+      return posts
+    } catch (error) {
+      console.log(error)
     }
-    fetchPosts()
-    return () => {
-      postsDispatch({ type: 'SET_POSTS', payload: [] })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getUsers(userId)
         await getNumberOfFollow(userId)
+        await fetchPosts()
       } catch (error) {
         console.log(error)
       }
@@ -380,9 +361,7 @@ function page() {
                 >
                   Posts
                 </Typography>
-                {postsState.posts.map((post, index) => (
-                  <PostCard key={index} post={post} />
-                ))}
+                {posts?.map((post, index) => <PostCard key={index} post={post} />)}
               </Box>
             ) : (
               <Friends userId={userId}></Friends>

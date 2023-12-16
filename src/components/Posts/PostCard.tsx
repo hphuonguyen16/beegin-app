@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation'
 import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import ReplyPostCard from './ReplyPostCard'
-import Video from 'next-video';
+import Video from 'next-video'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -59,7 +59,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
 
   '.next-video-container': {
     height: '100%',
-    maxHeight: '600px',
+    maxHeight: '600px'
   }
 }))
 
@@ -83,6 +83,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     try {
       if (!like) {
         setLike(true)
+        post.isLiked = true
         post.numLikes++
         postsDispatch({
           type: 'SET_LIKED_POST',
@@ -94,6 +95,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
         setLike(false)
+        post.isLiked = false
         post.numLikes--
         postsDispatch({
           type: 'SET_LIKED_POST',
@@ -104,7 +106,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) { }
+    } catch (err) {}
   }
 
   const openPostDetail = async () => {
@@ -127,7 +129,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) { }
+    } catch (error) {}
   }
   return (
     <>
@@ -263,14 +265,26 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
           </Box>
-          <ImageContainerStyled
-            number={post.images ? post.images.length : 0}
-          >
-            {post.images?.map((src, index) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              src.split('/')[4] === 'image' ? <img onClick={openPostDetail} className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' /> :
-                <Video src={src} autoPlay={false} accentColor='#E078D8' />
-            ))}
+          <ImageContainerStyled number={post.images ? post.images.length : 0}>
+            {post.images?.map((src, index) => {
+              if (src && src.split('/')[4] === 'image') {
+                return (
+                  <img
+                    onClick={openPostDetail}
+                    className={`image-${index + 1}`}
+                    src={src}
+                    key={index}
+                    alt='image'
+                    loading='lazy'
+                  />
+                )
+              } else if (src) {
+                return <Video key={index} src={src} autoPlay={false} accentColor='#E078D8' />
+              } else {
+                // Handle the case where src is undefined or null
+                return null
+              }
+            })}
           </ImageContainerStyled>
           {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
           {post?.images?.length === 0 && postParent && <PostCard post={postParent as Post} isRepost={true} />}
