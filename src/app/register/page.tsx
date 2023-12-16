@@ -353,38 +353,41 @@ export default function Register() {
               <Stack direction={'row'} justifyContent={'space-between'} className='w-full'>
                 {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
                 <div>
-                  <Button type='submit' variant='contained' color='primary' disabled={isSubmitting ? true : false} onClick={_handleSubmit}
+                  <Button type='submit' variant='contained' color='primary' disabled={isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? true : false} onClick={_handleSubmit}
                     //@ts-ignore
-                    sx={{ background: isSubmitting ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`, }}>
-                    {activeStep === 2 && cropper === null ? "Skip" : ( isLastStep?(isSubmitting? <CircularProgress size = { 15} sx = {{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next')}
-                  </Button>
-                </div>
-              </Stack>
-            </StyledContent>
-          </StyledForm>
+                    sx={{ background: isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`,
+                    // ...((activeStep === steps.length - 1) && formValues.preferences.length < 3 && { color: 'blue' })
+                    }}>
+                  {activeStep === 2 && cropper === null ? "Skip" : (isLastStep ? (isSubmitting ? <CircularProgress size={15} sx={{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next')}
+                </Button>
+              </div>
+            </Stack>
+          </StyledContent>
+        </StyledForm>
 
           {mdUp && (
-            <StyledBanner>
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative'
-                }}
-              >
-                <Image
-                  style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
-                  fill
-                  src={SignupBanner}
-                  alt='signup'
-                />
-              </Box>
-            </StyledBanner>
-          )}
-        </StyledRoot>
-      ) : (
-        <RegistrationComplete />
+        <StyledBanner>
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              position: 'relative'
+            }}
+          >
+            <Image
+              style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
+              fill
+              src={SignupBanner}
+              alt='signup'
+            />
+          </Box>
+        </StyledBanner>
       )}
+    </StyledRoot >
+      ) : (
+    <RegistrationComplete />
+  )
+}
     </>
   )
 }
