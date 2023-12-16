@@ -32,7 +32,7 @@ const NotificationPopover = () => {
   }
 
   const open = Boolean(anchorEl)
-  const id = open ? 'simple-popover' : undefined
+  const id = open ? 'simple-popover-notif' : undefined
   return (
     <div>
       <Button
@@ -58,10 +58,6 @@ const NotificationPopover = () => {
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
         }}
       >
         <Typography variant={'h4'} sx={{ padding: '25px 0px 10px 15px', fontSize: '17px' }}>
