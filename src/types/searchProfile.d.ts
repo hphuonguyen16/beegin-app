@@ -6,4 +6,5 @@ export default interface searchProfile {
   id: string
   avatar: string
   bio: string
+  slug: string
 }

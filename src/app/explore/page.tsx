@@ -10,9 +10,11 @@ import withAuth from '@/authorization/withAuth'
 function Page() {
   return (
     <PostLayout>
-    <title>Explore | Beegin</title>
-      <TrendingList count={5} isFull={false} />
-      <TrendingPostList />
+      <title>Explore | Beegin</title>
+      <Stack sx={{ margin: '0 20px' }}>
+        <TrendingList count={5} isFull={false} />
+        <TrendingPostList />
+      </Stack>
     </PostLayout>
   )
 }

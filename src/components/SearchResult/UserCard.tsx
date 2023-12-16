@@ -10,14 +10,14 @@ interface UserCardProps {
   profile: searchProfile
 }
 export default function UserCard({ profile }: UserCardProps) {
-  const { user } = useAuth();
-  const { id, avatar, firstname, lastname, bio } = profile
+  const { user } = useAuth()
+  const { id, avatar, firstname, lastname, bio, slug } = profile
   const router = useRouter()
   const redirectToProfile = () => {
     if (profile.user !== user?._id) {
       router.push(`/profile/${profile.user}`)
     } else {
-      router.push('/profile');
+      router.push('/profile')
     }
   }
   return (
@@ -50,7 +50,7 @@ export default function UserCard({ profile }: UserCardProps) {
               >
                 {firstname + ' ' + lastname}
               </Typography>
-              <Typography>@{firstname + lastname}</Typography>
+              <Typography>@{slug}</Typography>
             </Stack>
             <FollowSearchButton userId={profile.user} myId={user?._id} />
           </Stack>

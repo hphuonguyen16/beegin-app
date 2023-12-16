@@ -36,7 +36,8 @@ export default function TrendingList({ count = 5, isFull }: TrendingListProps) {
         // maxHeight: '100%',
         // overflow: 'auto',
         backgroundColor: 'transparent',
-        padding: '0 0 30px 0',
+        padding: '0',
+        margin: '0 10px 0 0',
         borderRadius: '10px'
       }}
     >
