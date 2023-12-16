@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation'
 import Loader from '@/components/common/Loader/Loader'
 import ProfilePopover from './ProfilePopover/index'
 import SearchTextbox from './SearchTextbox/SearchTextbox'
+import NotificationPopover from '@/components/Notification/NotificationPopover'
 
 // ----------------------------------------------------------------------
 
@@ -147,7 +148,6 @@ const Layout = ({ children, menuItems }: LayoutProps) => {
   const topic =
     pathSegments[pathSegments.length - 1].charAt(0).toUpperCase() + pathSegments[pathSegments.length - 1].slice(1)
 
-
   return (
     <StyledRoot>
       {isLoading && <Loader />}
@@ -159,11 +159,7 @@ const Layout = ({ children, menuItems }: LayoutProps) => {
           <HeaderBar>
             <SearchTextbox />
             <Stack direction={'row'} spacing={2}>
-              <Button sx={{ borderRadius: '50%' }}>
-                <StyledIconNotifBox>
-                  <NotificationsRoundedIcon />
-                </StyledIconNotifBox>
-              </Button>
+              <NotificationPopover></NotificationPopover>
               <ProfilePopover></ProfilePopover>
             </Stack>
           </HeaderBar>
