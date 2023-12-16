@@ -141,7 +141,7 @@ function Friends({ userId }: { userId: string }) {
           sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {filteredData !== null && filteredData.length > 0
+        {filteredData !== null
           ? onFollowTab === true
             ? filteredData.map((user: any, index) => (
                 <CardUser

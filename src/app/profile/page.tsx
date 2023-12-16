@@ -64,21 +64,15 @@ const SkeletonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  width: '300px',
+  height: '410px'
 }))
 const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
   backgroundColor: 'white'
-}))
-
-const ButtonCustom = styled(Button)(({ theme }) => ({
-  width: '120px',
-  height: '80px',
-  borderRadius: '15px',
-  backgroundColor: 'white',
-  border: '1px solid #D9D9D9'
 }))
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -206,7 +200,6 @@ function page() {
   }
   return (
     <StyledProfile>
-      <title>Profile | Beegin</title>
       <title>Profile | Beegin</title>
       <Grid container spacing={2} sx={{ paddingX: '20px' }}>
         <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
@@ -382,11 +375,11 @@ function page() {
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)' }}>
+        <Grid item xs={12} md={9} sx={{ paddingRight: '50px', transform: 'translateY(-80px)' }}>
           <Paper>
             <Posts>
               {showPosts === true ? (
-                <Box sx={{ padding: '24px 48px' }}>
+                <Box sx={{ marginLeft: '55px', marginTop: '25px' }}>
                   {' '}
                   <Typography
                     variant='h3'
