@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Typography, Stack, Avatar, TextField, IconButton, Button } from '@mui/material'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { MdVideoLibrary } from "react-icons/md";
+import { MdVideoLibrary } from 'react-icons/md'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import useResponsive from '@/hooks/useResponsive'
@@ -19,7 +19,8 @@ import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
 import { usePathname } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { AxiosResponse } from 'axios'
+import Video from 'next-video';
+import getFileType from '@/utils/getFileType';
 
 interface NewPostProps {
   content: string | ''
@@ -43,13 +44,13 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   },
   '& .image-1': {
     gridArea: '1 / 1 / 2 / 2',
-    maxHeight: '720px'
+    maxHeight: '600px'
   },
   '& .image-2': {
-    gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'
+    gridArea: props.number === 3 ? '1 / 2 / 3 / 3' : '1 / 2 / 2 / 3'
   },
   '& .image-3': {
-    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '1 / 2 / 3 / 3'
+    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '2 / 1 / 3 / 2'
   },
   '& .image-4': {
     gridArea: '2 / 2 / 3 / 3'
@@ -62,16 +63,23 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
       borderRadius: '8px',
       objectFit: 'cover'
     }
+  },
+  '.next-video-container': {
+    height: '100%',
+    maxHeight: '400px',
+  },
+  '.video-2': {
+    height: props.number === 3 ? '345px' : '100%'
   }
 }))
 
-async function handleFileUpload(files: any) {
-  const uploadPromises = files.map((file: any) => {
+async function handleFileUpload(files: File[]) {
+  const uploadPromises = files.map((file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
+    formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`);
 
-    return fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    return fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${getFileType(file)}/upload`, {
       method: 'POST',
       body: formData
     })
@@ -113,10 +121,13 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
-    if (e.target.files && e.target.files.length > 0 && images.length <= 4) {
+    const files = e.target.files;
+    if (files && files.length > 0 && images.length <= 4) {
       const newImages = [...images]
-      for (let i = 0; i < e.target.files.length; i++) {
-        newImages.push(e.target.files[i])
+      var pushLength = files.length;
+      if (pushLength + images.length > 4) pushLength = 4 - images.length;
+      for (let i = 0; i < pushLength; i++) {
+        newImages.push(files[i])
       }
       setImages(newImages)
     }
@@ -143,6 +154,18 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         newPosts.unshift(data)
         //@ts-ignore
         postsDispatch({ type: 'ADD_POST', payload: data })
+        setSnack({
+          open: true,
+          message: 'Create post successfully!',
+          type: 'success'
+        })
+        setNewPost(null)
+        setIsSuccess(true)
+        setIsLoad(false)
+        setSelectedCategories([])
+        setContent('')
+        setImages([])
+        setOpen(false)
         return {
           pages: [
             {
@@ -160,19 +183,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         newPosts.unshift(data)
         return newPosts
       })
-      setIsLoad(false)
-      setIsSuccess(true)
-      setSnack({
-        open: true,
-        message: 'Create post successfully!',
-        type: 'success'
-      })
-      setTimeout(() => {
-        setContent('')
-        setImages([])
-        setIsSuccess(false)
-        setOpen(false)
-      }, 1000)
     },
     onError: (error: any) => {
       setIsLoad(false)
@@ -194,12 +204,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    // const response = await axiosPrivate.post(urlConfig.posts.createPost, {
-    //   content: content,
-    //   images: uploadedUrls,
-    //   categories: selectedCategories.map((item) => item._id),
-    //   parent: repost?._id
-    // })
     createPostMutation.mutate({
       content: content,
       images: uploadedUrls,
@@ -246,7 +250,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         <Box
           sx={{
             justifyContent: 'space-between',
-            maxHeight: '485px',
+            maxHeight: '530px',
             height: '60%',
             overflow: 'auto',
             marginTop: '17px'
@@ -272,21 +276,26 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
             />
             <Box sx={{ position: 'relative', paddingBottom: '30px' }}>
               <ImageContainerStyled number={images ? images.length : 0}>
-                {images?.map((item: any, index: number) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    className={`image-${index + 1}`}
-                    src={URL.createObjectURL(item)}
-                    key={index}
-                    alt='image'
-                    loading='lazy'
-                  />
+                {images?.map((item: File, index: number) => (
+                  getFileType(item) === 'video' ?
+                    <Video className={`video-${index + 1}`} src={URL.createObjectURL(item)} autoPlay={false} accentColor='#E078D8' /> :
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      className={`image-${index + 1}`}
+                      src={URL.createObjectURL(item)}
+                      key={index}
+                      alt='image'
+                      loading='lazy'
+                    />
                 ))}
                 <IconButton
-                  sx={{ position: 'absolute', top: '6%', right: '5%', backgroundColor: 'white !important' }}
+                  sx={{
+                    position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
+                    '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                  }}
                   onClick={() => handleDeleteImages()}
                 >
-                  <CloseRoundedIcon sx={{ color: 'black', fontSize: '25px' }} />
+                  <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
                 </IconButton>
               </ImageContainerStyled>
               {repost && <PostCard post={repost} isRepost={true} />}
@@ -313,12 +322,11 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
               padding: '13px 10px'
             }}
           >
-            <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px', width: '45%' }}>
-              {' '}
+            <Typography variant='h5' sx={{ fontWeight: 'bold', fontSize: '20px', width: '45%', marginLeft: '15px' }}>
               Add to your post
             </Typography>
-            <Stack direction={'row'} gap={2} sx={{ width: '55%', justifyContent: "end" }}>
-              <>
+            <Stack direction={'row'} gap={2} sx={{ width: '55%', justifyContent: 'end' }}>
+              {/* <>
                 <input
                   accept='*'
                   type='file'
@@ -328,23 +336,29 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                   className='hidden'
                 />
                 <label htmlFor='icon-button-video'>
-                  <IconButton component='span' sx={{ color: (theme: any) => theme.palette.secondary.main, fontSize: "35px" }}>
+                  <IconButton
+                    component='span'
+                    sx={{ color: (theme: any) => theme.palette.secondary.main, fontSize: '35px' }}
+                  >
                     <MdVideoLibrary />
                   </IconButton>
                 </label>
-              </>
+              </>  */}
               <>
                 <input
-                  accept='image/*'
+                  accept='image/*, video/*'
                   type='file'
                   id='icon-button-file'
                   multiple
                   onChange={handleImageChange}
                   className='hidden'
+                  disabled={images.length === 4}
                 />
                 <label htmlFor='icon-button-file'>
-                  <IconButton component='span'>
-                    <CollectionsIcon color='secondary' fontSize='large' />
+                  <IconButton component='span' disabled={images.length === 4} >
+                    <CollectionsIcon
+                      //@ts-ignore
+                      sx={{ color: images.length === 4 ? theme => theme.palette.disabled : theme => theme.palette.secondary.main }} fontSize='large' />
                   </IconButton>
                 </label>
               </>
@@ -353,8 +367,14 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
           </Box>
           <Button
             variant='contained'
-            sx={{ width: '100%', marginTop: '20px', padding: '12px 0' }}
+            sx={{
+              width: '100%',
+              marginTop: '20px',
+              padding: '12px 0',
+              color: 'white !important'
+            }}
             onClick={() => createPost()}
+            disabled={!content && images.length === 0 && !repost ? true : false}
           >
             Create Post
           </Button>

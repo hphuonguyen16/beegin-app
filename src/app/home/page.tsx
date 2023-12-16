@@ -80,7 +80,7 @@ function Home() {
             transform: 'translate(-50%, -50%)',
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? '80%' : '40%',
-            height: isMobile ? '80%' : '80%',
+            height: isMobile ? '80%' : '83%',
             bgcolor: 'background.paper',
             boxShadow: 24,
             borderRadius: 2,
@@ -97,7 +97,7 @@ function Home() {
           {/* <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
             Feeds
           </Typography> */}
-          <Stack direction={'row'} sx={{ marginTop: '25px', justifyContent: 'center' }} spacing={2}>
+          <Stack direction={'row'} sx={{ marginTop: '25px', marginLeft: "30px", justifyContent: 'center' }} spacing={2}>
             <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
             <TextField
               size='small'
@@ -138,9 +138,7 @@ function Home() {
               {postsState?.posts?.map((post: Post, index: number) => {
                 if (post && post.parent) {
                   return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
-                  return <PostCard key={post._feedId || index} post={post} postParent={post.parent} />
                 } else if (post) {
-                  return <PostCard key={post._feedId || index} post={post} />
                   return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
@@ -151,7 +149,7 @@ function Home() {
                 </>
               ) : (
                 <>
-                  <Box sx={{ height: '200px' }}>
+                  <Box sx={{ height: '130px' }}>
                     <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
                   </Box>
                 </>

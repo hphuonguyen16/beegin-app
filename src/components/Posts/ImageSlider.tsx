@@ -28,7 +28,7 @@ const Slider = ({ images }: SliderProps) => {
 
   return (
     <Box className='slider' sx={{ width: '100%', height: '100%', position: 'relative' }}>
-      {images[currentSlide].split('/')[4] === 'image' ? <img
+      {images[currentSlide].split('/')[4] === 'video'  ? <Video src={images[currentSlide]} autoPlay={true} loop={true} accentColor='#E078D8' /> : <img
         src={images[currentSlide]}
         alt={`Image ${currentSlide}`}
         key={currentSlide}
@@ -38,7 +38,7 @@ const Slider = ({ images }: SliderProps) => {
           width: '100%'
           // animation: 'slideInLeft 0.2s ease-in-out'
         }}
-      /> : <Video src={images[currentSlide]} autoPlay={true} loop={true} accentColor='#E078D8' />}
+      />}
       {images.length > 1 && (
         <IconButton
           onClick={prevSlide}
