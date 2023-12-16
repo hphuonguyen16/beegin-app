@@ -9,7 +9,7 @@ import { Category } from '@/types/category'
 const Root = styled('div')(
   ({ theme }) => `
   color: ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'};
-  font-size: 14px;`
+  font-size: 14px;`,
 )
 
 const Label = styled('label')`
@@ -28,7 +28,7 @@ const InputWrapper = styled('div')(
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; padding: 2px 15px;
 
   &:hover {
     border-color: ${theme.palette.primary.main};
