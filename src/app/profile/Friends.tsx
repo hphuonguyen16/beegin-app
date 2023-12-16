@@ -67,7 +67,7 @@ function Friends({ userId }: { userId: string }) {
           `${user.follower.profile.firstname} ${user.follower.profile.lastname}`
             .toLowerCase()
             .includes(searchValue.toLowerCase())
-      )
+    )
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -147,7 +147,7 @@ function Friends({ userId }: { userId: string }) {
                   key={index}
                   userId={user.following._id}
                   profile={user.following.profile}
-                  status={userId === 'me' ? true : undefined}
+                  status={userId === 'me' ? true : user.status}
                   isVisible={true}
                 />
               ))
@@ -156,7 +156,7 @@ function Friends({ userId }: { userId: string }) {
                   key={index}
                   userId={user.follower._id}
                   profile={user.follower.profile}
-                  status={user.follower.status}
+                  status={user.status}
                   isVisible={true}
                 />
               ))
