@@ -13,7 +13,8 @@ import {
   FormControlLabel,
   Checkbox,
   ToggleButton,
-  Button
+  Button,
+  Typography
 } from '@mui/material'
 import { Edit, Delete, Favorite, FavoriteBorder } from '@mui/icons-material'
 import { useState, ChangeEvent, useEffect } from 'react'
@@ -167,29 +168,34 @@ const RegisterForms = ({
             helperText={!formErrors.slug && 'Please fill in your slug'}
             onChange={handleTextFieldChange}
           />
-          <FormControl fullWidth>
-            <InputLabel id='demo-simple-select-label'>Gender</InputLabel>
-            <Select
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
-              value={formValues.gender === true ? 1 : 0}
-              label='Gender'
-              onChange={(e) => setFormValues({ ...formValues, gender: e.target.value === 1 ? true : false })}
-            >
-              <MenuItem value={1}>Male</MenuItem>
-              <MenuItem value={0}>Female</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            error={!formErrors.address}
-            id='address'
-            name='address'
-            type='address'
-            label='Address'
-            value={formValues.address}
-            helperText={!formErrors.address && 'Please fill in your address'}
-            onChange={handleTextFieldChange}
-          />
+          <Stack direction='row' spacing={3}>
+            <TextField
+              error={!formErrors.address}
+              id='address'
+              name='address'
+              type='address'
+              label='Address'
+              value={formValues.address}
+              helperText={!formErrors.address && 'Please fill in your address'}
+              onChange={handleTextFieldChange}
+              sx={{ width: "200%" }}
+            />
+            <FormControl fullWidth>
+              <InputLabel id='demo-simple-select-label'>Gender</InputLabel>
+              <Select
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
+                value={formValues.gender === true ? 1 : 0}
+                label='Gender'
+                onChange={(e) => setFormValues({ ...formValues, gender: e.target.value === 1 ? true : false })}
+              >
+                <MenuItem value={1}>Male</MenuItem>
+                <MenuItem value={0}>Female</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
+
           <TextField
             error={!formErrors.bio}
             id='bio'
@@ -235,7 +241,7 @@ const RegisterForms = ({
                     />
                   </svg>
                   <p className='mb-2 text-sm text-violet-800 dark:text-violet-600'>
-                    <span className='font-semibold'>Click to upload</span> or drag and drop
+                    <span className='font-semibold'>Click to upload</span> or just skip for now
                   </p>
                   <p className='text-xs text-violet-800 dark:text-violet-600'>SVG, PNG, JPG or GIF</p>
                 </div>
@@ -262,6 +268,7 @@ const RegisterForms = ({
       </FormGroup>
       <FormGroup sx={{ display: step === 3 ? '' : 'none' }}>
         <Box className='w-full px-5 text-center'>
+          <Typography variant='h4' sx={{ fontSize: "14px", color: theme => theme.palette.secondary.main, marginBottom: "10px" }}>Choose at least 3 categories you'd prefer to see</Typography>
           {topics.map((topic: any, index: number) => (
             <Button
               key={index}
