@@ -164,7 +164,12 @@ function Friends({ userId }: { userId: string }) {
           : (() => {
               console.log('Rendering Skeletons...')
               return [...Array(5)].map((elementInArray, index) => (
-                <Stack key={index} direction={'row'} alignItems={'center'} sx={{ padding: '25px' }}>
+                <Stack
+                  key={index}
+                  direction={'row'}
+                  alignItems={'center'}
+                  sx={{ margin: '15px 40px', padding: '10px' }}
+                >
                   <Skeleton variant='circular' width={60} height={60} />
                   <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
                     <Skeleton variant='rounded' height={20} width={130} />
@@ -172,7 +177,7 @@ function Friends({ userId }: { userId: string }) {
                   </Stack>
                   <Skeleton
                     variant='rounded'
-                    sx={{ marginLeft: '720px', borderRadius: '18px' }}
+                    sx={{ marginLeft: '620px', borderRadius: '18px' }}
                     width={105}
                     height={40}
                   />
