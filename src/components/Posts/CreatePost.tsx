@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Typography, Stack, Avatar, TextField, IconButton, Button } from '@mui/material'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { MdVideoLibrary } from "react-icons/md";
+import { MdVideoLibrary } from 'react-icons/md'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import urlConfig from '@/config/urlConfig'
 import useResponsive from '@/hooks/useResponsive'
@@ -143,6 +143,18 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         newPosts.unshift(data)
         //@ts-ignore
         postsDispatch({ type: 'ADD_POST', payload: data })
+        setSnack({
+          open: true,
+          message: 'Create post successfully!',
+          type: 'success'
+        })
+        setNewPost(null)
+        setIsSuccess(true)
+        setIsLoad(false)
+        setSelectedCategories([])
+        setContent('')
+        setImages([])
+        setOpen(false)
         return {
           pages: [
             {
@@ -160,19 +172,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
         newPosts.unshift(data)
         return newPosts
       })
-      setIsLoad(false)
-      setIsSuccess(true)
-      setSnack({
-        open: true,
-        message: 'Create post successfully!',
-        type: 'success'
-      })
-      setTimeout(() => {
-        setContent('')
-        setImages([])
-        setIsSuccess(false)
-        setOpen(false)
-      }, 1000)
     },
     onError: (error: any) => {
       setIsLoad(false)
@@ -194,12 +193,6 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    // const response = await axiosPrivate.post(urlConfig.posts.createPost, {
-    //   content: content,
-    //   images: uploadedUrls,
-    //   categories: selectedCategories.map((item) => item._id),
-    //   parent: repost?._id
-    // })
     createPostMutation.mutate({
       content: content,
       images: uploadedUrls,
@@ -224,7 +217,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       {isLoad && <PostLoader />}
 
       <div>
-        {isSuccess && <Snackbar />}
+        <Snackbar />
         <Stack direction={'row'} sx={{ alignItems: 'center' }} gap={2}>
           <Avatar alt='Remy Sharp' src={user?.profile?.avatar} sx={{ width: 60, height: 60 }} />
           <Box>
@@ -317,7 +310,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
               {' '}
               Add to your post
             </Typography>
-            <Stack direction={'row'} gap={2} sx={{ width: '55%', justifyContent: "end" }}>
+            <Stack direction={'row'} gap={2} sx={{ width: '55%', justifyContent: 'end' }}>
               <>
                 <input
                   accept='*'
@@ -328,7 +321,10 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                   className='hidden'
                 />
                 <label htmlFor='icon-button-video'>
-                  <IconButton component='span' sx={{ color: (theme: any) => theme.palette.secondary.main, fontSize: "35px" }}>
+                  <IconButton
+                    component='span'
+                    sx={{ color: (theme: any) => theme.palette.secondary.main, fontSize: '35px' }}
+                  >
                     <MdVideoLibrary />
                   </IconButton>
                 </label>
