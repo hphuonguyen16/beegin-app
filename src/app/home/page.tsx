@@ -151,7 +151,7 @@ function Home() {
                 </>
               ) : (
                 <>
-                  <Box sx={{ height: '200px' }}>
+                  <Box sx={{ height: '130px' }}>
                     <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
                   </Box>
                 </>
