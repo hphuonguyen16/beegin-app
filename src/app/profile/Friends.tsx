@@ -68,7 +68,6 @@ function Friends({ userId }: { userId: string }) {
             .toLowerCase()
             .includes(searchValue.toLowerCase())
       )
-  console.log(listFollower)
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -141,7 +140,7 @@ function Friends({ userId }: { userId: string }) {
           sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {filteredData !== null
+        {filteredData !== null && filteredData.length > 0
           ? onFollowTab === true
             ? filteredData.map((user: any, index) => (
                 <CardUser

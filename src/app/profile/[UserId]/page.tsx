@@ -215,7 +215,7 @@ function page() {
             <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
               <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
                 <Box>
-                  {data.firstname != '' && number.NumberOfFollowing != 0 ? (
+                  {data.firstname != '' ? (
                     <Information>
                       <Stack spacing={2} alignItems='center'>
                         <Paper style={{ backgroundColor: 'white' }}>
