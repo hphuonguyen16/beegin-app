@@ -186,7 +186,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                   height: '83%',
                   bgcolor: 'background.paper',
                   overflow: 'auto',
-                  borderRadius: '0px 10px 0px 10px'
+                  borderRadius: hasImages ? '0px 10px 10px 0px' : '10px'
                 }}
                 id='commentDiv'
               >
