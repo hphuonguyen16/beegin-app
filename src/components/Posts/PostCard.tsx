@@ -39,10 +39,10 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
     maxHeight: '720px'
   },
   '& .image-2': {
-    gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'
+    gridArea: props.number === 3 ? '1 / 2 / 3 / 3' : '1 / 2 / 2 / 3'
   },
   '& .image-3': {
-    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '1 / 2 / 3 / 3'
+    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '2 / 1 / 3 / 2'
   },
   '& .image-4': {
     gridArea: '2 / 2 / 3 / 3'
@@ -56,10 +56,12 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
       objectFit: 'cover'
     }
   },
-
   '.next-video-container': {
     height: '100%',
-    maxHeight: '600px'
+    maxHeight: '600px',
+  },
+  '.video-2': {
+    height: props.number === 3 ? '605px' : '100%'
   }
 }))
 
@@ -106,7 +108,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const openPostDetail = async () => {
@@ -129,7 +131,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) {}
+    } catch (error) { }
   }
   return (
     <>
@@ -142,7 +144,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             transform: 'translate(-50%, -50%)',
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? '80%' : '40%',
-            height: isMobile ? '80%' : '80%',
+            height: isMobile ? '80%' : '83%',
             bgcolor: 'background.paper',
             boxShadow: 24,
             borderRadius: 2,
@@ -265,21 +267,24 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
           </Box>
-          <ImageContainerStyled number={post.images ? post.images.length : 0}>
+          <ImageContainerStyled
+            number={post.images ? post.images.length : 0}
+          >
             {post.images?.map((src, index) => {
-              if (src && src.split('/')[4] === 'image') {
+              if (src && src.split('/')[4] === 'video') {
                 return (
-                  <img
-                    onClick={openPostDetail}
-                    className={`image-${index + 1}`}
-                    src={src}
-                    key={index}
-                    alt='image'
-                    loading='lazy'
-                  />
+                  <Video className={`video-${index + 1}`} key={index} src={src} autoPlay={false} accentColor='#E078D8' />
+
                 )
-              } else if (src) {
-                return <Video key={index} src={src} autoPlay={false} accentColor='#E078D8' />
+              } else if (src.split('/')[4] === 'image') {
+                return <img
+                  onClick={openPostDetail}
+                  className={`image-${index + 1}`}
+                  src={src}
+                  key={index}
+                  alt='image'
+                  loading='lazy'
+                />
               } else {
                 // Handle the case where src is undefined or null
                 return null

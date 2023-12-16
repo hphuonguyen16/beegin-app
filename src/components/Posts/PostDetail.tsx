@@ -143,7 +143,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
               transform: 'translate(-50%, -50%)',
               //   width: isMobile ? '80vw' : width ? width : '100vw',
               width: isMobile ? '80%' : '40%',
-              height: isMobile ? '80%' : '80%',
+              height: isMobile ? '80%' : '83%',
               bgcolor: 'background.paper',
               boxShadow: 24,
               borderRadius: 2,
