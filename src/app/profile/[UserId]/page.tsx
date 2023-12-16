@@ -390,7 +390,7 @@ function page() {
                     >
                       Posts
                     </Typography>
-                    {posts?.map((post, index) => <PostCard key={index} post={post} />)}
+                    {posts?.map((post, index) => <PostCard key={index} post={post} postParent={post?.parent} />)}
                   </Box>
                 ) : (
                   <Friends userId={userId}></Friends>
