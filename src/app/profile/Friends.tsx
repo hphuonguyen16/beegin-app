@@ -1,19 +1,22 @@
 /* eslint-disable no-console */
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Grid, Paper, Typography, Box, Stack, styled, TextField, InputAdornment, Skeleton } from '@mui/material'
+import { Grid, Paper, Typography, Box, Stack, Card, TextField, InputAdornment, Skeleton } from '@mui/material'
+import Image from 'next/image'
 import CardUser from './UserCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import SearchIcon from '@mui/icons-material/Search'
+// import FollowBanner from '@/assets/follower_banner.jpeg'
+import NoFriendImg from '@/assets/no_friends.jpg'
 
 function Friends({ userId }: { userId: string }) {
   const axiosPrivate = useAxiosPrivate()
   const [listFollowing, setFollowing] = useState([])
   const [listFollower, setFollower] = useState([])
   const [onFollowTab, setOnFollowTab] = useState(true)
-  const [isVisible, setIsVisible] = useState(userId === 'me' ? true : false)
   const [searchValue, setSearchValue] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const getListFollowing = async (userId: any) => {
     try {
@@ -44,9 +47,12 @@ function Friends({ userId }: { userId: string }) {
       try {
         await getListFollower(userId)
         await getListFollowing(userId)
+        setLoading(true)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchData()
@@ -67,7 +73,7 @@ function Friends({ userId }: { userId: string }) {
           `${user.follower.profile.firstname} ${user.follower.profile.lastname}`
             .toLowerCase()
             .includes(searchValue.toLowerCase())
-    )
+      )
   return (
     <Stack>
       <Grid container spacing={2} margin={'0'}>
@@ -140,9 +146,10 @@ function Friends({ userId }: { userId: string }) {
           sx={{ width: '95%', margin: '20px 30px 5px 30px ' }}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        {filteredData !== null && filteredData.length > 0
-          ? onFollowTab === true
-            ? filteredData.map((user: any, index) => (
+        {loading === false ? (
+          filteredData.length > 0 ? (
+            onFollowTab === true ? (
+              filteredData.map((user: any, index) => (
                 <CardUser
                   key={index}
                   userId={user.following._id}
@@ -151,7 +158,8 @@ function Friends({ userId }: { userId: string }) {
                   isVisible={true}
                 />
               ))
-            : filteredData.map((user: any, index) => (
+            ) : (
+              filteredData.map((user: any, index) => (
                 <CardUser
                   key={index}
                   userId={user.follower._id}
@@ -160,29 +168,48 @@ function Friends({ userId }: { userId: string }) {
                   isVisible={true}
                 />
               ))
-          : (() => {
-              console.log('Rendering Skeletons...')
-              return [...Array(5)].map((elementInArray, index) => (
-                <Stack
-                  key={index}
-                  direction={'row'}
-                  alignItems={'center'}
-                  sx={{ margin: '15px 40px', padding: '10px' }}
-                >
-                  <Skeleton variant='circular' width={60} height={60} />
-                  <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
-                    <Skeleton variant='rounded' height={20} width={130} />
-                    <Skeleton variant='rounded' height={15} width={50} />
-                  </Stack>
-                  <Skeleton
-                    variant='rounded'
-                    sx={{ marginLeft: '620px', borderRadius: '18px' }}
-                    width={105}
-                    height={40}
-                  />
+            )
+          ) : searchValue === '' ? (
+            <Card className='flex flex-col justify-center items-center' sx={{ height: '95%', background: '#fdfdfd' }}>
+              <Image src={NoFriendImg} alt='' height={400} />
+              <Typography variant='h1'>Boohoo.</Typography>
+              <Typography variant='h3'>
+                {userId === 'me'
+                  ? onFollowTab === true
+                    ? `You don't follow any other users yet`
+                    : `This account doesn't follow any other users yet`
+                  : onFollowTab === false
+                  ? `No one is following you yet `
+                  : `No one is following this account yet`}
+              </Typography>
+              <Typography variant='h5'>Beefriend others now by following people you know!</Typography>
+            </Card>
+          ) : (
+            <Card className='flex flex-col justify-center items-center' sx={{ height: '95%', background: '#fdfdfd' }}>
+              <Image src={NoFriendImg} alt='' height={400} />
+              <Typography variant='h3'>No users were found matching the search information</Typography>
+            </Card>
+          )
+        ) : (
+          (() => {
+            console.log('Rendering Skeletons...')
+            return [...Array(5)].map((elementInArray, index) => (
+              <Stack key={index} direction={'row'} alignItems={'center'} sx={{ margin: '15px 40px', padding: '10px' }}>
+                <Skeleton variant='circular' width={60} height={60} />
+                <Stack spacing={1} justifyContent={'center'} sx={{ marginLeft: '26px' }}>
+                  <Skeleton variant='rounded' height={20} width={130} />
+                  <Skeleton variant='rounded' height={15} width={50} />
                 </Stack>
-              ))
-            })()}
+                <Skeleton
+                  variant='rounded'
+                  sx={{ marginLeft: '620px', borderRadius: '18px' }}
+                  width={105}
+                  height={40}
+                />
+              </Stack>
+            ))
+          })()
+        )}
       </Box>
     </Stack>
   )
