@@ -22,7 +22,7 @@ function CustomTabPanel(props: TabPanelProps) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      style={{ overflow: 'auto', maxHeight: '600px' }}
+      style={{ overflow: 'auto', maxHeight: '500px' }}
     >
       {value === index && (
         <Box sx={{ p: 3, width: '480px' }}>
@@ -58,18 +58,20 @@ export default function NotificationTab() {
             label={
               <div style={{ color: '#E078D8' }}>
                 Unread{' '}
-                <span
-                  style={{
-                    marginLeft: '5px',
-                    backgroundColor: '#E078D8',
-                    color: 'white',
-                    padding: '3px 12px',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                >
-                  {notifsState.total}
-                </span>
+                {notifsState.unread > 0 && (
+                  <span
+                    style={{
+                      marginLeft: '5px',
+                      backgroundColor: '#E078D8',
+                      color: 'white',
+                      padding: '3px 12px',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    {notifsState.notifications.filter((notif) => !notif.read).length}
+                  </span>
+                )}
               </div>
             }
             {...a11yProps(1)}

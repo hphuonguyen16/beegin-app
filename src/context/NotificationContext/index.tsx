@@ -34,7 +34,7 @@ interface NotificationProviderProps {
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const initialState: NotifState = {
     notifications: [],
-    total: 0
+    unread: 0
   }
 
   //@ts-ignore

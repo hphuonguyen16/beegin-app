@@ -8,6 +8,8 @@ import { useNotifications } from '../../context/NotificationContext'
 import UrlConfig from '@/config/urlConfig'
 import { Notification } from '@/types/notification'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { pusherClient } from '@/libs/pusher'
+import { useAuth } from '@/context/AuthContext'
 
 const StyledIconNotifBox = styled('div')(({ theme }) => ({
   width: '55px',
@@ -29,6 +31,8 @@ const NotificationPopover = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
   const axiosPrivate = useAxiosPrivate()
   const { notifsState, notifsDispatch } = useNotifications()
+  const auth = useAuth()
+  const myId = auth.user?._id
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -38,6 +42,18 @@ const NotificationPopover = () => {
     setAnchorEl(null)
   }
 
+  useEffect(() => {
+    if (!myId) return
+    pusherClient.subscribe(myId)
+    pusherClient.bind('notifications:new', (data: Notification) => {
+      notifsDispatch({ type: 'ADD_NOTIFICATION', payload: { notification: data } })
+    })
+    return () => {
+      pusherClient.unsubscribe(myId)
+      pusherClient.unbind('notifications:new')
+    }
+  }, [myId])
+
   async function getNotifications() {
     try {
       const res = await axiosPrivate(UrlConfig.notifications.getNotifications)
@@ -46,7 +62,7 @@ const NotificationPopover = () => {
         type: 'SET_NOTIFICATIONS',
         payload: {
           notifications: data,
-          total: res.data.numUnread
+          unread: res.data.numUnread
         }
       })
     } catch (error) {
@@ -72,7 +88,7 @@ const NotificationPopover = () => {
         onClick={handleClick}
       >
         <StyledIconNotifBox>
-          <Badge badgeContent={notifsState.total} color='error' overlap='circular'>
+          <Badge badgeContent={notifsState.unread} color='error' overlap='circular' max={100}>
             <NotificationsRoundedIcon />
           </Badge>
         </StyledIconNotifBox>
