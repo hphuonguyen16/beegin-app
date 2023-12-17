@@ -186,7 +186,6 @@ function page() {
     }
     fetchData()
   }, [])
-  console.log(data.firstname)
   return (
     <StyledProfile>
       <PersistentScrollView id={'scrollProfile'}>
