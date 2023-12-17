@@ -3,6 +3,7 @@ import React from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded'
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded'
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 
 interface CustomAvatarProps {
   image: string
@@ -17,9 +18,9 @@ function getIcon(type: string) {
       return (
         <FavoriteRoundedIcon
           sx={{
-            fontSize: '20px',
+            fontSize: '22px',
             position: 'absolute',
-            bottom: '0px',
+            bottom: '-2px',
             right: '-6px'
           }}
           color='secondary'
@@ -30,7 +31,7 @@ function getIcon(type: string) {
       return (
         <ModeCommentRoundedIcon
           sx={{
-            fontSize: '20px',
+            fontSize: '22px',
             position: 'absolute',
             bottom: '-2px',
             right: '-6px'
@@ -42,14 +43,27 @@ function getIcon(type: string) {
       return (
         <Person2RoundedIcon
           sx={{
-            fontSize: '20px',
+            fontSize: '22px',
             position: 'absolute',
-            bottom: '0px',
+            bottom: '-2px',
             right: '-6px'
           }}
           color='secondary'
         />
       )
+    case 'share post':
+      return (
+        <ShareRoundedIcon
+          sx={{
+            fontSize: '22px',
+            position: 'absolute',
+            bottom: '-2px',
+            right: '-6px'
+          }}
+          color='secondary'
+        />
+      )
+
     default:
       return <div></div>
   }
@@ -61,7 +75,7 @@ const CustomAvatar = ({ image, type, read }: CustomAvatarProps) => {
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {read ? (
         <Box sx={{ position: 'relative' }}>
-          <Avatar sx={{ width: '45px', height: '45px' }} src={image}></Avatar>
+          <Avatar sx={{ width: '50px', height: '50px' }} src={image}></Avatar>
           {getIcon(type)}
         </Box>
       ) : (
@@ -75,7 +89,7 @@ const CustomAvatar = ({ image, type, read }: CustomAvatarProps) => {
           }}
         >
           <Box sx={{ position: 'relative' }}>
-            <Avatar sx={{ width: '45px', height: '45px' }} src={image}></Avatar>
+            <Avatar sx={{ width: '50px', height: '50px' }} src={image}></Avatar>
             {getIcon(type)}
           </Box>
         </Badge>
