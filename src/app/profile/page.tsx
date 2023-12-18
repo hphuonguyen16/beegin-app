@@ -368,7 +368,7 @@ function page() {
             <Paper>
               <Posts>
                 {showPosts === true ? (
-                  <Box sx={{ marginLeft: '55px', marginTop: '25px' }}>
+                  <Box sx={{ marginLeft: '55px', marginTop: '25px', width: '74%' }}>
                     {' '}
                     <Typography
                       variant='h3'

@@ -35,6 +35,9 @@ import _ from 'lodash'
 import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import { useRouter } from 'next/navigation'
+import UserLikedList from './UserLikedList'
+import SharePostList from './SharePostList'
+import { User } from '@/types/user'
 
 // find the root of children comment
 function findRootComment(comments: Comment[], comment: Comment | null | undefined): Comment | null {
@@ -68,6 +71,9 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
   const [loading, setLoading] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
   const [isFollowing, setIsFollowing] = React.useState(post.isFollowing)
+  const [openUserLikeList, setOpenUserLikeList] = React.useState(false)
+  const [openSharePostList, setOpenSharePostList] = React.useState(false)
+
   const router = useRouter()
 
   const fetchComments = async () => {
@@ -139,22 +145,67 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
     else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchComments()
-      } catch (error) {}
+  async function fetchUserLikePost(currentPage = 1) {
+    try {
+      if (openUserLikeList) {
+        const response = await axiosPrivate.get(
+          `${urlConfig.posts.getUsersLikedPost(post._id)}?limit=10&page=${currentPage}`
+        )
+        const data = response.data.data as User[]
+        const profile = data.map((user) => ({
+          name: user.profile?.firstname + ' ' + user.profile?.lastname,
+          username: user.profile?.slug,
+          avatar: user.profile?.avatar
+        }))
+        return profile
+      }
+    } catch (error) {
+      // Handle error
     }
-    if (!post.comments) {
-      fetchData()
-    }
+  }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  async function fetchSharePostList(currentPage = 1) {
+    try {
+      if (openSharePostList) {
+        const response = await axiosPrivate.get(
+          `${urlConfig.posts.getUsersSharedPost(post._id)}?limit=10&page=${currentPage}`
+        )
+        const data = response.data.data as Post[]
+        return data
+      }
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await fetchComments()
+  //     } catch (error) {}
+  //   }
+  //   if (!post.comments) {
+  //     fetchData()
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
   return (
     post && (
       <>
+        <UserLikedList
+          open={openUserLikeList}
+          handleClose={() => setOpenUserLikeList(false)}
+          // @ts-ignore
+          propFetchMoreData={fetchUserLikePost}
+        />
+        <SharePostList
+          open={openSharePostList}
+          handleClose={() => setOpenSharePostList(false)}
+          // @ts-ignore
+          propFetchMoreData={fetchSharePostList}
+        />
         <Modal open={repostOpen} onClose={() => setRepostOpen(false)}>
           <Box
             sx={{
@@ -414,9 +465,22 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                         )}
                         {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                       </IconButton>
-                      <span style={{ marginLeft: isMobile ? '7px' : '5px', fontWeight: 600, fontSize: '13px' }}>
+                      <Typography
+                        component={'span'}
+                        sx={{
+                          marginLeft: isMobile ? '7px' : '5px',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            color: 'primary.main',
+                            fontWeight: 600
+                          }
+                        }}
+                        onClick={() => setOpenUserLikeList(true)}
+                      >
                         {post.numLikes}
-                      </span>
+                      </Typography>
                     </Stack>
                     <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
                       <IconButton>
@@ -434,9 +498,22 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                       >
                         <ShareIcon color='secondary' />
                       </IconButton>
-                      <span style={{ marginLeft: isMobile ? '7px' : '5px', fontWeight: 600, fontSize: '13px' }}>
+                      <Typography
+                        component={'span'}
+                        sx={{
+                          marginLeft: isMobile ? '7px' : '5px',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            color: 'primary.main',
+                            fontWeight: 600
+                          }
+                        }}
+                        onClick={() => setOpenSharePostList(true)}
+                      >
                         {post.numShares}
-                      </span>
+                      </Typography>
                     </Stack>
                   </Stack>
                   <Typography

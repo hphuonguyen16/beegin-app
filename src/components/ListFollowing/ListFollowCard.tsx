@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardHeader, Avatar, Button, Box } from '@mui/material'
 
 export default function ListFollowCard(props: any) {
+  console.log(props)
   const { name, username, avatar } = props.user
   const [follow, setFollow] = React.useState(false)
   const handleFollow = () => {

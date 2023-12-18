@@ -124,15 +124,19 @@ function Home() {
             loader={<></>}
             endMessage={<div>No more posts</div>}
             scrollableTarget='scrollableDiv'
+            style={{
+              overflowX: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
           >
             <Box
               sx={{
+                width: '74%',
                 marginTop: '50px',
-                overflowX: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
+                overflowX: 'hidden'
               }}
             >
               {postsState?.posts?.map((post: Post, index: number) => {
