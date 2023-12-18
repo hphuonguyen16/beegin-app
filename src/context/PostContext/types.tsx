@@ -69,6 +69,7 @@ interface SetLikedPostAction {
   }
 }
 
+
 export type PostAction =
   | SetPostsAction
   | AddPostAction

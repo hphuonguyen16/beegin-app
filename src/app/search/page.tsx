@@ -27,8 +27,8 @@ export default function Page() {
   }, [value, searchParams])
   return (
     <PostLayout>
-    <title>Search | Beegin</title>
-      <Box sx={{ width: '100%', typography: 'body1' }}>
+      <title>Search | Beegin</title>
+      <Box sx={{ width: '95%', typography: 'body1', margin: '0 20px', alignItems: 'center', alignContent: 'center' }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList
@@ -37,6 +37,7 @@ export default function Page() {
               variant='fullWidth'
               textColor='primary'
               indicatorColor='primary'
+              sx={{}}
             >
               <Tab label='Top' value='top' sx={{ fontSize: '20px' }} />
               <Tab label='Latest' value='latest' sx={{ fontSize: '20px' }} />
@@ -45,10 +46,14 @@ export default function Page() {
             </TabList>
           </Box>
           <TabPanel value='top'>
-            <Typography variant='h3'>User</Typography>
+            <Typography variant='h3' sx={{ margin: '10px 0' }}>
+              User
+            </Typography>
             <UserList f={value} limit={3} />
             <Divider sx={{ padding: '20px 0 20px 0' }} />
-            <Typography variant='h3'>Post</Typography>
+            <Typography variant='h3' sx={{ margin: '10px 0' }}>
+              Post
+            </Typography>
             <PostList f={value} />
           </TabPanel>
           <TabPanel value='latest'>

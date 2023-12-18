@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { Snackbar } from '@mui/material'
 import { SnackbarContextProvider } from '@/context/snackbarContext'
 import { PostProvider } from '@/context/PostContext'
+import { NotificationProvider } from '@/context/NotificationContext'
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import ArticleIcon from '@mui/icons-material/Article'
@@ -159,21 +160,23 @@ export default function RootLayout({ children, session }: { children: React.Reac
           <TanstackProvider>
             <SnackbarContextProvider>
               <SessionProvider session={session}>
-                <PostProvider>
-                  {noLayoutPaths.includes(pathname) ? (
-                    <ThemeProvider>{children}</ThemeProvider>
-                  ) : (
-                    <ThemeProvider>
-                      {isAdminPath ? (
-                        <Layout menuItems={menuAdminItems}>{children}</Layout>
-                      ) : isBusinessPath ? (
-                        <Layout menuItems={menuBusinessItems}>{children}</Layout>
-                      ) : (
-                        <Layout menuItems={menuItems}>{children}</Layout>
-                      )}
-                    </ThemeProvider>
-                  )}
-                </PostProvider>
+                <NotificationProvider>
+                  <PostProvider>
+                    {noLayoutPaths.includes(pathname) ? (
+                      <ThemeProvider>{children}</ThemeProvider>
+                    ) : (
+                      <ThemeProvider>
+                        {isAdminPath ? (
+                          <Layout menuItems={menuAdminItems}>{children}</Layout>
+                        ) : isBusinessPath ? (
+                          <Layout menuItems={menuBusinessItems}>{children}</Layout>
+                        ) : (
+                          <Layout menuItems={menuItems}>{children}</Layout>
+                        )}
+                      </ThemeProvider>
+                    )}
+                  </PostProvider>
+                </NotificationProvider>
               </SessionProvider>
             </SnackbarContextProvider>
           </TanstackProvider>

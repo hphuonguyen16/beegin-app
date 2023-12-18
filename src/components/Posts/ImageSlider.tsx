@@ -9,6 +9,7 @@ import FiberManualRecordOutlinedIcon from '@mui/icons-material/FiberManualRecord
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import { Box, Stack } from '@mui/material'
 import './ImageSlider.css'
+import Video from 'next-video';
 
 interface SliderProps {
   images: string[]
@@ -27,7 +28,7 @@ const Slider = ({ images }: SliderProps) => {
 
   return (
     <Box className='slider' sx={{ width: '100%', height: '100%', position: 'relative' }}>
-      <img
+      {images[currentSlide].split('/')[4] === 'video'  ? <Video src={images[currentSlide]} autoPlay={true} loop={true} accentColor='#E078D8' /> : <img
         src={images[currentSlide]}
         alt={`Image ${currentSlide}`}
         key={currentSlide}
@@ -37,7 +38,7 @@ const Slider = ({ images }: SliderProps) => {
           width: '100%'
           // animation: 'slideInLeft 0.2s ease-in-out'
         }}
-      />
+      />}
       {images.length > 1 && (
         <IconButton
           onClick={prevSlide}

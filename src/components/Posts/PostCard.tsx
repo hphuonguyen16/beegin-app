@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation'
 import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import ReplyPostCard from './ReplyPostCard'
+import Video from 'next-video'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -38,10 +39,10 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
     maxHeight: '720px'
   },
   '& .image-2': {
-    gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'
+    gridArea: props.number === 3 ? '1 / 2 / 3 / 3' : '1 / 2 / 2 / 3'
   },
   '& .image-3': {
-    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '1 / 2 / 3 / 3'
+    gridArea: props.number === 4 ? '2 / 1 / 3 / 2' : '2 / 1 / 3 / 2'
   },
   '& .image-4': {
     gridArea: '2 / 2 / 3 / 3'
@@ -54,6 +55,13 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
       borderRadius: '8px',
       objectFit: 'cover'
     }
+  },
+  '.next-video-container': {
+    height: '100%',
+    maxHeight: '600px'
+  },
+  '.video-2': {
+    height: props.number === 3 ? '605px' : '100%'
   }
 }))
 
@@ -77,6 +85,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     try {
       if (!like) {
         setLike(true)
+        post.isLiked = true
         post.numLikes++
         postsDispatch({
           type: 'SET_LIKED_POST',
@@ -88,6 +97,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         await axiosPrivate.post(UrlConfig.posts.likePost(post._id))
       } else {
         setLike(false)
+        post.isLiked = false
         post.numLikes--
         postsDispatch({
           type: 'SET_LIKED_POST',
@@ -104,9 +114,10 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const openPostDetail = async () => {
     const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
     const comments = commentResponse.data.data as Comment[]
+    const isFollowing = await axiosPrivate.get(UrlConfig.me.isFollowingOtherUser(post.user._id))
     postsDispatch({
       type: 'SELECT_POST',
-      payload: { ...post, comments, totalComments: commentResponse.data.total }
+      payload: { ...post, comments, totalComments: commentResponse.data.total, isFollowing: isFollowing.data.data }
     })
     setOpen(true)
   }
@@ -134,7 +145,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             transform: 'translate(-50%, -50%)',
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? '80%' : '40%',
-            height: isMobile ? '80%' : '80%',
+            height: isMobile ? '80%' : '83%',
             bgcolor: 'background.paper',
             boxShadow: 24,
             borderRadius: 2,
@@ -257,16 +268,34 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
           </Box>
-          <ImageContainerStyled
-            number={post.images ? post.images.length : 0}
-            onClick={() => {
-              openPostDetail()
-            }}
-          >
-            {post.images?.map((src, index) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className={`image-${index + 1}`} src={src} key={index} alt='image' loading='lazy' />
-            ))}
+          <ImageContainerStyled number={post.images ? post.images.length : 0}>
+            {post.images?.map((src, index) => {
+              if (src && src.split('/')[4] === 'video') {
+                return (
+                  <Video
+                    className={`video-${index + 1}`}
+                    key={index}
+                    src={src}
+                    autoPlay={false}
+                    accentColor='#E078D8'
+                  />
+                )
+              } else if (src.split('/')[4] === 'image') {
+                return (
+                  <img
+                    onClick={openPostDetail}
+                    className={`image-${index + 1}`}
+                    src={src}
+                    key={index}
+                    alt='image'
+                    loading='lazy'
+                  />
+                )
+              } else {
+                // Handle the case where src is undefined or null
+                return null
+              }
+            })}
           </ImageContainerStyled>
           {post?.images?.length !== 0 && postParent && <ReplyPostCard post={postParent as Post} />}
           {post?.images?.length === 0 && postParent && <PostCard post={postParent as Post} isRepost={true} />}

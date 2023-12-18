@@ -17,32 +17,29 @@ import {
   Skeleton
 } from '@mui/material'
 import Image from 'next/image'
-import background from '@/assets/background1.jpg'
-import PeopleIcon from '@mui/icons-material/People'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
-import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import Friends from '../Friends'
 import PostCard from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import ButtonFollow from '../../../components/ButtonFollow/ButtonFollow'
+import DefaultBackground from '@/assets/default_background.jpg'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import { Post } from '@/types/post'
-import { usePosts } from '@/context/PostContext'
-import DefaultBackground from '@/assets/default_background.jpg'
+import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
-import { BsPeople } from 'react-icons/bs'
 import { TbCell } from 'react-icons/tb'
+import PersistentScrollView from '@/components/common/PersistentScrollView'
 
 const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
   color: '#FFFFFF',
-  overflow: 'auto',
+  // overflow: 'auto',
   position: 'relative'
 }))
 
@@ -50,8 +47,7 @@ const Information = styled(Card)(({ theme }) => ({
   height: '100%',
   borderRadius: '15px',
   backgroundColor: 'white',
-  minWidth: '300px',
-
+  minWidth: '300px'
 }))
 const SkeletonBox = styled(Box)(({ theme }) => ({
   backgroundColor: 'white',
@@ -61,7 +57,9 @@ const SkeletonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  width: '300px',
+  height: '410px'
 }))
 
 const Posts = styled(Card)(({ theme }) => ({
@@ -110,6 +108,7 @@ function page() {
   const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
   const [showPosts, setShowPosts] = useState(true)
+  const [posts, setPosts] = useState<Post[]>([])
   const [data, setData] = useState<{
     firstname: string
     lastname: string
@@ -131,12 +130,12 @@ function page() {
     gender: true,
     slug: ''
   })
-  const { postsState, postsDispatch } = usePosts()
   const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
+  const [loading, setLoading] = useState(true)
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setNumber({
@@ -164,232 +163,254 @@ function page() {
       setNumber(response.data.data)
     } catch (err) {}
   }
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
-        let posts = response.data.data
-        posts = posts.map(async (post: Post) => {
-          const likeResponse = await axiosPrivate.get(UrlConfig.posts.checkLikePost(post._id))
-          const isLiked = likeResponse.data.data
-          return {
-            ...post,
-            isLiked
-          }
-        })
-        posts = await Promise.all(posts)
-        postsDispatch({ type: 'SET_POSTS', payload: posts })
-        setNumberPost(response.data.results)
-      } catch (error) {
-        console.log(error)
-      }
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
+      let posts = response.data.data as Post[]
+      setPosts(posts)
+      setNumberPost(response.data.results)
+      return posts
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
     }
-    fetchPosts()
-    return () => {
-      postsDispatch({ type: 'SET_POSTS', payload: [] })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [1])
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getUsers(userId)
         await getNumberOfFollow(userId)
+        await fetchPosts()
       } catch (error) {
         console.log(error)
       }
     }
     fetchData()
   }, [])
-
+  console.log(posts.length)
   return (
     <StyledProfile>
-      <title>Profile | Beegin</title>
-      <Grid container spacing={2} sx={{ paddingX: '20px' }}>
-        <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
-          <Box>
-            {data.background !== '' ? (
-              <Image
-                src={data.background}
-                alt='Background'
-                width={720}
-                height={280}
-                style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: 'cover' }}
-                loading='lazy'
-              />
-            ) : (
-              <Skeleton variant='rectangular' width='100%' height='280px' />
-            )}
-            <Box sx={{ position: 'absolute', right: '130px !important', top: '19% !important' }}>
-              <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
-          <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
-            <Box>
-              {data.firstname != '' && number.NumberOfFollowing != 0 ? (
-                <Information>
-                  <Stack spacing={2} alignItems='center'>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Avatar src={data.avatar} sx={{ width: '150px', height: '150px', marginTop: '25px' }}></Avatar>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
-                        {`@${data.slug}`}
-                      </Typography>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
-                        <LocationOnIcon fontSize='medium' /> {data.address}
-                      </Typography>
-                    </Paper>
-                    <Paper style={{ backgroundColor: 'white' }}>
-                      <Typography
-                        variant='h6'
-                        sx={{
-                          fontWeight: 'light',
-                          textAlign: 'center',
-                          fontSize: '15px',
-                          fontFamily: 'Inter',
-                          margin: '0 15px'
-                        }}
-                      >
-                        {data.bio}
-                      </Typography>
-                    </Paper>
-                    <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Posts
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              {numberPost}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2} paddingBottom={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Followers
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              {number.NumberOfFollower}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={4} paddingRight='16px'>
-                          <Stack spacing={2}>
-                            <Typography
-                              variant='h4'
-                              sx={{ fontWeight: 'light', textAlign: 'center', fontSize: '15px', fontFamily: 'Inter' }}
-                            >
-                              Following
-                            </Typography>
-                            <Typography
-                              variant='h4'
-                              sx={{
-                                fontWeight: 'medium',
-                                textAlign: 'center',
-                                fontSize: '15px',
-                                fontFamily: 'Inter',
-                                marginTop: '6px !important'
-                              }}
-                            >
-                              {number.NumberOfFollowing}
-                            </Typography>
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Stack>
-                </Information>
-              ) : (
-                <SkeletonBox>
-                  <Skeleton variant='circular' width={150} height={150} />
-                  <Skeleton variant='text' width={120} height={20} />
-                  <Skeleton variant='text' width={80} height={16} />
-                  <Skeleton variant='text' width={150} height={16} />
-                  <Skeleton variant='text' width={200} height={60} />
-                  <Skeleton variant='rectangular' width={250} height={40} />
-                </SkeletonBox>
-              )}
-            </Box>
-            <Box>
-              <StyledToggleButtonGroup
-                size='large'
-                value={showPosts}
-                exclusive
-                onChange={() => setShowPosts(!showPosts)}
-                aria-label='text alignment'
-              >
-                <StyledToggleButton size='large' value={true} aria-label='left aligned' disabled={showPosts === true}>
-                  <IoMdImages />
-                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Posts</Typography>
-                </StyledToggleButton>
-                <Paper sx={{ margin: '0 1.5px !important' }}></Paper>
-                <StyledToggleButton size='large' value={false} aria-label='centered' disabled={showPosts === false}>
-                  <TbCell />
-                  <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Socials</Typography>
-                </StyledToggleButton>
-              </StyledToggleButtonGroup>
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={9} sx={{ paddingRight: '48px', transform: 'translateY(-80px)' }}>
-          <Posts>
-            {showPosts === true ? (
-              <Box sx={{ padding: '24px 48px' }}>
-                {' '}
-                <Typography
-                  variant='h3'
-                  sx={{
-                    fontWeight: 'medium',
-                    fontSize: '25px',
-                    marginBottom: '25px !important'
-                  }}
-                >
-                  Posts
-                </Typography>
-                {postsState.posts.map((post, index) => (
-                  <PostCard key={index} post={post} />
-                ))}
+      <PersistentScrollView id={'scrollProfile'}>
+        <>
+          <title>Profile | Beegin</title>
+          <Grid container spacing={2} sx={{ paddingX: '20px' }}>
+            <Grid item xs={12} md={12} sx={{ paddingRight: '16px' }}>
+              <Box>
+                {data.background !== '' ? (
+                  <Image
+                    src={data.background ?? DefaultBackground}
+                    alt='Background'
+                    width={720}
+                    height={280}
+                    style={{ width: '100%', height: '280px', borderRadius: '10px', objectFit: 'cover' }}
+                    loading='lazy'
+                  />
+                ) : (
+                  <Skeleton variant='rectangular' width='100%' height='280px' />
+                )}
+                <Box sx={{ position: 'absolute', right: '130px !important', top: '19% !important' }}>
+                  <ButtonFollow userId={userId} sendDataToParent={handleDataFromChild}></ButtonFollow>
+                </Box>
               </Box>
-            ) : (
-              <Friends userId={userId}></Friends>
-            )}
-          </Posts>
-        </Grid>
-      </Grid>
+            </Grid>
+            <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
+              <Stack spacing={2} alignItems='center' sx={{ position: 'sticky', top: '80px' }}>
+                <Box>
+                  {data.firstname != '' ? (
+                    <Information>
+                      <Stack spacing={2} alignItems='center'>
+                        <Paper style={{ backgroundColor: 'white' }}>
+                          <Avatar
+                            src={data.avatar}
+                            sx={{ width: '150px', height: '150px', marginTop: '25px' }}
+                          ></Avatar>
+                        </Paper>
+                        <Paper style={{ backgroundColor: 'white' }}>
+                          <Typography variant='h4'>{data.firstname + ' ' + data.lastname}</Typography>
+                        </Paper>
+                        <Paper style={{ backgroundColor: 'white' }}>
+                          <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '-13px', fontSize: '16px' }}>
+                            {`@${data.slug}`}
+                          </Typography>
+                        </Paper>
+                        <Paper style={{ backgroundColor: 'white' }}>
+                          <Typography variant='h6' sx={{ fontWeight: 'light', marginTop: '0px', fontSize: '13px' }}>
+                            <LocationOnIcon fontSize='medium' /> {data.address}
+                          </Typography>
+                        </Paper>
+                        <Paper style={{ backgroundColor: 'white' }}>
+                          <Typography
+                            variant='h6'
+                            sx={{
+                              fontWeight: 'light',
+                              textAlign: 'center',
+                              fontSize: '15px',
+                              fontFamily: 'Inter',
+                              margin: '0 15px'
+                            }}
+                          >
+                            {data.bio}
+                          </Typography>
+                        </Paper>
+                        <Box style={{ backgroundColor: 'white', marginTop: '15px' }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={4} paddingRight='16px'>
+                              <Stack spacing={2}>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'light',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter'
+                                  }}
+                                >
+                                  Posts
+                                </Typography>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'medium',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter',
+                                    marginTop: '6px !important'
+                                  }}
+                                >
+                                  {numberPost}
+                                </Typography>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={4} paddingRight='16px'>
+                              <Stack spacing={2} paddingBottom={2}>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'light',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter'
+                                  }}
+                                >
+                                  Followers
+                                </Typography>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'medium',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter',
+                                    marginTop: '6px !important'
+                                  }}
+                                >
+                                  {number.NumberOfFollower}
+                                </Typography>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={4} paddingRight='16px'>
+                              <Stack spacing={2}>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'light',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter'
+                                  }}
+                                >
+                                  Following
+                                </Typography>
+                                <Typography
+                                  variant='h4'
+                                  sx={{
+                                    fontWeight: 'medium',
+                                    textAlign: 'center',
+                                    fontSize: '15px',
+                                    fontFamily: 'Inter',
+                                    marginTop: '6px !important'
+                                  }}
+                                >
+                                  {number.NumberOfFollowing}
+                                </Typography>
+                              </Stack>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      </Stack>
+                    </Information>
+                  ) : (
+                    <SkeletonBox>
+                      <Skeleton variant='circular' width={150} height={150} />
+                      <Skeleton variant='text' width={120} height={20} />
+                      <Skeleton variant='text' width={80} height={16} />
+                      <Skeleton variant='text' width={150} height={16} />
+                      <Skeleton variant='text' width={200} height={60} />
+                      <Skeleton variant='rectangular' width={250} height={40} />
+                    </SkeletonBox>
+                  )}
+                </Box>
+                <Box>
+                  <StyledToggleButtonGroup
+                    size='large'
+                    value={showPosts}
+                    exclusive
+                    onChange={() => setShowPosts(!showPosts)}
+                    aria-label='text alignment'
+                  >
+                    <StyledToggleButton
+                      size='large'
+                      value={true}
+                      aria-label='left aligned'
+                      disabled={showPosts === true}
+                    >
+                      <IoMdImages />
+                      <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Posts</Typography>
+                    </StyledToggleButton>
+                    <Paper sx={{ margin: '0 1.5px !important' }}></Paper>
+                    <StyledToggleButton size='large' value={false} aria-label='centered' disabled={showPosts === false}>
+                      <TbCell />
+                      <Typography sx={{ fontSize: '13px', lineHeight: 1, mt: '4px' }}>Socials</Typography>
+                    </StyledToggleButton>
+                  </StyledToggleButtonGroup>
+                </Box>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={9} sx={{ paddingRight: '50px', transform: 'translateY(-80px)' }}>
+              <Posts>
+                {showPosts === true ? (
+                  <Box sx={{ marginLeft: '55px', marginTop: '25px' }}>
+                    {' '}
+                    <Typography
+                      variant='h3'
+                      sx={{
+                        fontWeight: 'medium',
+                        fontSize: '25px',
+                        marginBottom: '25px !important'
+                      }}
+                    >
+                      Posts
+                    </Typography>
+                    {loading === false ? (
+                      posts?.map((post, index) => <PostCard key={index} post={post} />)
+                    ) : (
+                      <>
+                        <PostSkeleton />
+                        <PostSkeleton />
+                      </>
+                    )}
+                  </Box>
+                ) : (
+                  <Friends userId={userId}></Friends>
+                )}
+              </Posts>
+            </Grid>
+          </Grid>
+        </>
+      </PersistentScrollView>
     </StyledProfile>
   )
 }

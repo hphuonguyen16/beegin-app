@@ -15,6 +15,20 @@
   }
 }
 
+[data-next-video] {
+  height: 100%;
+  aspect-ratio: 0 !important;
+}
+
+mux-player {
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.next-video-container{
+  height: 100%;
+}
 
 /* @media (prefers-color-scheme: dark) {
   :root {

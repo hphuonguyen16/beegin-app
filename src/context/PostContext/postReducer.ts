@@ -61,7 +61,9 @@ export const postReducer = (state: PostState, action: PostAction) => {
 
       const uniquePostsArray = Array.from(uniquePostsSet)
 
-      const uniquePosts = uniquePostsArray.map((postId) => updatedPosts.find((post) => post._id === postId))
+      let uniquePosts = uniquePostsArray.map((postId) => updatedPosts.find((post) => post._id === postId))
+      if (uniquePosts.length === state.posts.length) uniquePosts = [...uniquePosts, updatedPosts[0]]
+      console.log(uniquePosts)
 
       return {
         ...state,

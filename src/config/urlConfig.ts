@@ -23,7 +23,9 @@ const UrlConfig: any = {
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`,
     updateProfile: `/api/v1/users/updateMe`,
-    createReport: `/api/v1/reports/createReport`
+    createReport: `/api/v1/reports/createReport`,
+    isFollowingOtherUser: (id: string) => `/api/v1/follows/isFollowing/${id}`,
+    unFollowOtherUser: (id: string) => `/api/v1/follows/unfollow/${id}`,
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -48,7 +50,8 @@ const UrlConfig: any = {
     likeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     createComment: (postId: string) => `/api/v1/posts/${postId}/comments`,
-    getReplyComments: (postId: string, commentId: string) => `/api/v1/posts/${postId}/comments/${commentId}`
+    getReplyComments: (postId: string, commentId: string) => `/api/v1/posts/${postId}/comments/${commentId}`,
+    getCommentById: (commentId: string) => `/api/v1/comments/id/${commentId}`
   },
   categories: {
     getCategories: `/api/v1/categories`
@@ -76,6 +79,10 @@ const UrlConfig: any = {
     createAdvertisement: `/api/v1/transactions/create_payment_url`,
     getUnitPrice: `/api/v1/prices`,
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/business/signup`
+  },
+  notifications: {
+    getNotifications: `/api/v1/notifications`,
+    markAsRead: `/api/v1/notifications`
   }
 }
 
