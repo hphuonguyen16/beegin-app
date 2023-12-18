@@ -33,14 +33,6 @@ function page() {
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = useState(1)
   const [data, setData] = useState<any[]>([])
-  const handleDeleteUser = async (userId: string) => {
-    try {
-      // Implement the logic to delete a user
-      // Example: await axiosPrivate.delete(`/api/v1/users/${userId}`);
-    } catch (error) {
-      console.log(error)
-    }
-  }
   const [selectedRole, setSelectedRole] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const filteredData = data.filter((user: any) => {
@@ -67,7 +59,7 @@ function page() {
           page: number
           role?: string // Make role property optional
         } = {
-          fields: 'email,role',
+          fields: 'email,role,isActived',
           sort: 'createAt',
           limit: 8,
           page: page
@@ -94,6 +86,16 @@ function page() {
   }
   const handleRoleChange = (event: any) => {
     setSelectedRole(event.target.value as string)
+  }
+  const lockOrUnlockAccount = async (userId: String) => {
+    try {
+      await axiosPrivate.patch(UrlConfig.admin.lockOrUnlockAccount(userId))
+      setData((prevData) =>
+        prevData.map((user) => (user._id === userId ? { ...user, isActived: !user.isActived } : user))
+      )
+    } catch (error) {
+      console.log(error)
+    }
   }
   return (
     <div style={{ height: '100%', overflowY: 'auto' }}>
@@ -122,8 +124,6 @@ function page() {
               <MenuItem value='user'>User</MenuItem>
               <MenuItem value='admin'>Admin</MenuItem>
               <MenuItem value='business'>Business</MenuItem>
-
-              {/* Add more roles as needed */}
             </Select>
           </FormControl>
         </Grid>
@@ -150,8 +150,8 @@ function page() {
                   <TableCell style={{ textAlign: 'center' }}>{user.email}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{user.role}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant='outlined' onClick={() => handleDeleteUser(user._id)}>
-                      Delete
+                    <Button variant='outlined' onClick={() => lockOrUnlockAccount(user._id)}>
+                      {user.isActived ? 'Lock' : 'Unlock'}
                     </Button>
                   </TableCell>
                 </TableRow>
