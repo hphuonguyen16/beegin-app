@@ -1,5 +1,5 @@
 'use client'
-import { Avatar, Box, Stack, Typography, Button, Modal, Grid } from '@mui/material'
+import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import React, { useEffect } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
@@ -19,6 +19,10 @@ import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import ReplyPostCard from './ReplyPostCard'
 import Video from 'next-video'
+import UserLikedList from './UserLikedList'
+import SharePostList from './SharePostList'
+import { User } from '@/types/user'
+import Image from 'next/image'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -80,6 +84,8 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const [open, setOpen] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
   const [like, setLike] = React.useState<boolean>(post.isLiked ? true : false)
+  const [openUserLikeList, setOpenUserLikeList] = React.useState(false)
+  const [openSharePostList, setOpenSharePostList] = React.useState(false)
 
   const handleLike = async () => {
     try {
@@ -134,8 +140,53 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       }
     } catch (error) {}
   }
+  async function fetchUserLikePost(currentPage = 1) {
+    try {
+      if (openUserLikeList) {
+        const response = await axiosPrivate.get(
+          `${UrlConfig.posts.getUsersLikedPost(post._id)}?limit=10&page=${currentPage}`
+        )
+        const data = response.data.data as User[]
+        const profile = data.map((user) => ({
+          name: user.profile?.firstname + ' ' + user.profile?.lastname,
+          username: user.profile?.slug,
+          avatar: user.profile?.avatar
+        }))
+        return profile
+      }
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  async function fetchSharePostList(currentPage = 1) {
+    try {
+      if (openSharePostList) {
+        const response = await axiosPrivate.get(
+          `${UrlConfig.posts.getUsersSharedPost(post._id)}?limit=10&page=${currentPage}`
+        )
+        const data = response.data.data as Post[]
+        return data
+      }
+    } catch (error) {
+      // Handle error
+    }
+  }
+
   return (
     <>
+      <UserLikedList
+        open={openUserLikeList}
+        handleClose={() => setOpenUserLikeList(false)}
+        // @ts-ignore
+        propFetchMoreData={fetchUserLikePost}
+      />
+      <SharePostList
+        open={openSharePostList}
+        handleClose={() => setOpenSharePostList(false)}
+        // @ts-ignore
+        propFetchMoreData={fetchSharePostList}
+      />
       <Modal open={repostOpen} onClose={() => setRepostOpen(false)}>
         <Box
           sx={{
@@ -176,7 +227,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         direction={isMobile ? 'column' : 'row'}
         spacing={isMobile ? 1 : 3}
         sx={{
-          width: '70%',
+          width: '100%',
           justifyContent: 'center',
           ...(isRepost && {
             border: '1px solid #dbd5d5',
@@ -314,15 +365,34 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 }}
               >
                 {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
-                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numLikes}</span>
+                {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
+                <Typography
+                  component={'span'}
+                  sx={{
+                    marginLeft: isMobile ? '7px' : '12px',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      color: 'primary.main',
+                      fontWeight: 600
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setOpenUserLikeList(true)
+                  }}
+                >
+                  {post.numLikes}
+                </Typography>
               </Button>
+
               <Button
                 onClick={() => {
                   openPostDetail()
                 }}
               >
                 <ChatBubbleOutlineIcon color='secondary' />{' '}
-                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numComments}</span>
+                <span style={{ marginLeft: isMobile ? '7px' : '12px', fontWeight: 500 }}>{post.numComments}</span>
               </Button>
               <Button
                 onClick={() => {
@@ -330,7 +400,24 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 }}
               >
                 <ShareIcon color='secondary' />
-                <span style={{ marginLeft: isMobile ? '7px' : '10px', fontWeight: 500 }}>{post.numShares}</span>
+                <Typography
+                  component={'span'}
+                  sx={{
+                    marginLeft: isMobile ? '7px' : '12px',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      color: 'primary.main',
+                      fontWeight: 600
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setOpenSharePostList(true)
+                  }}
+                >
+                  {post.numShares}
+                </Typography>
               </Button>
             </Stack>
           )}

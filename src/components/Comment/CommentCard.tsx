@@ -19,6 +19,8 @@ import UrlConfig from '@/config/urlConfig'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import { usePosts } from '@/context/PostContext'
+import { User } from '@/types/user'
+import UserLikedList from '@/components/Posts/UserLikedList'
 
 interface CommentCardProps {
   postId: string
@@ -34,6 +36,8 @@ const CommentCard = ({ postId, comment, replyComment }: CommentCardProps) => {
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = React.useState(1)
   const [loading, setLoading] = React.useState(false)
+  const [openUserLikeList, setOpenUserLikeList] = React.useState(false)
+
   const handleLike = async () => {
     try {
       if (!liked) {
@@ -71,8 +75,33 @@ const CommentCard = ({ postId, comment, replyComment }: CommentCardProps) => {
     }
   }
 
+  async function fetchUsersLikeComment(currentPage = 1) {
+    try {
+      if (openUserLikeList) {
+        const response = await axiosPrivate.get(
+          `${UrlConfig.comments.getUsersLikedComment(comment._id)}?limit=10&page=${currentPage}`
+        )
+        const data = response.data.data as User[]
+        const profile = data.map((user) => ({
+          name: user.profile?.firstname + ' ' + user.profile?.lastname,
+          username: user.profile?.slug,
+          avatar: user.profile?.avatar
+        }))
+        return profile
+      }
+    } catch (error) {
+      // Handle error
+    }
+  }
+
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <UserLikedList
+        open={openUserLikeList}
+        handleClose={() => setOpenUserLikeList(false)}
+        // @ts-ignore
+        propFetchMoreData={fetchUsersLikeComment}
+      />
       <ListItem
         alignItems='flex-start'
         sx={{ paddingTop: '0px !important', paddingBottom: '0px !important', paddingRight: '0px !important' }}
@@ -139,6 +168,9 @@ const CommentCard = ({ postId, comment, replyComment }: CommentCardProps) => {
                         fontWeight: 600,
                         wordWrap: 'break-word',
                         cursor: 'pointer'
+                      }}
+                      onClick={() => {
+                        setOpenUserLikeList(true)
                       }}
                     >
                       {comment.numLikes} {comment.numLikes > 1 ? 'likes' : 'like'}
