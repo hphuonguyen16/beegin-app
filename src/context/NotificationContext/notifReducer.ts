@@ -44,6 +44,13 @@ function AddContentNotification(notification: any) {
         content: `replied to your comment "${notification.populate?.content}"`,
         actors: actorsString
       }
+    case 'share post':
+      return {
+        ...notification,
+        content: `shared your post`,
+        actors: actorsString
+      }
+
     default:
       return notification
   }
@@ -98,6 +105,8 @@ export const notifReducer = (state: NotifState, action: NotifAction) => {
         }
         return true
       })
+
+      console.log(filteredNotifications)
 
       return {
         ...state,

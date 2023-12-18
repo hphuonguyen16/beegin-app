@@ -74,7 +74,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
               wordWrap: 'break-word'
             }}
           >
-            {timeSince(new Date(notification?.updatedAt))}
+            {timeSince(new Date(notification.updatedAt))}
           </Typography>
           {/* </Stack> */}
           {/* <Typography sx={{ fontSize: '14px', marginTop: '5px', color: '#979797' }}>liked your post</Typography> */}
