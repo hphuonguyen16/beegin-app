@@ -1,4 +1,4 @@
-const UrlConfig: any = {
+const UrlConfig = {
   admin: {
     getOverview: (year: number) => `/api/v1/users/overview/${year}`,
     getAllReports: `/api/v1/reports/getAllReports`,
@@ -44,7 +44,7 @@ const UrlConfig: any = {
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`,
     deletePost: (postId: string) => `/api/v1/posts/${postId}`,
-    update: (postId: string) => `/api/v1/posts/${postId}`,
+    update: (postId: string | undefined) => `/api/v1/posts/${postId}`,
     getUsersLikedPost: (postId: string) => `/api/v1/posts/${postId}/users/like`,
     getUsersSharedPost: (postId: string) => `/api/v1/posts/${postId}/users/share`,
   },
