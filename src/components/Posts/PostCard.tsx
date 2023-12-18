@@ -1,7 +1,8 @@
 'use client'
 import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton } from '@mui/material'
+import { MoreVert } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
@@ -19,6 +20,15 @@ import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
 import ReplyPostCard from './ReplyPostCard'
 import Video from 'next-video'
+import Popover from '@/components/common/Popover'
+import { BiPencil } from 'react-icons/bi'
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FiEdit3 } from "react-icons/fi";
+import { useAuth } from '@/context/AuthContext'
+import { FaRegFaceAngry } from "react-icons/fa6";
+import RootModal from '../common/modals/RootModal'
+import useSnackbar from '@/context/snackbarContext'
+import EditPost from './EditPost'
 import UserLikedList from './UserLikedList'
 import SharePostList from './SharePostList'
 import { User } from '@/types/user'
@@ -76,14 +86,16 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
-  const [newPost, setNewPost] = React.useState<Post | null>(null)
+  const [newPost, setNewPost] = useState<Post | null>(null)
   const { postsState, postsDispatch } = usePosts()
   const router = useRouter()
   const axiosPrivate = useAxiosPrivate()
   const isMobile = useResponsive('down', 'sm')
-  const [open, setOpen] = React.useState(false)
-  const [repostOpen, setRepostOpen] = React.useState(false)
-  const [like, setLike] = React.useState<boolean>(post.isLiked ? true : false)
+  const [open, setOpen] = useState(false)
+  const [repostOpen, setRepostOpen] = useState(false)
+  const [like, setLike] = useState<boolean>(post.isLiked ? true : false)
+  const videoRef = useRef<any>();
+  const { user } = useAuth();
   const [openUserLikeList, setOpenUserLikeList] = React.useState(false)
   const [openSharePostList, setOpenSharePostList] = React.useState(false)
 
@@ -114,10 +126,11 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const openPostDetail = async () => {
+    videoRef.current?.pause();
     const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
     const comments = commentResponse.data.data as Comment[]
     const isFollowing = await axiosPrivate.get(UrlConfig.me.isFollowingOtherUser(post.user._id))
@@ -128,7 +141,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     setOpen(true)
   }
   const closePostDetail = () => {
-    setOpen(false)
+    setOpen(false);
   }
   const redirectToProfile = async () => {
     try {
@@ -138,8 +151,25 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) {}
+    } catch (error) { }
   }
+
+  const { snack, setSnack } = useSnackbar();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [openEditModal, setOpenEditModal] = useState(false)
+
+  const onDeleteBtnClick = () => {
+    setOpenDeleteModal(true);
+  }
+
+  async function handleDeletePost() {
+    const result = await axiosPrivate.delete(UrlConfig.posts.deletePost(post._id));
+    if (result) {
+      setOpenDeleteModal(false);
+      setSnack({ open: true, message: "Deleted post successfully" });
+    }
+  }
+
   async function fetchUserLikePost(currentPage = 1) {
     try {
       if (openUserLikeList) {
@@ -251,8 +281,9 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           md={2}
         >
           <Avatar
-            sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px' }}
+            sx={{ width: isMobile ? '45px' : '60px', height: isMobile ? '45px' : '60px', cursor: 'pointer' }}
             src={post.user?.profile?.avatar}
+            onClick={redirectToProfile}
           ></Avatar>
         </Grid>
         <Grid
@@ -261,60 +292,70 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           md={isRepost ? 12 : 10}
           sx={{ paddingLeft: '0px !important', ...(isRepost && { paddingTop: '0px !important' }) }}
         >
-          {' '}
-          <Stack
-            direction={'row'}
-            sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
-            onClick={() => redirectToProfile()}
-          >
-            {isRepost && (
-              <Avatar
-                sx={{ width: isMobile ? '30px' : '45px', height: isMobile ? '30px' : '45px', marginRight: '10px' }}
-                src={post.user?.profile?.avatar}
-              ></Avatar>
-            )}
-            <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
-              {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
-            </Typography>
-            <Typography
-              sx={{
-                color: 'rgba(0, 0, 0, 0.50)',
-                fontSize: isMobile ? '10px' : '14px',
-                fontWeight: 400,
-                marginLeft: '7px'
-              }}
+          <Stack direction={'row'} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack
+              direction={'row'}
+              sx={{ alignItems: 'center', marginTop: '3px', cursor: 'pointer' }}
+              onClick={() => redirectToProfile()}
             >
-              {post.user?.profile?.slug}
-            </Typography>
-            <Box
-              sx={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                marginLeft: '15px',
-                backgroundColor: 'rgba(0, 0, 0, 0.50)'
-              }}
-            ></Box>
-            <Typography
-              sx={{
-                color: 'rgba(0, 0, 0, 0.50)',
-                fontSize: isMobile ? '13px' : '13px',
-                fontWeight: 400,
-                wordWrap: 'break-word',
-                marginLeft: '15px'
-              }}
-            >
-              {timeSince(new Date(post.createdAt))}
-            </Typography>
+              {isRepost && (
+                <Avatar
+                  sx={{ width: isMobile ? '30px' : '45px', height: isMobile ? '30px' : '45px', marginRight: '10px' }}
+                  src={post.user?.profile?.avatar}
+                ></Avatar>
+              )}
+              <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
+                {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
+              </Typography>
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.50)',
+                  fontSize: isMobile ? '10px' : '14px',
+                  fontWeight: 400,
+                  marginLeft: '7px'
+                }}
+              >
+                @{post.user?.profile?.slug}
+              </Typography>
+              <Box
+                sx={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  marginLeft: '15px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.50)'
+                }}
+              ></Box>
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.50)',
+                  fontSize: isMobile ? '13px' : '13px',
+                  fontWeight: 400,
+                  wordWrap: 'break-word',
+                  marginLeft: '15px',
+                  lineHeight: 1
+                }}
+              >
+                {timeSince(new Date(post.createdAt))}
+              </Typography>
+            </Stack>
+            <Popover icon={<MoreVert />} items={
+              user?._id === post.user._id ? 
+              [{ icon: <FiEdit3 />, content: 'Edit', onClickFunc: ()=>setOpenEditModal(true) },
+              { icon: <FaRegTrashAlt />, content: 'Delete', color: '#FF4842', onClickFunc: onDeleteBtnClick }]
+                : [{ icon: <FaRegFaceAngry />, content: 'Report' }]
+            } />
           </Stack>
           <Box
             sx={{
               margin: isMobile ? '5px 0' : '10px 0',
               fontSize: isMobile ? '13px' : '18px',
               overflow: 'hidden',
+              // minHeight: '50px',
               maxHeight: '80px', // Set the maximum height for the text container
               whiteSpace: 'pre-line', // Preserve line breaks within the text
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
+              paddingRight: '20px',
             }}
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
@@ -325,6 +366,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 return (
                   <Video
                     className={`video-${index + 1}`}
+                    ref={videoRef}
                     key={index}
                     src={src}
                     autoPlay={false}
@@ -354,7 +396,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             <Stack
               direction={'row'}
               sx={{
-                margin: isMobile ? '7px 0px 30px 0px' : '10px 10px 30px 10px',
+                margin: isMobile ? '7px 0px 30px 0px' : '15px 10px 30px 10px',
                 justifyContent: 'space-between',
                 alignItems: 'center'
               }}
@@ -423,6 +465,21 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           )}
         </Grid>
       </Grid>
+      {
+        openDeleteModal && (
+          <RootModal
+            variant="Delete"
+            handleOk={handleDeletePost}
+            handleClose={() => setOpenDeleteModal(false)}
+            open={openDeleteModal}
+            closeOnly={false}
+            height={"auto"}
+            width='500px'>
+            <div>Are you sure you want to delete this post?</div>
+          </RootModal>
+        )
+      }
+      {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} />}
     </>
   )
 }

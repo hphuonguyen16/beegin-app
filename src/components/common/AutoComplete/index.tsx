@@ -170,17 +170,15 @@ export default function CustomizedHook({ data, selectedData, setSelectedData }: 
     setAnchorEl
   } = useAutocomplete({
     id: 'customized-hook-demo',
-    // defaultValue: [top100Films[1]],
+    defaultValue: selectedData,
     multiple: true,
     options: data,
     getOptionLabel: (option) => option.name
   })
 
-  React.useEffect(
-    () => {
+  React.useEffect(() => {
       setSelectedData(value)
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [value]
   )
 

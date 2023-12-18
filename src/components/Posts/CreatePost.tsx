@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Typography, Stack, Avatar, TextField, IconButton, Button } from '@mui/material'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -109,12 +109,12 @@ interface CreatePostProps {
 const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostProps) => {
   const isMobile = useResponsive('down', 'sm')
   const { user } = useAuth()
-  const [categories, setCategories] = React.useState<Category[]>([])
-  const [selectedCategories, setSelectedCategories] = React.useState<Category[]>([])
-  const [content, setContent] = React.useState<string | ''>('')
-  const [images, setImages] = React.useState<any>([])
-  const [isSuccess, setIsSuccess] = React.useState(false)
-  const [isLoad, setIsLoad] = React.useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([])
+  const [content, setContent] = useState<string | ''>('')
+  const [images, setImages] = useState<any>([])
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isLoad, setIsLoad] = useState(false)
   const axiosPrivate = useAxiosPrivate()
   const { setSnack } = useSnackbar()
   const { postsState, postsDispatch } = usePosts()
@@ -132,8 +132,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       setImages(newImages)
     }
   }
-  const handleDeleteImages = () => {
-    setImages([])
+  const handleDeleteImages = (indexToRemove: number) => {
+    setImages((prevItems: any) => prevItems.filter((item: any, index: number) => index !== indexToRemove));
   }
   const addPostApi = async (data: NewPostProps) => {
     const response = await axiosPrivate.post(urlConfig.posts.createPost, {
@@ -278,25 +278,36 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
               <ImageContainerStyled number={images ? images.length : 0}>
                 {images?.map((item: File, index: number) => (
                   getFileType(item) === 'video' ?
-                    <Video className={`video-${index + 1}`} src={URL.createObjectURL(item)} autoPlay={false} accentColor='#E078D8' /> :
+                    <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
+                      <Video className={`video-${index + 1}`} src={URL.createObjectURL(item)} autoPlay={false} accentColor='#E078D8' /><IconButton
+                        sx={{
+                          position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
+                          '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                        }}
+                        onClick={() => handleDeleteImages(index)}
+                      >
+                        <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
+                      </IconButton></span> :
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      className={`image-${index + 1}`}
-                      src={URL.createObjectURL(item)}
-                      key={index}
-                      alt='image'
-                      loading='lazy'
-                    />
+                    <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
+                      <img
+
+                        src={URL.createObjectURL(item)}
+                        key={index}
+                        alt='image'
+                        loading='lazy'
+
+                      /><IconButton
+                        sx={{
+                          position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
+                          '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                        }}
+                        onClick={() => handleDeleteImages(index)}
+                      >
+                        <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
+                      </IconButton></span>
                 ))}
-                <IconButton
-                  sx={{
-                    position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
-                    '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
-                  }}
-                  onClick={() => handleDeleteImages()}
-                >
-                  <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
-                </IconButton>
+
               </ImageContainerStyled>
               {repost && <PostCard post={repost} isRepost={true} />}
             </Box>
