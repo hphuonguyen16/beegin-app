@@ -49,7 +49,7 @@ function Home() {
       // Handle errors if necessary
     }
   }
-  const { fetchNextPage, isFetching } = useInfiniteQuery({
+  const { fetchNextPage, isFetching, hasNextPage } = useInfiniteQuery({
     queryKey: ['postsData'],
     queryFn: fetchPosts,
     initialPageParam: 1,
@@ -142,16 +142,18 @@ function Home() {
                   return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
-              <>
-                <PostSkeleton />
-                <PostSkeleton />
-              </>
-              {/* ) : (
+              {hasNextPage || isFetching ? (
+                <>
+                  <PostSkeleton />
+                  <PostSkeleton />
+                </>
+              ) : (
                 <>
                   <Box sx={{ height: '130px' }}>
                     <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
                   </Box>
-                </> */}
+                </>
+              )}
             </Box>
           </InfiniteScroll>
         </Box>
