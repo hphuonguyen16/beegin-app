@@ -134,6 +134,8 @@ function page() {
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
+  const [loading, setLoading] = useState(true)
+
   const fetchPosts = async () => {
     try {
       const response = await axiosPrivate.get(UrlConfig.posts.getMyPosts)
@@ -142,6 +144,8 @@ function page() {
       return posts
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
   const { data: posts, isLoading } = useQuery<Post[]>({
@@ -376,8 +380,8 @@ function page() {
                     >
                       Posts
                     </Typography>
-                    {posts && posts.length > 0 ? (
-                      posts?.map((post, index) => <PostCard key={index} post={post} postParent={post?.parent} />)
+                    {loading === false ? (
+                      posts?.map((post, index) => <PostCard key={index} post={post} />)
                     ) : (
                       <>
                         <PostSkeleton />

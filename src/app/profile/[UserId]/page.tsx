@@ -28,6 +28,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import { Post } from '@/types/post'
+import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
@@ -134,6 +135,7 @@ function page() {
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
+  const [loading, setLoading] = useState(true)
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setNumber({
@@ -171,6 +173,8 @@ function page() {
       return posts
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -186,6 +190,7 @@ function page() {
     }
     fetchData()
   }, [])
+  console.log(posts.length)
   return (
     <StyledProfile>
       <PersistentScrollView id={'scrollProfile'}>
@@ -389,7 +394,14 @@ function page() {
                     >
                       Posts
                     </Typography>
-                    {posts?.map((post, index) => <PostCard key={index} post={post} postParent={post?.parent} />)}
+                    {loading === false ? (
+                      posts?.map((post, index) => <PostCard key={index} post={post} />)
+                    ) : (
+                      <>
+                        <PostSkeleton />
+                        <PostSkeleton />
+                      </>
+                    )}
                   </Box>
                 ) : (
                   <Friends userId={userId}></Friends>

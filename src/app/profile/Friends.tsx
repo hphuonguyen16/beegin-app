@@ -171,18 +171,20 @@ function Friends({ userId }: { userId: string }) {
             )
           ) : searchValue === '' ? (
             <Card className='flex flex-col justify-center items-center' sx={{ height: '95%', background: '#fdfdfd' }}>
-              <Image src={NoFriendImg} alt='' height={400} />
+              <Image src={NoFriendImg} alt='' height={430} />
               <Typography variant='h1'>Boohoo.</Typography>
               <Typography variant='h3'>
                 {userId === 'me'
                   ? onFollowTab === true
                     ? `You don't follow any other users yet`
-                    : `This account doesn't follow any other users yet`
+                    : `No one is following you yet `
                   : onFollowTab === false
-                  ? `No one is following you yet `
-                  : `No one is following this account yet`}
+                  ? `No one is following this account yet`
+                  : `This account doesn't follow any other users yet`}
               </Typography>
-              <Typography variant='h5'>Beefriend others now by following people you know!</Typography>
+              <Typography variant='h5' sx={{ marginBottom: '10px' }}>
+                Beefriend others now by following people you know!
+              </Typography>
             </Card>
           ) : (
             <Card className='flex flex-col justify-center items-center' sx={{ height: '95%', background: '#fdfdfd' }}>
@@ -202,7 +204,7 @@ function Friends({ userId }: { userId: string }) {
                 </Stack>
                 <Skeleton
                   variant='rounded'
-                  sx={{ marginLeft: '620px', borderRadius: '18px' }}
+                  sx={{ marginLeft: '700px', borderRadius: '18px' }}
                   width={105}
                   height={40}
                 />
