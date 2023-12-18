@@ -58,7 +58,7 @@ function PostList({ f }: PostListProps) {
     }
   }, [searchParams])
   return (
-    <Stack>
+    <Stack sx={{ width: '74%' }}>
       {loading ? (
         <CircularProgress color='primary' sx={{ alignSelf: 'center' }} />
       ) : posts.length > 0 ? (

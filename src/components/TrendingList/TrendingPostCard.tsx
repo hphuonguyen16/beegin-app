@@ -13,7 +13,7 @@ export default function TrendingPostCard({ category, posts }: TrendingPostCardPr
         <TopicIcon color='secondary' sx={{ marginRight: '30px' }} fontSize='large' />
         {category}
       </Typography>
-      <Stack>
+      <Stack sx={{ width: '74%' }}>
         {posts.map((post, index) => (
           <PostCard key={index} post={post} />
         ))}

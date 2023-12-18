@@ -382,7 +382,7 @@ function page() {
             <Grid item xs={12} md={9} sx={{ paddingRight: '50px', transform: 'translateY(-80px)' }}>
               <Posts>
                 {showPosts === true ? (
-                  <Box sx={{ marginLeft: '55px', marginTop: '25px' }}>
+                  <Box sx={{ marginLeft: '55px', marginTop: '25px', width: '74%' }}>
                     {' '}
                     <Typography
                       variant='h3'

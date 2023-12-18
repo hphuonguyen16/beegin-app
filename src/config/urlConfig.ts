@@ -4,7 +4,8 @@ const UrlConfig: any = {
     getAllReports: `/api/v1/reports/getAllReports`,
     reportProcessing: `/api/v1/reports/reportProcessing`,
     getAllUsers: `/api/v1/users`,
-    getBusinessRequest: `/api/v1/users/business/requests`
+    getBusinessRequest: `/api/v1/users/business/requests`,
+    lockOrUnlockAccount: (userId: string) => `/api/v1/users/lockOrUnlockAccount/${userId}`
   },
 
   user: {
@@ -25,7 +26,7 @@ const UrlConfig: any = {
     updateProfile: `/api/v1/users/updateMe`,
     createReport: `/api/v1/reports/createReport`,
     isFollowingOtherUser: (id: string) => `/api/v1/follows/isFollowing/${id}`,
-    unFollowOtherUser: (id: string) => `/api/v1/follows/unfollow/${id}`,
+    unFollowOtherUser: (id: string) => `/api/v1/follows/unfollow/${id}`
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
@@ -41,7 +42,9 @@ const UrlConfig: any = {
     likePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     unlikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
-    getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`
+    getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`,
+    getUsersLikedPost: (postId: string) => `/api/v1/posts/${postId}/users/like`,
+    getUsersSharedPost: (postId: string) => `/api/v1/posts/${postId}/users/share`
   },
   feeds: {
     getFeeds: `/api/v1/feed`
@@ -51,7 +54,8 @@ const UrlConfig: any = {
     unlikeComment: (commentId: string) => `/api/v1/comments/${commentId}/like`,
     createComment: (postId: string) => `/api/v1/posts/${postId}/comments`,
     getReplyComments: (postId: string, commentId: string) => `/api/v1/posts/${postId}/comments/${commentId}`,
-    getCommentById: (commentId: string) => `/api/v1/comments/id/${commentId}`
+    getCommentById: (commentId: string) => `/api/v1/comments/id/${commentId}`,
+    getUsersLikedComment: (commentId: string) => `/api/v1/comments/users/${commentId}`
   },
   categories: {
     getCategories: `/api/v1/categories`

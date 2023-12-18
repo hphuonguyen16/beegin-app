@@ -10,7 +10,7 @@ const PostSkeleton = () => {
       container
       direction={'row'}
       spacing={isMobile ? 1 : 3}
-      sx={{ width: '70%', marginBottom: '15px', justifyContent: 'center' }}
+      sx={{ width: '100%', marginBottom: '15px', justifyContent: 'center' }}
     >
       <Grid item md={2} sx={{ paddingLeft: '0px !important', display: 'flex', justifyContent: 'center' }}>
         <Skeleton animation='wave' variant='circular' width={60} height={60} />
