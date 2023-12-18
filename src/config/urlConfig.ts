@@ -22,7 +22,9 @@ const UrlConfig: any = {
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`,
     updateProfile: `/api/v1/users/updateMe`,
-    createReport: `/api/v1/reports/createReport`
+    createReport: `/api/v1/reports/createReport`,
+    isFollowingOtherUser: (id: string) => `/api/v1/follows/isFollowing/${id}`,
+    unFollowOtherUser: (id: string) => `/api/v1/follows/unfollow/${id}`,
   },
   otherUsers: {
     getProfileByID: `/api/v1/users/getProfileByID/:id`,
