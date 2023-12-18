@@ -3,7 +3,8 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import NotificationCard from './NotificationCard'
+import AllNotifications from './AllNotifications'
+import { useNotifications } from '../../context/NotificationContext'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -21,6 +22,7 @@ function CustomTabPanel(props: TabPanelProps) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
+      style={{ overflow: 'auto', maxHeight: '500px' }}
     >
       {value === index && (
         <Box sx={{ p: 3, width: '480px' }}>
@@ -40,6 +42,8 @@ function a11yProps(index: number) {
 
 export default function NotificationTab() {
   const [value, setValue] = React.useState(0)
+  const { notifsState } = useNotifications()
+  const unreadNotifs = notifsState.notifications.filter((notif) => !notif.read)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -49,42 +53,25 @@ export default function NotificationTab() {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
-          <Tab
-            label={
-              <div style={{ color: '#E078D8' }}>
-                All{' '}
-                <span
-                  style={{
-                    marginLeft: '5px',
-                    backgroundColor: '#E078D8',
-                    color: 'white',
-                    padding: '3px 12px',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                >
-                  4
-                </span>
-              </div>
-            }
-            {...a11yProps(0)}
-          />
+          <Tab label={<div style={{ color: '#E078D8' }}>All </div>} {...a11yProps(0)} />
           <Tab
             label={
               <div style={{ color: '#E078D8' }}>
                 Unread{' '}
-                <span
-                  style={{
-                    marginLeft: '5px',
-                    backgroundColor: '#E078D8',
-                    color: 'white',
-                    padding: '3px 12px',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                >
-                  4
-                </span>
+                {notifsState.unread > 0 && (
+                  <span
+                    style={{
+                      marginLeft: '5px',
+                      backgroundColor: '#E078D8',
+                      color: 'white',
+                      padding: '3px 12px',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    {notifsState.notifications.filter((notif) => !notif.read).length}
+                  </span>
+                )}
               </div>
             }
             {...a11yProps(1)}
@@ -92,12 +79,10 @@ export default function NotificationTab() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <>
-          <NotificationCard />
-        </>
+        <AllNotifications notifications={notifsState.notifications} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        Item Two
+        <AllNotifications notifications={unreadNotifs} />
       </CustomTabPanel>
     </Box>
   )

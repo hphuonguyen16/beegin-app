@@ -13,29 +13,43 @@ const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, length }) => {
     isOverLength = true
   }
   const regex = /#(\w+)/g
-  const matches: { hashtag: string; index: number }[] = []
+  const regexLink = /(https:\/\/\S+)|#(\w+)/g
+  const matches: { hashtag: string; index: number; isLink?: boolean }[] = []
   let match
 
-  while ((match = regex.exec(text))) {
-    matches.push({ hashtag: match[0], index: match.index })
+  while ((match = regexLink.exec(text))) {
+    const hashtag = match[0]
+    const { index } = match
+    const isLink = match[1] !== undefined
+
+    matches.push({ hashtag, index, isLink })
   }
 
   const segments: React.ReactNode[] = []
   let lastIndex = 0
 
   for (const match of matches) {
-    const { hashtag, index } = match
+    const { hashtag, index, isLink } = match
 
-    // Add the text segment before the hashtag
+    // Add the text segment before the hashtag or link
     segments.push(<span key={lastIndex}>{text.slice(lastIndex, index)}</span>)
 
-    // Add the hashtag
-    const href = `/search?q=${encodeURIComponent(hashtag)}&f=top`
-    segments.push(
-      <Link key={index} href={href} style={{ color: 'blue' }}>
-        {hashtag}
-      </Link>
-    )
+    // Render the hashtag or link accordingly
+    if (isLink) {
+      segments.push(
+        <a key={index} href={hashtag} style={{ color: 'blue' }} target='_blank' rel='noopener noreferrer'>
+          {hashtag}
+        </a>
+      )
+    } else {
+      // Add the hashtag
+      const href = `/search?q=${encodeURIComponent(hashtag)}&f=top`
+      segments.push(
+        <Link key={index} href={href} style={{ color: 'blue' }}>
+          {hashtag}
+        </Link>
+      )
+    }
 
     lastIndex = index + hashtag.length
   }
@@ -49,9 +63,9 @@ const HashtagWrapper: React.FC<HashtagWrapperProps> = ({ text, length }) => {
         {' ...'}
       </span>
     )
-    return <>{segments}</>
   }
-  return <>{segments}</>
+
+  return <div style={{ whiteSpace: 'pre-line' }}>{segments}</div>
 }
 
 export default HashtagWrapper

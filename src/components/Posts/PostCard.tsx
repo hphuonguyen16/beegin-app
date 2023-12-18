@@ -58,7 +58,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   },
   '.next-video-container': {
     height: '100%',
-    maxHeight: '600px',
+    maxHeight: '600px'
   },
   '.video-2': {
     height: props.number === 3 ? '605px' : '100%'
@@ -108,7 +108,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) { }
+    } catch (err) {}
   }
 
   const openPostDetail = async () => {
@@ -131,7 +131,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) { }
+    } catch (error) {}
   }
   return (
     <>
@@ -267,24 +267,29 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
           </Box>
-          <ImageContainerStyled
-            number={post.images ? post.images.length : 0}
-          >
+          <ImageContainerStyled number={post.images ? post.images.length : 0}>
             {post.images?.map((src, index) => {
               if (src && src.split('/')[4] === 'video') {
                 return (
-                  <Video className={`video-${index + 1}`} key={index} src={src} autoPlay={false} accentColor='#E078D8' />
-
+                  <Video
+                    className={`video-${index + 1}`}
+                    key={index}
+                    src={src}
+                    autoPlay={false}
+                    accentColor='#E078D8'
+                  />
                 )
               } else if (src.split('/')[4] === 'image') {
-                return <img
-                  onClick={openPostDetail}
-                  className={`image-${index + 1}`}
-                  src={src}
-                  key={index}
-                  alt='image'
-                  loading='lazy'
-                />
+                return (
+                  <img
+                    onClick={openPostDetail}
+                    className={`image-${index + 1}`}
+                    src={src}
+                    key={index}
+                    alt='image'
+                    loading='lazy'
+                  />
+                )
               } else {
                 // Handle the case where src is undefined or null
                 return null

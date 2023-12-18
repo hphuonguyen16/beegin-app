@@ -97,7 +97,7 @@ function Home() {
           {/* <Typography variant='h4' sx={{ fontWeight: 'bold', color: 'black' }} onClick={() => fetchNextPage()}>
             Feeds
           </Typography> */}
-          <Stack direction={'row'} sx={{ marginTop: '25px', marginLeft: "30px", justifyContent: 'center' }} spacing={2}>
+          <Stack direction={'row'} sx={{ marginTop: '25px', marginLeft: '30px', justifyContent: 'center' }} spacing={2}>
             <Avatar src={user?.profile?.avatar} sx={{ width: 50, height: 50 }}></Avatar>
             <TextField
               size='small'
@@ -142,18 +142,16 @@ function Home() {
                   return <PostCard key={post._feedId || index} post={post} />
                 }
               })}
-              {isFetching ? (
-                <>
-                  <PostSkeleton />
-                  <PostSkeleton />
-                </>
-              ) : (
+              <>
+                <PostSkeleton />
+                <PostSkeleton />
+              </>
+              {/* ) : (
                 <>
                   <Box sx={{ height: '130px' }}>
                     <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
                   </Box>
-                </>
-              )}
+                </> */}
             </Box>
           </InfiniteScroll>
         </Box>
