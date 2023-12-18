@@ -34,6 +34,7 @@ import EmojiPicker from '../common/EmojiPicker'
 import _ from 'lodash'
 import { usePosts } from '@/context/PostContext'
 import CreatePost from './CreatePost'
+import { useRouter } from 'next/navigation'
 
 // find the root of children comment
 function findRootComment(comments: Comment[], comment: Comment | null | undefined): Comment | null {
@@ -66,6 +67,8 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
   const [page, setPage] = React.useState(2)
   const [loading, setLoading] = React.useState(false)
   const [repostOpen, setRepostOpen] = React.useState(false)
+  const [isFollowing, setIsFollowing] = React.useState(post.isFollowing)
+  const router = useRouter()
 
   const fetchComments = async () => {
     setLoading(true)
@@ -113,11 +116,29 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
     } catch (error) {}
   }
 
+  const handleFollow = async (event: any) => {
+    event.stopPropagation()
+    try {
+      if (isFollowing) {
+        setIsFollowing(false)
+        await axiosPrivate.delete(urlConfig.me.unFollowOtherUser(post.user._id))
+      } else {
+        setIsFollowing(true)
+        await axiosPrivate.post(urlConfig.me.followingOtherUser, { id: post.user._id })
+      }
+    } catch (error) {}
+  }
+
+  const navigateToProfile = (event: any) => {
+    router.push(`/profile/${post.user._id}`)
+  }
+
   const replyComment = (commentReply: Comment) => {
     setCommentReply(commentReply)
     if (commentReply.user.profile?.slug) setComment(`@${commentReply.user.profile?.slug} `)
     else setComment(`@${commentReply.user.profile?.firstname + commentReply.user.profile?.lastname} `)
   }
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -191,7 +212,10 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                 id='commentDiv'
               >
                 <Box sx={{ overflow: 'auto', width: '100%', height: '93%', overflowX: 'hidden' }}>
-                  <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                  <List
+                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', cursor: 'pointer' }}
+                    onClick={navigateToProfile}
+                  >
                     <ListItem alignItems='flex-start'>
                       <ListItemAvatar>
                         <Avatar alt='Remy Sharp' src={post.user?.profile?.avatar} />
@@ -240,8 +264,9 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                                 }
                               }}
                               color='secondary'
+                              onClick={handleFollow}
                             >
-                              Follow
+                              {isFollowing ? 'Following' : 'Follow'}
                             </Typography>
                           </Stack>
                         }
@@ -255,7 +280,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                       sx={{ width: isMobile ? '45px' : '40px', height: isMobile ? '45px' : '40px' }}
                       src={post.user?.profile?.avatar}
                     ></Avatar>
-                    <Stack>
+                    <Stack sx={{ width: '90%' }}>
                       <Box>
                         <Stack direction={'row'} sx={{ alignItems: 'center', marginTop: '3px' }}>
                           <Typography variant='h5' sx={{ fontWeight: 'bold' }}>

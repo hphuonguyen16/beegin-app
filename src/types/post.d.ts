@@ -16,4 +16,5 @@ export interface Post {
   parent?: Post
   comments: Comment[]
   totalComments: number
+  isFollowing?: boolean
 }

@@ -114,9 +114,10 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const openPostDetail = async () => {
     const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
     const comments = commentResponse.data.data as Comment[]
+    const isFollowing = await axiosPrivate.get(UrlConfig.me.isFollowingOtherUser(post.user._id))
     postsDispatch({
       type: 'SELECT_POST',
-      payload: { ...post, comments, totalComments: commentResponse.data.total }
+      payload: { ...post, comments, totalComments: commentResponse.data.total, isFollowing: isFollowing.data.data }
     })
     setOpen(true)
   }
