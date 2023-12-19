@@ -56,6 +56,13 @@ interface SelectPostAction {
   payload: Post
 }
 
+interface DeletePostAction {
+  type: 'DELETE_POST'
+  payload: {
+    postId: string
+  }
+}
+
 export interface PostState {
   posts: Post[]
   selectedPost: Post | null
@@ -74,7 +81,6 @@ interface SetLikedPostAction {
   }
 }
 
-
 export type PostAction =
   | SetPostsAction
   | AddPostAction
@@ -86,3 +92,4 @@ export type PostAction =
   | AddReplyCommentsAction
   | SelectPostAction
   | SetLikedPostAction
+  | DeletePostAction

@@ -381,7 +381,7 @@ function page() {
                       Posts
                     </Typography>
                     {loading === false ? (
-                      posts?.map((post, index) => <PostCard key={index} post={post} />)
+                      posts?.map((post, index) => <PostCard key={index} post={post} postParent={post?.parent} />)
                     ) : (
                       <>
                         <PostSkeleton />

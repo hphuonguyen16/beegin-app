@@ -53,7 +53,15 @@ export const postReducer = (state: PostState, action: PostAction) => {
       return { ...state, posts: [action.payload, ...state.posts] }
     }
     case 'UPDATE_POST': {
-      return { ...state, posts: state.posts.map(item => { item._id === action.payload._id ? action.payload : item }) }
+      return {
+        ...state,
+        posts: state.posts.map((item) => {
+          item._id === action.payload._id ? action.payload : item
+        })
+      }
+    }
+    case 'DELETE_POST': {
+      return { ...state, posts: state.posts.filter((item) => item._id !== action.payload.postId) }
     }
     case 'ADD_MULTIPLE_POSTS': {
       const { payload: multiplePosts } = action
@@ -80,18 +88,18 @@ export const postReducer = (state: PostState, action: PostAction) => {
         selectedPost:
           state.selectedPost?._id === postId
             ? {
-              ...state.selectedPost,
-              comments: Array.from(new Set([...state.selectedPost.comments, ...comments])),
-              totalComments
-            }
+                ...state.selectedPost,
+                comments: Array.from(new Set([...state.selectedPost.comments, ...comments])),
+                totalComments
+              }
             : state.selectedPost,
         posts: state.posts.map((post) =>
           post._id === postId
             ? {
-              ...post,
-              comments: Array.from(new Set([...post.comments, ...comments])),
-              totalComments
-            }
+                ...post,
+                comments: Array.from(new Set([...post.comments, ...comments])),
+                totalComments
+              }
             : post
         )
       }
@@ -155,10 +163,10 @@ export const postReducer = (state: PostState, action: PostAction) => {
         selectedPost:
           state.selectedPost?._id === postId
             ? {
-              ...state.selectedPost,
-              isLiked,
-              numLikes: isLiked ? state.selectedPost.numLikes + 1 : state.selectedPost.numLikes - 1
-            }
+                ...state.selectedPost,
+                isLiked,
+                numLikes: isLiked ? state.selectedPost.numLikes + 1 : state.selectedPost.numLikes - 1
+              }
             : state.selectedPost
       }
     }
