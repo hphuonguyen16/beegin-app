@@ -6,6 +6,11 @@ interface AddPostAction {
   payload: Post
 }
 
+interface UpdatePostAction {
+  type: 'UPDATE_POST'
+  payload: Post
+}
+
 interface AddMultiplePostsAction {
   type: 'ADD_MULTIPLE_POSTS'
   payload: Post[]
@@ -73,6 +78,7 @@ interface SetLikedPostAction {
 export type PostAction =
   | SetPostsAction
   | AddPostAction
+  | UpdatePostAction
   | SetLikedPostsAction
   | AddCommentAction
   | AddMultiplePostsAction

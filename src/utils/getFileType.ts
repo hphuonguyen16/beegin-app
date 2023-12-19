@@ -1,15 +1,23 @@
-export default function getFileType(file: File) {
-
-    if(file.type.match('image.*'))
+export default function getFileType(file: any) {
+  if (typeof file === 'string') {
+    if (file.split('/')[4] === 'image')
       return 'image';
-  
-    if(file.type.match('video.*'))
+    else if (file.split('/')[4] === 'video')
       return 'video';
-  
-    if(file.type.match('audio.*'))
+    else
+      return 'other';
+  } else {
+    if (file.type.match('image.*'))
+      return 'image';
+
+    if (file.type.match('video.*'))
+      return 'video';
+
+    if (file.type.match('audio.*'))
       return 'audio';
-  
+
     // etc...
-  
+
     return 'other';
   }
+}
