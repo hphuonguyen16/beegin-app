@@ -4,8 +4,8 @@ const UrlConfig: any = {
     getAllReports: `/api/v1/reports/getAllReports`,
     reportProcessing: `/api/v1/reports/reportProcessing`,
     getAllUsers: `/api/v1/users`,
+    getBusinessRequest: `/api/v1/users/business/requests`,
     lockOrUnlockAccount: (userId: string) => `/api/v1/users/lockOrUnlockAccount/${userId}`
-
   },
 
   user: {
@@ -44,7 +44,7 @@ const UrlConfig: any = {
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`,
     getUsersLikedPost: (postId: string) => `/api/v1/posts/${postId}/users/like`,
-    getUsersSharedPost: (postId: string) => `/api/v1/posts/${postId}/users/share`,
+    getUsersSharedPost: (postId: string) => `/api/v1/posts/${postId}/users/share`
   },
   feeds: {
     getFeeds: `/api/v1/feed`

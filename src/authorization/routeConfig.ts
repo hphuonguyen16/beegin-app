@@ -19,7 +19,8 @@ const routeConfig: { [key: string]: { [key: string]: string } } = {
     [RouteNames.admin_advertisements]: RouteNames.admin_advertisements,
     [RouteNames.admin_overview]: RouteNames.admin_overview,
     [RouteNames.admin_reports]: RouteNames.admin_reports,
-    [RouteNames.admin_user_management]: RouteNames.admin_user_management
+    [RouteNames.admin_user_management]: RouteNames.admin_user_management,
+    [RouteNames.admin_business_management]: RouteNames.admin_business_management
   },
   [Roles.business]: {
     default: RouteNames.business_analytics,
