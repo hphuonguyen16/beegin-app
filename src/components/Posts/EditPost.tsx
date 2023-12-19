@@ -403,6 +403,7 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
                         sx={{
                           color:
                             images.length === 4
+                              //@ts-ignore
                               ? (theme) => theme.palette.disabled
                               : (theme) => theme.palette.secondary.main
                         }}
