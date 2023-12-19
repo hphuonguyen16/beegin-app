@@ -110,6 +110,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
 
       const createdComment = response.data.data
 
+      // @ts-ignore
       postsDispatch({
         type: 'ADD_COMMENT',
         // @ts-ignore

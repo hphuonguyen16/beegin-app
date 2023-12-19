@@ -22,16 +22,17 @@ import ReplyPostCard from './ReplyPostCard'
 import Video from 'next-video'
 import Popover from '@/components/common/Popover'
 import { BiPencil } from 'react-icons/bi'
-import { FaRegTrashAlt } from "react-icons/fa";
-import { FiEdit3 } from "react-icons/fi";
+import { FaRegTrashAlt } from 'react-icons/fa'
+import { FiEdit3 } from 'react-icons/fi'
 import { useAuth } from '@/context/AuthContext'
-import { FaRegFaceAngry } from "react-icons/fa6";
+import { FaRegFaceAngry } from 'react-icons/fa6'
 import RootModal from '../common/modals/RootModal'
 import useSnackbar from '@/context/snackbarContext'
 import EditPost from './EditPost'
 import UserLikedList from './UserLikedList'
 import SharePostList from './SharePostList'
 import { User } from '@/types/user'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
@@ -94,10 +95,11 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
   const [open, setOpen] = useState(false)
   const [repostOpen, setRepostOpen] = useState(false)
   const [like, setLike] = useState<boolean>(post.isLiked ? true : false)
-  const videoRef = useRef<any>();
-  const { user } = useAuth();
+  const videoRef = useRef<any>()
+  const { user } = useAuth()
   const [openUserLikeList, setOpenUserLikeList] = React.useState(false)
   const [openSharePostList, setOpenSharePostList] = React.useState(false)
+  const queryClient = useQueryClient()
 
   const handleLike = async () => {
     try {
@@ -126,11 +128,11 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) { }
+    } catch (err) {}
   }
 
   const openPostDetail = async () => {
-    videoRef.current?.pause();
+    videoRef.current?.pause()
     const commentResponse = await axiosPrivate.get(`${UrlConfig.posts.getComments(post._id)}?limit=10&page=1`)
     const comments = commentResponse.data.data as Comment[]
     const isFollowing = await axiosPrivate.get(UrlConfig.me.isFollowingOtherUser(post.user._id))
@@ -141,7 +143,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     setOpen(true)
   }
   const closePostDetail = () => {
-    setOpen(false);
+    setOpen(false)
   }
   const redirectToProfile = async () => {
     try {
@@ -151,22 +153,34 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
-  const { snack, setSnack } = useSnackbar();
+  const { snack, setSnack } = useSnackbar()
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
 
   const onDeleteBtnClick = () => {
-    setOpenDeleteModal(true);
+    setOpenDeleteModal(true)
   }
 
   async function handleDeletePost() {
-    const result = await axiosPrivate.delete(UrlConfig.posts.deletePost(post._id));
+    const result = await axiosPrivate.delete(UrlConfig.posts.deletePost(post._id))
+    queryClient.setQueryData(['profilePosts'], (oldData: any) => {
+      let updatedPosts = [...oldData]
+      updatedPosts = updatedPosts.filter((item: any) => item._id !== post._id)
+      //@ts-ignore
+      return updatedPosts
+    })
+    queryClient.setQueryData(['categoryPosts'], (oldData: any) => {
+      let updatedPosts = [...oldData]
+      updatedPosts = updatedPosts.filter((item: any) => item._id !== post._id)
+      return updatedPosts
+    })
+    postsDispatch({ type: 'DELETE_POST', payload: { postId: post._id } })
     if (result) {
-      setOpenDeleteModal(false);
-      setSnack({ open: true, message: "Deleted post successfully" });
+      setOpenDeleteModal(false)
+      setSnack({ open: true, message: 'Deleted post successfully' })
     }
   }
 
@@ -339,12 +353,17 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 {timeSince(new Date(post.createdAt))}
               </Typography>
             </Stack>
-            <Popover icon={<MoreVert />} items={
-              user?._id === post.user._id ? 
-              [{ icon: <FiEdit3 />, content: 'Edit', onClickFunc: ()=>setOpenEditModal(true) },
-              { icon: <FaRegTrashAlt />, content: 'Delete', color: '#FF4842', onClickFunc: onDeleteBtnClick }]
-                : [{ icon: <FaRegFaceAngry />, content: 'Report' }]
-            } />
+            <Popover
+              icon={<MoreVert />}
+              items={
+                user?._id === post.user._id
+                  ? [
+                      { icon: <FiEdit3 />, content: 'Edit', onClickFunc: () => setOpenEditModal(true) },
+                      { icon: <FaRegTrashAlt />, content: 'Delete', color: '#FF4842', onClickFunc: onDeleteBtnClick }
+                    ]
+                  : [{ icon: <FaRegFaceAngry />, content: 'Report' }]
+              }
+            />
           </Stack>
           <Box
             sx={{
@@ -355,7 +374,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               maxHeight: '80px', // Set the maximum height for the text container
               whiteSpace: 'pre-line', // Preserve line breaks within the text
               textOverflow: 'ellipsis',
-              paddingRight: '20px',
+              paddingRight: '20px'
             }}
           >
             {post.content && <HashtagWrapper text={post.content} length={200} />}
@@ -465,20 +484,19 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           )}
         </Grid>
       </Grid>
-      {
-        openDeleteModal && (
-          <RootModal
-            variant="Delete"
-            handleOk={handleDeletePost}
-            handleClose={() => setOpenDeleteModal(false)}
-            open={openDeleteModal}
-            closeOnly={false}
-            height={"auto"}
-            width='500px'>
-            <div>Are you sure you want to delete this post?</div>
-          </RootModal>
-        )
-      }
+      {openDeleteModal && (
+        <RootModal
+          variant='Delete'
+          handleOk={handleDeletePost}
+          handleClose={() => setOpenDeleteModal(false)}
+          open={openDeleteModal}
+          closeOnly={false}
+          height={'auto'}
+          width='500px'
+        >
+          <div>Are you sure you want to delete this post?</div>
+        </RootModal>
+      )}
       {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} />}
     </>
   )

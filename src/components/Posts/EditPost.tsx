@@ -19,8 +19,8 @@ import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
 import { usePathname } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Video from 'next-video';
-import getFileType from '@/utils/getFileType';
+import Video from 'next-video'
+import getFileType from '@/utils/getFileType'
 
 interface NewPostProps {
   content: string | ''
@@ -66,7 +66,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   },
   '.next-video-container': {
     height: '100%',
-    maxHeight: '400px',
+    maxHeight: '400px'
   },
   '.video-2': {
     height: props.number === 3 ? '345px' : '100%'
@@ -79,12 +79,15 @@ async function handleFileUpload(files: Array<File | string>) {
     else {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`);
+      formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
 
-      return fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${getFileType(file)}/upload`, {
-        method: 'POST',
-        body: formData
-      })
+      return fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${getFileType(file)}/upload`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
           if (data.secure_url !== '') {
@@ -123,11 +126,11 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
   const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
-    const files = e.target.files;
+    const { files } = e.target
     if (files && files.length > 0 && images.length <= 4) {
       const newImages = [...images]
-      var pushLength = files.length;
-      if (pushLength + images.length > 4) pushLength = 4 - images.length;
+      var pushLength = files.length
+      if (pushLength + images.length > 4) pushLength = 4 - images.length
       for (let i = 0; i < pushLength; i++) {
         newImages.push(files[i])
       }
@@ -135,7 +138,7 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
     }
   }
   const handleDeleteImages = (indexToRemove: number) => {
-    setImages((prevItems: any) => prevItems.filter((item: any, index: number) => index !== indexToRemove));
+    setImages((prevItems: any) => prevItems.filter((item: any, index: number) => index !== indexToRemove))
   }
 
   const updatePostApi = async (data: NewPostProps) => {
@@ -145,6 +148,7 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
       categories: data.categories,
       parent: repost?._id
     })
+
     return response.data.data
   }
 
@@ -153,36 +157,20 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
     onSuccess: (data: NewPostProps) => {
       // Invalidates cache and refetch
       // Add new post to the top of the list
-      queryClient.setQueryData(['postsData'], (oldData: any) => {
-        const newPosts = [...oldData.pages[0].posts]
-        newPosts.unshift(data)
-        //@ts-ignore
-        postsDispatch({ type: 'UPDATE_POST', payload: data })
-        setSnack({ open: true, message: 'Update post successfully!', type: 'success' })
-        setIsSuccess(true)
-        console.log('okkkkkk')
-        setIsLoad(false)
-        setSelectedCategories([])
-        setContent('')
-        setImages([])
-        setOpen(false)
-        return {
-          pages: [
-            {
-              posts: newPosts,
-              total: oldData.pages[0].total,
-              prevPage: oldData.pages[0].prevPage
-            }
-          ],
-          pageParams: oldData.pageParams
-        }
-      })
-
       queryClient.setQueryData(['profilePosts'], (oldData: any) => {
-        const newPosts = [...oldData]
-        newPosts.unshift(data)
-        return newPosts
+        const updatedPosts = [...oldData]
+        const index = updatedPosts.findIndex((item: any) => item._id === post?._id)
+        updatedPosts[index] = data
+        return updatedPosts
       })
+      queryClient.setQueryData(['categoryPosts'], (oldData: any) => {
+        const updatedPosts = [...oldData]
+        const index = updatedPosts.findIndex((item: any) => item._id === post?._id)
+        updatedPosts[index] = data
+        return updatedPosts
+      })
+      //@ts-ignore
+      postsDispatch({ type: 'UPDATE_POST', payload: data })
     },
     onError: (error: any) => {
       setIsLoad(false)
@@ -202,17 +190,17 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    // updatePostMutation.mutate({
+    updatePostMutation.mutate({
+      content: content,
+      images: uploadedUrls,
+      categories: selectedCategories.map((item) => item._id)
+    })
+    // const updatedPost = await updatePostApi({
     //   content: content,
     //   images: uploadedUrls,
     //   categories: selectedCategories.map((item) => item._id)
     // })
-    const updatedPost = await updatePostApi({
-      content: content,
-      images: uploadedUrls,
-      categories: selectedCategories.map((item) => item._id)
-    });
-    postsDispatch({ type: 'UPDATE_POST', payload: updatedPost })
+    // postsDispatch({ type: 'UPDATE_POST', payload: updatedPost })
     setSnack({ open: true, message: 'Update post successfully!', type: 'success' })
     setIsSuccess(true)
     console.log('okkkkkk')
@@ -238,7 +226,6 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
 
   return (
     <>
-
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
@@ -304,18 +291,30 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
               />
               <Box sx={{ position: 'relative', paddingBottom: '30px' }}>
                 <ImageContainerStyled number={images ? images.length : 0}>
-                  {images?.map((item: any, index: number) => (
-                    getFileType(item) === 'video' ?
+                  {images?.map((item: any, index: number) =>
+                    getFileType(item) === 'video' ? (
                       <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
-                        <Video className={`video-${index + 1}`} src={typeof item === 'string' ? item : URL.createObjectURL(item)} autoPlay={false} accentColor='#E078D8' /><IconButton
+                        <Video
+                          className={`video-${index + 1}`}
+                          src={typeof item === 'string' ? item : URL.createObjectURL(item)}
+                          autoPlay={false}
+                          accentColor='#E078D8'
+                        />
+                        <IconButton
                           sx={{
-                            position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
-                            '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                            position: 'absolute',
+                            top: '6%',
+                            right: '5%',
+                            backgroundColor: (theme) => `${theme.palette.common.white}aa !important`,
+                            zIndex: 3,
+                            '&:hover': { backgroundColor: (theme) => `${theme.palette.common.white}!important` }
                           }}
                           onClick={() => handleDeleteImages(index)}
                         >
                           <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
-                        </IconButton></span> :
+                        </IconButton>
+                      </span>
+                    ) : (
                       // eslint-disable-next-line @next/next/no-img-element
                       <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
                         <img
@@ -323,18 +322,23 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
                           key={index}
                           alt='image'
                           loading='lazy'
-
-                        /><IconButton
+                        />
+                        <IconButton
                           sx={{
-                            position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
-                            '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                            position: 'absolute',
+                            top: '6%',
+                            right: '5%',
+                            backgroundColor: (theme) => `${theme.palette.common.white}aa !important`,
+                            zIndex: 3,
+                            '&:hover': { backgroundColor: (theme) => `${theme.palette.common.white}!important` }
                           }}
                           onClick={() => handleDeleteImages(index)}
                         >
                           <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
-                        </IconButton></span>
-                  ))}
-
+                        </IconButton>
+                      </span>
+                    )
+                  )}
                 </ImageContainerStyled>
                 {repost && <PostCard post={repost} isRepost={true} />}
               </Box>
@@ -393,10 +397,18 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
                     disabled={images.length === 4}
                   />
                   <label htmlFor='icon-button-file'>
-                    <IconButton component='span' disabled={images.length === 4} >
+                    <IconButton component='span' disabled={images.length === 4}>
                       <CollectionsIcon
                         //@ts-ignore
-                        sx={{ color: images.length === 4 ? theme => theme.palette.disabled : theme => theme.palette.secondary.main }} fontSize='large' />
+                        sx={{
+                          color:
+                            images.length === 4
+                              //@ts-ignore
+                              ? (theme) => theme.palette.disabled
+                              : (theme) => theme.palette.secondary.main
+                        }}
+                        fontSize='large'
+                      />
                     </IconButton>
                   </label>
                 </>
