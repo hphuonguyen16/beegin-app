@@ -14,6 +14,8 @@ import FormLabel from '@mui/material/FormLabel'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import { useRouter } from 'next/navigation'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const style = {
   top: '50%',
@@ -110,6 +112,10 @@ const ModalComponent = (props: ModalProps) => {
       setLoading(true)
       await axiosPrivate.patch(url, updatedData)
       router.refresh()
+      toast.success('Profile updated successfully!', {
+        autoClose: 2000,
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
       setLoading(false)
     } catch (err) {
       console.error('API Error:', err)
@@ -269,6 +275,7 @@ const ModalComponent = (props: ModalProps) => {
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
+            
             <Button
               variant={'outlined'}
               sx={{

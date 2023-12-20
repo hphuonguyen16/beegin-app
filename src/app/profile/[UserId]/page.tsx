@@ -169,7 +169,7 @@ function page() {
       const response = await axiosPrivate.get(UrlConfig.posts.getPostByUserId(userId))
       let posts = response.data.data as Post[]
       setPosts(posts)
-      setNumberPost(response.data.results)
+      setNumberPost(response.data.total)
       return posts
     } catch (error) {
       console.log(error)
