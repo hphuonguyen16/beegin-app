@@ -5,6 +5,8 @@ const UrlConfig: any = {
     reportProcessing: `/api/v1/reports/reportProcessing`,
     getAllUsers: `/api/v1/users`,
     getBusinessRequest: `/api/v1/users/business/requests`,
+    rejectBusinessRequest: `/api/v1/users/business/reject`,
+    sendApprovalRequest: `/api/v1/users/business/approve`,
     lockOrUnlockAccount: (userId: string) => `/api/v1/users/lockOrUnlockAccount/${userId}`
   },
 
