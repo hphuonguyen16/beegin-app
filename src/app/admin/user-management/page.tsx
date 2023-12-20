@@ -19,22 +19,82 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Box,
+  useTheme,
+  TableFooter,
+  TablePagination
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import React, { useEffect, useState } from 'react'
 import withAuth from '@/authorization/withAuth'
+import FirstPageIcon from '@mui/icons-material/FirstPage'
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
+import LastPageIcon from '@mui/icons-material/LastPage'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+interface TablePaginationActionsProps {
+  count: number
+  page: number
+  rowsPerPage: number
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void
+}
 
+function TablePaginationActions(props: TablePaginationActionsProps) {
+  const theme = useTheme()
+  const { count, page, rowsPerPage, onPageChange } = props
+
+  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, 0)
+  }
+
+  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, page - 1)
+  }
+
+  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, page + 1)
+  }
+
+  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1))
+  }
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} aria-label='first page'>
+        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label='previous page'>
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label='next page'
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label='last page'
+      >
+        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  )
+}
 function page() {
   const axiosPrivate = useAxiosPrivate()
   const [page, setPage] = useState(1)
   const [data, setData] = useState<any[]>([])
+  const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [selectedRole, setSelectedRole] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [numberAllUsers, setNumberAllUsers] = useState(0)
   const filteredData = data.filter((user: any) => {
     const firstname = user.profile?.firstname || ''
     const lastname = user.profile?.lastname || ''
@@ -57,12 +117,12 @@ function page() {
           sort: string
           limit: number
           page: number
-          role?: string // Make role property optional
+          role?: string
         } = {
           fields: 'email,role,isActived',
           sort: 'createAt',
-          limit: 8,
-          page: page
+          limit: rowsPerPage,
+          page: page + 1
         }
         if (selectedRole !== '') {
           params.role = selectedRole
@@ -70,20 +130,27 @@ function page() {
 
         const response = await axiosPrivate.get(UrlConfig.admin.getAllUsers, { params })
         setData(response.data.data.data)
+        setNumberAllUsers(response.data.total)
       } catch (error) {
         console.log(error)
       }
     }
     fetchData()
   }, [page, selectedRole])
-
-  const handleNextPage = () => {
-    setPage((prevPage) => prevPage + 1)
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage)
   }
-
-  const handlePrevPage = () => {
-    setPage((prevPage) => Math.max(prevPage - 1, 1))
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
   }
+  // const handleNextPage = () => {
+  //   setPage((prevPage) => prevPage + 1)
+  // }
+
+  // const handlePrevPage = () => {
+  //   setPage((prevPage) => Math.max(prevPage - 1, 1))
+  // }
   const handleRoleChange = (event: any) => {
     setSelectedRole(event.target.value as string)
   }
@@ -97,6 +164,7 @@ function page() {
       console.log(error)
     }
   }
+  console.log(numberAllUsers)
   return (
     <div style={{ height: '100%', overflowY: 'auto' }}>
       <Grid container spacing={2} xs={12} sx={{ marginLeft: '20px' }}>
@@ -129,9 +197,8 @@ function page() {
         </Grid>
         <Grid item xs={4}></Grid>
       </Grid>
-
-      <TableContainer component={Paper} style={{ marginRight: '15px' }}>
-        <Table>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 500, height: '100%' }} aria-label='custom pagination table'>
           <TableHead>
             <TableRow>
               <TableCell style={{ textAlign: 'center' }}>First Name</TableCell>
@@ -150,35 +217,49 @@ function page() {
                   <TableCell style={{ textAlign: 'center' }}>{user.email}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{user.role}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant='outlined' onClick={() => lockOrUnlockAccount(user._id)}>
+                    <Button
+                      variant={user.isActived ? 'outlined' : 'contained'}
+                      onClick={() => lockOrUnlockAccount(user._id)}
+                    >
                       {user.isActived ? 'Lock' : 'Unlock'}
                     </Button>
                   </TableCell>
                 </TableRow>
               ))}
+            {filteredData.length < rowsPerPage &&
+              Array.from({ length: rowsPerPage - filteredData.length }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell style={{ textAlign: 'center' }}>-</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>-</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>-</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>-</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>-</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 20]}
+              colSpan={7}
+              count={numberAllUsers}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: {
+                  'aria-label': 'rows per page'
+                },
+                native: true
+              }}
+              align='right'
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
       </TableContainer>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
-        <IconButton style={{ color: 'gray', marginRight: '15px' }} onClick={() => handlePrevPage()}>
-          <ArrowBackIosIcon />
-        </IconButton>
-        <Typography
-          variant='h4'
-          sx={{
-            fontWeight: '100',
-            textAlign: 'center',
-            fontSize: '20px',
-            marginTop: '20px !important',
-            marginBottom: '20px'
-          }}
-        >
-          {page}
-        </Typography>
-        <IconButton style={{ color: 'gray', marginLeft: '15px' }} onClick={() => handleNextPage()}>
-          <ArrowForwardIosIcon />
-        </IconButton>
-      </div>
     </div>
   )
 }
