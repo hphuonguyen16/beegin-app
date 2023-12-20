@@ -22,7 +22,7 @@ export default function Button(theme: CustomTheme) {
           // backgroundColor: theme.palette.grey[400],
           '&:hover': {
             color: theme.palette.grey[0],
-            backgroundColor: `${theme.palette.primary.main} !important`
+            backgroundColor: `${theme.palette.secondary.dark} !important`
           }
         },
         containedInherit: {
@@ -51,7 +51,7 @@ export default function Button(theme: CustomTheme) {
         }
       }
     },
-    MuiIconButton:{
+    MuiIconButton: {
       styleOverrides: {
         root: {
           color: theme.palette.primary.main,
