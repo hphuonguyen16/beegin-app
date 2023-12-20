@@ -33,6 +33,7 @@ import withAuth from '@/authorization/withAuth'
 import { BusinessRequest } from '@/types/businessRequest'
 import { axiosPrivate } from '@/axios'
 import UrlConfig from '@/config/urlConfig'
+import ActionPopOver from './ActionPopover'
 
 interface TablePaginationActionsProps {
   count: number
@@ -134,6 +135,16 @@ function Page() {
     }
     fetchData()
   }, [page, requestStatus, rowsPerPage])
+
+  const handleRequestChange = (requestId: string, status: string) => {
+    const requestsCopy = [...requests]
+    const index = requestsCopy.findIndex((request) => request._id === requestId)
+    if (index !== -1) {
+      requestsCopy[index].status = status
+
+      setRequests(requestsCopy)
+    }
+  }
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage)
   }
@@ -231,7 +242,13 @@ function Page() {
                     <Typography>{new Date(request.updatedAt).toLocaleString()}</Typography>
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
-                    <Typography>Action</Typography>
+                    <Typography>
+                      <ActionPopOver
+                        request={request._id}
+                        user={request.user?.id}
+                        setRequests={handleRequestChange}
+                      ></ActionPopOver>
+                    </Typography>
                   </TableCell>
                 </TableRow>
               ))}
