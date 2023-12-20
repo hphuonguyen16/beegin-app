@@ -21,10 +21,11 @@ import { ArrowBack, LogoDev } from '@mui/icons-material'
 import { LockPerson, PersonSearch, AddAPhoto, Check, Favorite } from '@mui/icons-material'
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector'
 import { StepIconProps } from '@mui/material/StepIcon'
-import { Register } from '@/types/register'
 import axios from 'axios'
 import UrlConfig from '@/config/urlConfig'
 import RegistrationComplete from './RegistrationSuccess'
+import { GiTreeBeehive } from "react-icons/gi";
+import { GiBeehive } from "react-icons/gi";
 
 // hooks
 import useResponsive from '@/hooks/useResponsive'
@@ -38,11 +39,13 @@ import Image from 'next/image'
 import RegisterForms from './RegisterForms'
 
 // assets
-import SignupBanner from '@/assets/signup_banner.jpg'
+import Banner from '@/assets/register_option_banner.jpg'
 import CustomSnackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
 import { sassFalse } from 'sass'
 import Link from 'next/link'
+import logoMobile from '@/assets/logoMobile.png'
+import { useRouter } from 'next/navigation'
 
 //----------------------------------------------------------------
 
@@ -89,14 +92,14 @@ const StyledForm = styled(Container)(({ theme }) => ({
 
 const StyledContent = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
-    width: '80%',
+    width: '65%',
     maxWidth: 480,
     margin: 'auto',
     display: 'flex',
     height: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     flexDirection: 'column',
-    padding: theme.spacing(6, 0)
+    padding: theme.spacing(14, 0)
   },
   [theme.breakpoints.down('md')]: {
     width: '95%',
@@ -176,218 +179,127 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture', 'Prefer
 //----------------------------------------------------------------
 
 export default function Register() {
-  let redirectUrl = ''
-  const [cropper, setCropper] = useState<any>(null)
-  const getCropData = async () => {
-    if (cropper) {
-      const file = await fetch(cropper.getCroppedCanvas().toDataURL())
-        .then((res) => res.blob())
-        .then((blob) => {
-          return new File([blob], 'avatar.png', { type: 'image/png' })
-        })
-      if (file) {
-        const formData = new FormData()
-        formData.append('file', file)
-        // formData.append('public_id', 'testttt@gmail.com1');
-        formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
-        return await fetch(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {
-            method: 'POST',
-            body: formData
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.secure_url !== '') {
-              const uploadedFileUrl = data.secure_url
-              return uploadedFileUrl
-            }
-          })
-          .catch((err) => console.error(err))
-      }
-    }
-  }
-  const [formValues, setFormValues] = useState<Register>({
-    email: '',
-    password: '',
-    passwordConfirm: '',
-    firstname: '',
-    lastname: '',
-    slug: '',
-    gender: true,
-    preferences: []
-  })
-  const [formErrors, setFormErrors] = useState<Register>({
-    email: true,
-    password: true,
-    passwordConfirm: true,
-    firstname: true,
-    lastname: true,
-    address: true,
-    bio: true,
-    gender: true,
-    slug: true
-  })
-  const [success, setSuccess] = useState<boolean>(false)
-  const { setSnack } = useSnackbar()
-
+  const [isPersonal, setIsPersonal] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const checkFormValues = (fields: (keyof Register)[]) => {
-    let values = { ...formValues }
-    let errors = { ...formErrors }
-    let hasError = false
-    fields.forEach((field) => {
-      if (values[field] === '') {
-        errors[field] = false
-        hasError = true
-      } else {
-        errors[field] = true
-      }
-    })
-    setFormErrors(errors)
-    return hasError
-  }
-
-  const handleSubmit = async () => {
-    var avatar = await getCropData()
-    setIsSubmitting(true);
-    axios
-      .post(UrlConfig.user.signup, { ...formValues, avatar: avatar })
-      .then((res: any) => {
-        setSuccess(true)
-      })
-      .catch((err: any) => {
-        setIsSubmitting(false);
-        setSnack({
-          open: true,
-          message: err.response.data.message,
-          type: 'error'
-        })
-      })
-  }
   const mdUp = useResponsive('up', 'md')
+  const router = useRouter();
 
-  const [activeStep, setActiveStep] = useState(0)
-  const isLastStep = activeStep === steps.length - 1
-
-  function _sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-  }
-
-  async function _submitForm(values: any, actions: any) {
-    await _sleep(1000)
-    alert(JSON.stringify(values, null, 2))
-    actions.setSubmitting(false)
-
-    setActiveStep(activeStep + 1)
-  }
-
-  function _handleSubmit() {
-    if (isLastStep) {
-      // _submitForm(values, actions);
-      // var avatar = ;
-      handleSubmit()
-    } else if (activeStep === 0) {
-      const hasError = checkFormValues(['email', 'password', 'passwordConfirm'])
-      if (!hasError) {
-        setActiveStep(activeStep + 1)
-      }
-    } else if (activeStep === 1) {
-      const hasError = checkFormValues(['firstname', 'lastname', 'address', 'bio'])
-      if (!hasError) {
-        setActiveStep(activeStep + 1)
-      }
+  function _handleNext() {
+    if (isPersonal) {
+      router.push('/register/personal');
     } else {
-      setActiveStep(activeStep + 1)
+      router.push('/register/business');
     }
-  }
-
-  function _handleBack() {
-    setActiveStep(activeStep - 1)
   }
 
   return (
     <>
-      <CustomSnackbar />
       <title> Signup | Beegin </title>
-      {!success ? (
-        <StyledRoot>
-          <StyledForm>
-            <Link href="/login">
-              <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
-                <ArrowBack></ArrowBack>
-              </IconButton>
-            </Link>
-            <Link href="/login">
-              <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
-                <ArrowBack></ArrowBack>
-              </IconButton>
-            </Link>
-            <StyledContent>
-              <Box>
-                <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
-                <Typography variant='h4' gutterBottom className='mt-6 mb-6'>
-                  Create a new account
-                </Typography>
+      <StyledRoot>
+        <StyledForm>
+          <Link href="/login">
+            <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
+              <ArrowBack></ArrowBack>
+            </IconButton>
+          </Link>
+          <Link href="/login">
+            <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
+              <ArrowBack></ArrowBack>
+            </IconButton>
+          </Link>
+          <StyledContent>
+            <Box>
+              <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
+              {/* <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev> */}
+              <Typography variant='h4' gutterBottom className='mt-6 mb-3 text-2xl'>
+                Choose your account type
+              </Typography>
+              <Typography variant='subtitle2' sx={{ fontSize: '13px' }}>Pick an account type based on your need. We offer a wealth experience regardless of the option you choose</Typography>
+            </Box>
 
-                <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
-                  {steps.map((label) => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Box>
+            <Box sx={{ marginY: '35px' }}>
+              <Button variant={isPersonal ? 'contained' : 'outlined'} disabled={isPersonal} onClick={() => setIsPersonal(!isPersonal)}
+                sx={{
+                  width: '100%', margin: '10px 0', borderRadius: '12px',
+                  "&:disabled": {
+                    // border: '2px solid rgb(155 99 191 / 63%)', background: '#e7afe01f',
+                    '& .MuiTypography-h5': {
+                      color: theme => theme.palette.common.white
+                    },
+                    '& .MuiTypography-subtitle2': {
+                      color: theme => theme.palette.grey[100]
+                    }
+                  }
+                }}>
+                <Stack direction={"row"} alignItems="center" justifyContent="start" sx={{ width: "100%" }}>
+                  <Box sx={{
+                    fontSize: "28px", background: theme => isPersonal ? theme.palette.common.white : theme.palette.secondary.main,
+                    color: theme => isPersonal ? theme.palette.secondary.main : theme.palette.common.white,
+                    padding: '10px 10px', margin: '10px 5px', borderRadius: '12px'
+                  }}>
+                    <GiTreeBeehive />
+                  </Box>
+                  <Box sx={{ marginLeft: '15px' }}>
+                    <Typography variant='h5' sx={{ textAlign: 'left', lineHeight: 1.25, marginBottom: '5px' }}>Personal</Typography>
+                    <Typography variant='subtitle2' sx={{ textTransform: 'initial' }}>Start interacting with your fellow bees</Typography>
+                  </Box>
+                </Stack>
+              </Button>
+              <Button variant={!isPersonal ? 'contained' : 'outlined'} disabled={!isPersonal} onClick={() => setIsPersonal(!isPersonal)}
+                sx={{
+                  width: '100%', margin: '10px 0', borderRadius: '12px',
+                  "&:disabled": {
+                    // border: '2px solid rgb(155 99 191 / 63%)', background: '#e7afe01f',
+                    '& .MuiTypography-h5': {
+                      color: theme => theme.palette.common.white
+                    },
+                    '& .MuiTypography-subtitle2': {
+                      color: theme => theme.palette.grey[100]
+                    }
+                  }
+                }}>
+                <Stack direction={"row"} alignItems="center" justifyContent="start" sx={{ width: "100%" }}>
+                <Box sx={{
+                    fontSize: "28px", background: theme => !isPersonal ? theme.palette.common.white : theme.palette.secondary.main,
+                    color: theme => !isPersonal ? theme.palette.secondary.main : theme.palette.common.white,
+                    padding: '10px 10px', margin: '10px 5px', borderRadius: '12px'
+                  }}>
+                    <GiBeehive />
+                  </Box>
+                  <Box sx={{ marginLeft: '15px' }}>
+                    <Typography variant='h5' sx={{ textAlign: 'left', lineHeight: 1.25, marginBottom: '5px' }}>Business</Typography>
+                    <Typography variant='subtitle2' sx={{ textTransform: 'initial' }}>Further promote your business</Typography>
+                  </Box>
+                </Stack>
+              </Button>
+            </Box>
 
-              <RegisterForms
-                step={activeStep}
-                formValues={formValues}
-                setFormValues={setFormValues}
-                setCropper={setCropper}
-                formErrors={formErrors}
-                setFormErrors={setFormErrors}
-              />
 
-              <Stack direction={'row'} justifyContent={'space-between'} className='w-full'>
-                {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
-                <div>
-                  <Button type='submit' variant='contained' color='primary' disabled={isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? true : false} onClick={_handleSubmit}
-                    //@ts-ignore
-                    sx={{ background: isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`,
-                    // ...((activeStep === steps.length - 1) && formValues.preferences.length < 3 && { color: 'blue' })
-                    }}>
-                  {activeStep === 2 && cropper === null ? "Skip" : (isLastStep ? (isSubmitting ? <CircularProgress size={15} sx={{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next')}
-                </Button>
-              </div>
+            <Stack direction={'row'} justifyContent={'start'} className='w-full'>
+              <Button variant='contained' sx={{ padding: '8px 25px' }} onClick={_handleNext}>Next Step</Button>
             </Stack>
           </StyledContent>
         </StyledForm>
 
-          {mdUp && (
-        <StyledBanner>
-          <Box
-            sx={{
-              width: '100%',
-              height: '100%',
-              position: 'relative'
-            }}
-          >
-            <Image
-              style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
-              fill
-              src={SignupBanner}
-              alt='signup'
-            />
-          </Box>
-        </StyledBanner>
-      )}
-    </StyledRoot >
-      ) : (
-    <RegistrationComplete />
-  )
-}
+        {mdUp && (
+          <StyledBanner>
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                position: 'relative'
+              }}
+            >
+              <Image
+                style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
+                fill
+                src={Banner}
+                alt='signup'
+              />
+            </Box>
+          </StyledBanner>
+        )}
+      </StyledRoot >
     </>
   )
 }

@@ -95,11 +95,12 @@ const RegisterForms = ({
     if (formValues.preferences.includes(topic._id)) {
       setFormValues({
         ...formValues,
-        ['preferences']: formValues.preferences.splice(formValues.preferences.indexOf(topic._id), 1)
+        ['preferences']: formValues.preferences.filter((pref: string) => pref !== topic._id)
       })
     } else {
       setFormValues({ ...formValues, ['preferences']: [...formValues.preferences, topic._id] })
     }
+    // console.log(formValues.preferences)
   }
 
   return (

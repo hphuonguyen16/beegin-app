@@ -24,7 +24,7 @@ import { StepIconProps } from '@mui/material/StepIcon'
 import { Register } from '@/types/register'
 import axios from 'axios'
 import UrlConfig from '@/config/urlConfig'
-import RegistrationComplete from './../RegistrationSuccess'
+import RegistrationComplete from '../RegistrationSuccess'
 
 // hooks
 import useResponsive from '@/hooks/useResponsive'
@@ -35,7 +35,7 @@ import { signIn, useSession } from 'next-auth/react'
 
 // components
 import Image from 'next/image'
-import RegisterForms from './../RegisterForms'
+import RegisterForms from '../RegisterForms'
 
 // assets
 import SignupBanner from '@/assets/signup_banner.jpg'
@@ -60,7 +60,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
     transform: 'translate(-50%, -50%)',
     boxShadow: theme.shadows[18],
     borderRadius: BORDER_RADIUS,
-    background: theme.palette.background.paper
+    background: theme.palette.background.paper,
   },
   [theme.breakpoints.down('md')]: {
     height: '100vh'
@@ -176,7 +176,7 @@ const steps = ['Account credentials', 'Profile info', 'Profile picture', 'Prefer
 
 //----------------------------------------------------------------
 
-export default function Register() {
+export default function PersonalRegister() {
   let redirectUrl = ''
   const [cropper, setCropper] = useState<any>(null)
   const getCropData = async () => {
@@ -233,7 +233,7 @@ export default function Register() {
   const [success, setSuccess] = useState<boolean>(false)
   const { setSnack } = useSnackbar()
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const checkFormValues = (fields: (keyof Register)[]) => {
     let values = { ...formValues }
@@ -250,23 +250,23 @@ export default function Register() {
     setFormErrors(errors)
     return hasError
   }
-
+  
   const handleSubmit = async () => {
     var avatar = await getCropData()
-    setIsSubmitting(true)
-    axios
-      .post(UrlConfig.bussiness.signup, { ...formValues, avatar: avatar })
-      .then((res: any) => {
-        setSuccess(true)
-      })
-      .catch((err: any) => {
-        setIsSubmitting(false)
-        setSnack({
-          open: true,
-          message: err.response.data.message,
-          type: 'error'
-        })
-      })
+    setIsSubmitting(true);
+    // axios
+    //   .post(UrlConfig.user.signup, { ...formValues, avatar: avatar })
+    //   .then((res: any) => {
+    //     setSuccess(true)
+    //   })
+    //   .catch((err: any) => {
+    //     setIsSubmitting(false);
+    //     setSnack({
+    //       open: true,
+    //       message: err.response.data.message,
+    //       type: 'error'
+    //     })
+    //   })
   }
   const mdUp = useResponsive('up', 'md')
 
@@ -316,16 +316,16 @@ export default function Register() {
       {!success ? (
         <StyledRoot>
           <StyledForm>
-            <Link href='/register'>
-              <IconButton sx={{ position: 'absolute', left: '35px', top: '25px' }}>
+            <Link href="/register">
+              <IconButton sx={{ position: 'absolute', left: "35px", top: "25px" }}>
                 <ArrowBack></ArrowBack>
               </IconButton>
             </Link>
             <StyledContent>
               <Box>
-                <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
+              <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
                 <Typography variant='h4' gutterBottom className='mt-6 mb-6'>
-                  Create a new business account
+                  Create a new account
                 </Typography>
 
                 <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
@@ -349,59 +349,41 @@ export default function Register() {
               <Stack direction={'row'} justifyContent={'space-between'} className='w-full'>
                 {activeStep !== 0 ? <Button onClick={_handleBack}>Back</Button> : <Box></Box>}
                 <div>
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    color='primary'
-                    disabled={isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? true : false}
-                    onClick={_handleSubmit}
-                    sx={{
-                      //@ts-ignore
-                      background: isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`,
-                    }}
-                  >
-                    {activeStep === 2 && cropper === null ? (
-                      'Skip'
-                    ) : isLastStep ? (
-                      isSubmitting ? (
-                        <CircularProgress
-                          size={15}
-                          sx={{ color: (theme) => theme.palette.secondary.dark, margin: '5px 20px' }}
-                        />
-                      ) : (
-                        'Register'
-                      )
-                    ) : (
-                      'Next'
-                    )}
-                  </Button>
-                </div>
-              </Stack>
-            </StyledContent>
-          </StyledForm>
+                  <Button type='submit' variant='contained' color='primary' disabled={isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? true : false} onClick={_handleSubmit}
+                    //@ts-ignore
+                    sx={{ background: isSubmitting || (activeStep === steps.length - 1 && formValues.preferences.length < 3) ? (theme) => `${theme.palette.disabled}!important` : theme => `${theme.palette.secondary.main}!important`,
+                    // ...((activeStep === steps.length - 1) && formValues.preferences.length < 3 && { color: 'blue' })
+                    }}>
+                  {activeStep === 2 && cropper === null ? "Skip" : (isLastStep ? (isSubmitting ? <CircularProgress size={15} sx={{ color: theme => theme.palette.secondary.dark, margin: "5px 20px" }} /> : 'Register') : 'Next')}
+                </Button>
+              </div>
+            </Stack>
+          </StyledContent>
+        </StyledForm>
 
           {mdUp && (
-            <StyledBanner>
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative'
-                }}
-              >
-                <Image
-                  style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
-                  fill
-                  src={SignupBanner}
-                  alt='signup'
-                />
-              </Box>
-            </StyledBanner>
-          )}
-        </StyledRoot>
-      ) : (
-        <RegistrationComplete />
+        <StyledBanner>
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              position: 'relative'
+            }}
+          >
+            <Image
+              style={{ objectFit: 'cover', borderRadius: BORDER_RADIUS }}
+              fill
+              src={SignupBanner}
+              alt='signup'
+            />
+          </Box>
+        </StyledBanner>
       )}
+    </StyledRoot >
+      ) : (
+    <RegistrationComplete />
+  )
+}
     </>
   )
 }
