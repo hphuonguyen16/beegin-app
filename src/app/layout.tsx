@@ -141,7 +141,7 @@ const menuBusinessItems = [
 ]
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
-  const noLayoutPaths = ['/login', '/register', '/verify', '/register/business', '/register/personal']
+  const noLayoutPaths = ['/login', '/register', '/register/business', '/register/personal']
   const isAdminPath = pathname.startsWith('/admin')
   const isBusinessPath = pathname.startsWith('/business')
   return (
@@ -162,7 +162,7 @@ export default function RootLayout({ children, session }: { children: React.Reac
               <SessionProvider session={session}>
                 <NotificationProvider>
                   <PostProvider>
-                    {noLayoutPaths.includes(pathname) ? (
+                    {noLayoutPaths.includes(pathname) || pathname.startsWith('/verify') ? (
                       <ThemeProvider>{children}</ThemeProvider>
                     ) : (
                       <ThemeProvider>

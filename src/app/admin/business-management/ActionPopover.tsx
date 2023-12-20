@@ -41,6 +41,20 @@ export default function MenuListComposition({ user, request, setRequests }: Menu
       setOpen(false)
     }
   }
+  const cancelRequest = async (event: Event | React.SyntheticEvent) => {
+    try {
+      if (user) {
+        const response = await axios.post(UrlConfig.admin.cancelBusinessRequest, { id: user })
+        const data = response.data
+        if (data && request !== null) {
+          setRequests(request, data.status)
+        }
+      }
+    } catch (err) {
+    } finally {
+      handleClose(event)
+    }
+  }
 
   const rejectRequest = async (event: Event | React.SyntheticEvent) => {
     try {
@@ -117,9 +131,9 @@ export default function MenuListComposition({ user, request, setRequests }: Menu
                   aria-labelledby='composition-button'
                   onKeyDown={handleListKeyDown}
                 >
-                  <MenuItem onClick={(e) => approveRequest(e)}>Send approval</MenuItem>
+                  <MenuItem onClick={(e) => approveRequest(e)}>Approve</MenuItem>
                   <MenuItem onClick={(e) => rejectRequest(e)}>Reject</MenuItem>
-                  <MenuItem onClick={handleClose}>Defer</MenuItem>
+                  <MenuItem onClick={(e) => cancelRequest(e)}>Cancel</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>
