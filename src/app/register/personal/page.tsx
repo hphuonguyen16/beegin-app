@@ -254,19 +254,19 @@ export default function PersonalRegister() {
   const handleSubmit = async () => {
     var avatar = await getCropData()
     setIsSubmitting(true);
-    // axios
-    //   .post(UrlConfig.user.signup, { ...formValues, avatar: avatar })
-    //   .then((res: any) => {
-    //     setSuccess(true)
-    //   })
-    //   .catch((err: any) => {
-    //     setIsSubmitting(false);
-    //     setSnack({
-    //       open: true,
-    //       message: err.response.data.message,
-    //       type: 'error'
-    //     })
-    //   })
+    axios
+      .post(UrlConfig.user.signup, { ...formValues, avatar: avatar })
+      .then((res: any) => {
+        setSuccess(true)
+      })
+      .catch((err: any) => {
+        setIsSubmitting(false);
+        setSnack({
+          open: true,
+          message: err.response.data.message,
+          type: 'error'
+        })
+      })
   }
   const mdUp = useResponsive('up', 'md')
 

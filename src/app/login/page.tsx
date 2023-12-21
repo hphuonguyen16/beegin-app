@@ -39,6 +39,7 @@ import Snackbar from '@/components/common/Snackbar'
 import useSnackbar from '@/context/snackbarContext'
 import Loader from '@/components/common/Loader/Loader'
 import { User } from '@/types/user'
+import logoMobile from '@/assets/logoMobile.png'
 
 //----------------------------------------------------------------
 
@@ -192,7 +193,7 @@ export default function LoginPage() {
           }}
         >
           <StyledContent>
-            <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
+              <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
             <Typography variant='h4' gutterBottom className='mt-8 mb-6'>
               Sign in to Beegin
             </Typography>
