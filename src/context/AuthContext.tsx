@@ -62,6 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       pathname !== '/register' &&
       pathname !== '/register/business' &&
       pathname !== '/register/personal' &&
+      pathname !== '/forgot-password' &&
       !pathname.startsWith('/verify')
     ) {
       router.push('/login')

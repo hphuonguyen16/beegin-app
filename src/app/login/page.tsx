@@ -193,7 +193,7 @@ export default function LoginPage() {
           }}
         >
           <StyledContent>
-              <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
+            <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
             <Typography variant='h4' gutterBottom className='mt-8 mb-6'>
               Sign in to Beegin
             </Typography>
@@ -225,7 +225,7 @@ export default function LoginPage() {
 
             <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ my: 2, width: '100%' }}>
               <FormControlLabel control={<Checkbox defaultChecked />} label='Remember me' />
-              <Link variant='subtitle2' underline='hover'>
+              <Link variant='subtitle2' underline='hover' style={{ cursor: 'pointer' }} onClick={() => router.push('/forgot-password')}>
                 Forgot password?
               </Link>
             </Stack>
@@ -237,7 +237,7 @@ export default function LoginPage() {
               sx={{
                 background: isLoggingIn
                   ? //@ts-ignore
-                    (theme) => `${theme.palette.disabled}!important`
+                  (theme) => `${theme.palette.disabled}!important`
                   : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
                 color: 'white !important',
                 width: '100%'

@@ -32,7 +32,7 @@ import Cookies from 'js-cookie' // Import js-cookie
 import Image from 'next/image'
 
 // assets
-import LoginBanner from '@/assets/login_banner.jpg'
+import Banner from '@/assets/forgot_password_banner.jpg'
 import { useAuth } from '@/context/AuthContext'
 import urlConfig from '@/config/urlConfig'
 import Snackbar from '@/components/common/Snackbar'
@@ -40,8 +40,11 @@ import useSnackbar from '@/context/snackbarContext'
 import Loader from '@/components/common/Loader/Loader'
 import { User } from '@/types/user'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import logoMobile from '@/assets/logoMobile.png'
 
 //----------------------------------------------------------------
+
+const BORDER_RADIUS = '16px'
 
 const StyledRoot = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -53,7 +56,8 @@ const StyledRoot = styled('div')(({ theme }) => ({
         top: '50%',
         transform: 'translate(-50%, -50%)',
         boxShadow: theme.shadows[18],
-        borderRadius: 12
+        borderRadius: BORDER_RADIUS,
+        background: theme.palette.background.paper,
     },
     [theme.breakpoints.down('md')]: {
         height: '100vh'
@@ -65,32 +69,46 @@ const StyledBanner = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
-    backgroundColor: theme.palette.background.default
+    margin: '12px',
+    borderTopRightRadius: BORDER_RADIUS,
+    borderBottomRightRadius: BORDER_RADIUS
+}))
+
+const StyledForm = styled(Container)(({ theme }) => ({
+    margin: 0,
+    minWidth: '50%',
+    width: 'auto',
+    height: '100%',
+    zIndex: 10,
+    borderRadius: BORDER_RADIUS,
+    display: 'flex',
+    justifyContent: 'center'
 }))
 
 const StyledContent = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
-        width: '80%',
-        maxWidth: 420,
+        width: '65%',
+        maxWidth: 480,
         margin: 'auto',
         display: 'flex',
+        height: '100%',
         justifyContent: 'center',
         flexDirection: 'column',
-        padding: theme.spacing(10, 0)
+        padding: theme.spacing(14, 0)
     },
     [theme.breakpoints.down('md')]: {
-        width: '85%',
-        maxWidth: 420,
+        width: '95%',
+        maxWidth: 480,
         margin: 'auto',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         flexDirection: 'column',
         padding: theme.spacing(10, 0),
-        alignItems: 'center'
+        alignItems: 'center',
+        height: '100%'
     }
 }))
+
 
 //----------------------------------------------------------------
 
@@ -120,7 +138,7 @@ export default function LoginPage() {
     const handleResetPw = async () => {
         setIsResetting(true)
 
-        const result = await axiosPrivate.post(urlConfig.user.resetPassword, {
+        const result = await axiosPrivate.post(urlConfig.user.forgotPassword, {
             email: email,
         });
 
@@ -148,9 +166,9 @@ export default function LoginPage() {
                             }}
                         >
                             <Image
-                                style={{ objectFit: 'cover', borderTopLeftRadius: 12, borderBottomLeftRadius: 12 }}
+                                style={{ objectFit: 'cover', borderRadius: 12 }}
                                 fill
-                                src={LoginBanner}
+                                src={Banner}
                                 alt='login'
                             />
                         </Box>
@@ -166,16 +184,15 @@ export default function LoginPage() {
                         width: 'auto',
                         height: '100%',
                         zIndex: 10,
-                        borderTopRightRadius: '12px',
-                        borderBottomRightRadius: '12px',
+                        borderRadius: '12px',
                         display: 'flex',
                         justifyContent: 'center'
                     }}
                 >
                     <StyledContent>
-                        <LogoDev fontSize='large' sx={{ color: (theme) => theme.palette.primary.main }}></LogoDev>
+                        <Image src={logoMobile} alt='logo' width={38} style={{ margin: '0' }} />
                         <Typography variant='h4' gutterBottom className='mt-8 mb-6'>
-                            Sign in to Beegin
+                            Reset your password
                         </Typography>
                         <Stack spacing={3} className='w-full'>
                             <TextField
@@ -199,7 +216,8 @@ export default function LoginPage() {
                                     (theme) => `${theme.palette.disabled}!important`
                                     : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
                                 color: 'white !important',
-                                width: '100%'
+                                width: '100%',
+                                marginTop: '30px'
                             }}
                             onClick={() => {
                                 handleResetPw()
