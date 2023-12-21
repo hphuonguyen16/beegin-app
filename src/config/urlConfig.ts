@@ -10,11 +10,11 @@ const UrlConfig: any = {
     cancelApprovalRequest: `/api/v1/users/business/cancel`,
     lockOrUnlockAccount: (userId: string) => `/api/v1/users/lockOrUnlockAccount/${userId}`
   },
-
   user: {
     login: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/login`,
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,
-    refresh: `/api/v1/users/refresh`
+    refresh: `/api/v1/users/refresh`,
+    resetPassword: '/api/v1/'
   },
   me: {
     getMe: `/api/v1/users/me`,
