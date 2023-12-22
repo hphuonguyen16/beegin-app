@@ -192,9 +192,11 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         )
         const data = response.data.data as User[]
         const profile = data.map((user) => ({
+          _id: user._id,
           name: user.profile?.firstname + ' ' + user.profile?.lastname,
           username: user.profile?.slug,
-          avatar: user.profile?.avatar
+          avatar: user.profile?.avatar,
+          isFollowing: user.profile?.isFollowing
         }))
         return profile
       }
