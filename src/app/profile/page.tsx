@@ -26,6 +26,9 @@ import UrlConfig from '@/config/urlConfig'
 import DefaultBackground from '@/assets/default_background.jpg'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import PersistentScrollView from '@/components/common/PersistentScrollView'
+import { ToastContainer, toast } from 'react-toastify'
+import { usePosts } from '@/context/PostContext/index'
+
 
 // hooks
 import React, { useEffect, useState } from 'react'
@@ -153,7 +156,10 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      setLoading(false)
+    }
   }
   const getNumberOfFollow = async () => {
     try {
@@ -215,6 +221,9 @@ function page() {
               Edit profile
             </Button>
             <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
+            <div>
+                <ToastContainer />
+              </div>
           </Box>
         </Grid>
         <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
