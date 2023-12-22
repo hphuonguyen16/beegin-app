@@ -44,7 +44,7 @@ export default function MenuListComposition({ user, request, setRequests }: Menu
   const cancelRequest = async (event: Event | React.SyntheticEvent) => {
     try {
       if (user) {
-        const response = await axios.post(UrlConfig.admin.cancelBusinessRequest, { id: user })
+        const response = await axios.post(UrlConfig.admin.cancelApprovalRequest, { id: user })
         const data = response.data
         if (data && request !== null) {
           setRequests(request, data.status)
