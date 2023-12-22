@@ -50,7 +50,6 @@ interface ModalProps {
 
 const ModalComponent = (props: ModalProps) => {
   const { onClose, data, open } = props
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [cropper, setCropper] = useState<any>()
   const axiosPrivate = useAxiosPrivate()
@@ -68,7 +67,6 @@ const ModalComponent = (props: ModalProps) => {
   const [firstnameError, setFirstnameError] = useState(false)
   const [lastnameError, setLastnameError] = useState(false)
   const [slugError, setSlugError] = useState(false)
-
   const editBackground = (imageUrl: string) => {
     setFormValues({ ...formValues, background: imageUrl })
   }
@@ -110,13 +108,22 @@ const ModalComponent = (props: ModalProps) => {
         ...formValues
       }
       setLoading(true)
-      await axiosPrivate.patch(url, updatedData)
-      router.refresh()
-      toast.success('Profile updated successfully!', {
-        autoClose: 2000,
-        position: toast.POSITION.BOTTOM_RIGHT
-      })
-      setLoading(false)
+      let response = await axiosPrivate.patch(url, updatedData)
+      console.log(response.data.status)
+      if (response.data.status === 'Success') {
+        // router.refresh()
+        toast.success('Profile updated successfully!', {
+          autoClose: 2000,
+          position: toast.POSITION.BOTTOM_RIGHT
+        })
+        setLoading(false)
+        onClose()
+      } else {
+        toast.error('Profile updated failed!', {
+          autoClose: 2000,
+          position: toast.POSITION.BOTTOM_RIGHT
+        })
+      }
     } catch (err) {
       console.error('API Error:', err)
       setLoading(false)
@@ -148,7 +155,8 @@ const ModalComponent = (props: ModalProps) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            objectFit: 'cover'
           }}
         >
           <EditBackground editBackground={editBackground} />
@@ -164,7 +172,8 @@ const ModalComponent = (props: ModalProps) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            objectFit: 'cover'
           }}
         >
           <EditAvatar editAvatar={editAvatar} />
@@ -275,7 +284,6 @@ const ModalComponent = (props: ModalProps) => {
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
-            
             <Button
               variant={'outlined'}
               sx={{
@@ -289,7 +297,7 @@ const ModalComponent = (props: ModalProps) => {
               }}
               disabled={loading}
               onClick={() => {
-                onClose()
+                // onClose()
                 updateProfile()
               }}
             >
