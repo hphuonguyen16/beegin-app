@@ -19,8 +19,8 @@ import PostCard from './PostCard'
 import { usePosts } from '@/context/PostContext'
 import { usePathname } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Video from 'next-video';
-import getFileType from '@/utils/getFileType';
+import Video from 'next-video'
+import getFileType from '@/utils/getFileType'
 
 interface NewPostProps {
   content: string | ''
@@ -66,7 +66,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   },
   '.next-video-container': {
     height: '100%',
-    maxHeight: '400px',
+    maxHeight: '400px'
   },
   '.video-2': {
     height: props.number === 3 ? '345px' : '100%'
@@ -77,12 +77,15 @@ async function handleFileUpload(files: File[]) {
   const uploadPromises = files.map((file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`);
+    formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
 
-    return fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${getFileType(file)}/upload`, {
-      method: 'POST',
-      body: formData
-    })
+    return fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${getFileType(file)}/upload`,
+      {
+        method: 'POST',
+        body: formData
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.secure_url !== '') {
@@ -121,11 +124,11 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
   const queryClient = useQueryClient()
 
   const handleImageChange = (e: any) => {
-    const files = e.target.files;
+    const files = e.target.files
     if (files && files.length > 0 && images.length <= 4) {
       const newImages = [...images]
-      var pushLength = files.length;
-      if (pushLength + images.length > 4) pushLength = 4 - images.length;
+      var pushLength = files.length
+      if (pushLength + images.length > 4) pushLength = 4 - images.length
       for (let i = 0; i < pushLength; i++) {
         newImages.push(files[i])
       }
@@ -133,7 +136,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     }
   }
   const handleDeleteImages = (indexToRemove: number) => {
-    setImages((prevItems: any) => prevItems.filter((item: any, index: number) => index !== indexToRemove));
+    setImages((prevItems: any) => prevItems.filter((item: any, index: number) => index !== indexToRemove))
   }
   const addPostApi = async (data: NewPostProps) => {
     const response = await axiosPrivate.post(urlConfig.posts.createPost, {
@@ -142,57 +145,29 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
       categories: data.categories,
       parent: repost?._id
     })
-    return response.data.data
-  }
-  const createPostMutation = useMutation({
-    mutationFn: addPostApi,
-    onSuccess: (data: NewPostProps) => {
-      // Invalidates cache and refetch
-      // Add new post to the top of the list
-      queryClient.setQueryData(['postsData'], (oldData: any) => {
-        const newPosts = [...oldData.pages[0].posts]
-        newPosts.unshift(data)
-        //@ts-ignore
-        postsDispatch({ type: 'ADD_POST', payload: data })
-        setSnack({
-          open: true,
-          message: 'Create post successfully!',
-          type: 'success'
-        })
-        setNewPost(null)
-        setIsSuccess(true)
-        setIsLoad(false)
-        setSelectedCategories([])
-        setContent('')
-        setImages([])
-        setOpen(false)
-        return {
-          pages: [
-            {
-              posts: newPosts,
-              total: oldData.pages[0].total,
-              prevPage: oldData.pages[0].prevPage
-            }
-          ],
-          pageParams: oldData.pageParams
-        }
-      })
-
-      queryClient.setQueryData(['profilePosts'], (oldData: any) => {
-        const newPosts = [...oldData]
-        newPosts.unshift(data)
-        return newPosts
-      })
-    },
-    onError: (error: any) => {
+    if (response.data.status === 'success') {
+      setIsSuccess(true)
+      setNewPost(null)
       setIsLoad(false)
+      setSelectedCategories([])
+      setContent('')
+      setImages([])
+      setOpen(false)
+      postsDispatch({ type: 'ADD_POST', payload: response.data.data })
       setSnack({
         open: true,
-        message: 'Create post failed!',
+        message: 'Post created successfully!',
+        type: 'success'
+      })
+    } else {
+      setSnack({
+        open: true,
+        message: 'Something went wrong! Please try again!',
         type: 'error'
       })
     }
-  })
+  }
+
   const createPost = async () => {
     if (!content && images.length === 0 && !repost) {
       setSnack({
@@ -204,11 +179,12 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    createPostMutation.mutate({
+    const data: NewPostProps = {
       content: content,
       images: uploadedUrls,
-      categories: selectedCategories.map((item) => item._id)
-    })
+      categories: selectedCategories.map((item: Category) => item._id)
+    }
+    addPostApi(data)
   }
 
   React.useEffect(() => {
@@ -276,38 +252,49 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
             />
             <Box sx={{ position: 'relative', paddingBottom: '30px' }}>
               <ImageContainerStyled number={images ? images.length : 0}>
-                {images?.map((item: File, index: number) => (
-                  getFileType(item) === 'video' ?
+                {images?.map((item: File, index: number) =>
+                  getFileType(item) === 'video' ? (
                     <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
-                      <Video className={`video-${index + 1}`} src={URL.createObjectURL(item)} autoPlay={false} accentColor='#E078D8' /><IconButton
+                      <Video
+                        className={`video-${index + 1}`}
+                        src={URL.createObjectURL(item)}
+                        autoPlay={false}
+                        accentColor='#E078D8'
+                      />
+                      <IconButton
                         sx={{
-                          position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
-                          '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                          position: 'absolute',
+                          top: '6%',
+                          right: '5%',
+                          backgroundColor: (theme) => `${theme.palette.common.white}aa !important`,
+                          zIndex: 3,
+                          '&:hover': { backgroundColor: (theme) => `${theme.palette.common.white}!important` }
                         }}
                         onClick={() => handleDeleteImages(index)}
                       >
                         <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
-                      </IconButton></span> :
+                      </IconButton>
+                    </span>
+                  ) : (
                     // eslint-disable-next-line @next/next/no-img-element
                     <span className={`image-${index + 1}`} style={{ position: 'relative' }}>
-                      <img
-
-                        src={URL.createObjectURL(item)}
-                        key={index}
-                        alt='image'
-                        loading='lazy'
-
-                      /><IconButton
+                      <img src={URL.createObjectURL(item)} key={index} alt='image' loading='lazy' />
+                      <IconButton
                         sx={{
-                          position: 'absolute', top: '6%', right: '5%', backgroundColor: theme => `${theme.palette.common.white}aa !important`, zIndex: 3,
-                          '&:hover': { backgroundColor: theme => `${theme.palette.common.white}!important` }
+                          position: 'absolute',
+                          top: '6%',
+                          right: '5%',
+                          backgroundColor: (theme) => `${theme.palette.common.white}aa !important`,
+                          zIndex: 3,
+                          '&:hover': { backgroundColor: (theme) => `${theme.palette.common.white}!important` }
                         }}
                         onClick={() => handleDeleteImages(index)}
                       >
                         <CloseRoundedIcon sx={{ color: 'black', fontSize: '21px' }} />
-                      </IconButton></span>
-                ))}
-
+                      </IconButton>
+                    </span>
+                  )
+                )}
               </ImageContainerStyled>
               {repost && <PostCard post={repost} isRepost={true} />}
             </Box>
@@ -366,10 +353,18 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                   disabled={images.length === 4}
                 />
                 <label htmlFor='icon-button-file'>
-                  <IconButton component='span' disabled={images.length === 4} >
+                  <IconButton component='span' disabled={images.length === 4}>
                     <CollectionsIcon
                       //@ts-ignore
-                      sx={{ color: images.length === 4 ? theme => theme.palette.disabled : theme => theme.palette.secondary.main }} fontSize='large' />
+                      sx={{
+                        color:
+                          images.length === 4
+                            ? //@ts-ignore
+                              (theme) => theme.palette.disabled
+                            : (theme) => theme.palette.secondary.main
+                      }}
+                      fontSize='large'
+                    />
                   </IconButton>
                 </label>
               </>

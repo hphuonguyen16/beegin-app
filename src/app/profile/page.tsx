@@ -27,14 +27,13 @@ import DefaultBackground from '@/assets/default_background.jpg'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import PersistentScrollView from '@/components/common/PersistentScrollView'
 import { ToastContainer, toast } from 'react-toastify'
-import { usePosts } from '@/context/PostContext/index'
-
 
 // hooks
 import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import withAuth from '@/authorization/withAuth'
 import { useQuery } from '@tanstack/react-query'
+import { usePosts } from '@/context/PostContext'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
@@ -46,7 +45,7 @@ const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
   color: '#FFFFFF',
- overflow: 'auto',
+  overflow: 'auto',
   position: 'relative'
 }))
 
@@ -72,7 +71,7 @@ const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
-  backgroundColor: 'white',
+  backgroundColor: 'white'
 }))
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -133,18 +132,16 @@ function page() {
     gender: true,
     slug: ''
   })
-  const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
-  const [loading, setLoading] = useState(true)
+  const { postsState, postsDispatch } = usePosts()
 
   const fetchPosts = async (currentPage = 1) => {
     try {
       const response = await axiosPrivate.get(`${UrlConfig.posts.getMyPosts}?limit=10&page=${currentPage}`)
       let rslt = response.data
-      setNumberPost(rslt.total)
       return rslt
     } catch (error) {
       console.log(error)
@@ -156,10 +153,7 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) {}
   }
   const getNumberOfFollow = async () => {
     try {
@@ -179,6 +173,16 @@ function page() {
     }
     fetchData()
   }, [open])
+
+  useEffect(() => {
+    postsDispatch({
+      type: 'SET_PROFILE_POSTS',
+      payload: {
+        posts: [],
+        totalPosts: undefined
+      }
+    })
+  }, [])
 
   const handleOpen = () => {
     setOpen(true)
@@ -222,8 +226,8 @@ function page() {
             </Button>
             <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
             <div>
-                <ToastContainer />
-              </div>
+              <ToastContainer />
+            </div>
           </Box>
         </Grid>
         <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
@@ -282,7 +286,7 @@ function page() {
                                 marginTop: '6px !important'
                               }}
                             >
-                              {numberPost}
+                              {postsState.profile.totalPosts}
                             </Typography>
                           </Stack>
                         </Grid>

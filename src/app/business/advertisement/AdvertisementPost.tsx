@@ -24,7 +24,7 @@ const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   },
   '& .image-1': {
     gridArea: '1 / 1 / 2 / 2',
-    maxHeight: '720px'
+    maxHeight: '600px'
   },
   '& .image-2': {
     gridArea: props.number === 3 ? '2 / 1 / 3 / 2' : '1 / 2 / 2 / 3'
@@ -57,14 +57,10 @@ const AdvertisementPost = ({ advertisementForm, setAdvertisementForm }: Advertis
   const axiosPrivate = useAxiosPrivate()
 
   const handleImageChange = (e: any) => {
-    if (
-      e.target.files &&
-      e.target.files.length > 0 &&
-      advertisementForm.images.length <= 4 &&
-      advertisementForm.images.length + e.target.files.length <= 4
-    ) {
+    if (e.target.files && e.target.files.length > 0 && advertisementForm.images.length <= 4) {
       const newImages = [...advertisementForm.images]
       for (let i = 0; i < e.target.files.length; i++) {
+        if (newImages.length === 4) break
         newImages.push(e.target.files[i])
       }
       setAdvertisementForm({ ...advertisementForm, images: newImages })
