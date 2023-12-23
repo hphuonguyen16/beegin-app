@@ -124,6 +124,11 @@ function BussinessStepper() {
       newSkipped.delete(activeStep)
     }
 
+    if (activeStep === 0 && !advertisementForm.content && !advertisementForm.images.length) {
+      setSnack({ open: true, message: 'Content or images is required', type: 'error' })
+      return
+    }
+
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
     setSkipped(newSkipped)
   }

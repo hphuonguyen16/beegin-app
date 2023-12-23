@@ -9,7 +9,7 @@ import { Category } from '@/types/category'
 const Root = styled('div')(
   ({ theme }) => `
   color: ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'};
-  font-size: 14px;`,
+  font-size: 14px;`
 )
 
 const Label = styled('label')`
@@ -177,10 +177,8 @@ export default function CustomizedHook({ data, selectedData, setSelectedData }: 
   })
 
   React.useEffect(() => {
-      setSelectedData(value)
-    },
-    [value]
-  )
+    setSelectedData(value)
+  }, [value])
 
   return (
     <Root>

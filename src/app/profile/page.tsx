@@ -35,6 +35,7 @@ import React, { useEffect, useState } from 'react'
 import { Post } from '@/types/post'
 import withAuth from '@/authorization/withAuth'
 import { useQuery } from '@tanstack/react-query'
+import { usePosts } from '@/context/PostContext'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
@@ -46,7 +47,7 @@ const StyledProfile = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
   color: '#FFFFFF',
- overflow: 'auto',
+  overflow: 'auto',
   position: 'relative'
 }))
 
@@ -72,7 +73,7 @@ const Posts = styled(Card)(({ theme }) => ({
   height: '100%',
   minHeight: '730px',
   borderRadius: '15px',
-  backgroundColor: 'white',
+  backgroundColor: 'white'
 }))
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -138,13 +139,14 @@ function page() {
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
-  const [loading, setLoading] = useState(true)
+  const { postsState, postsDispatch } = usePosts()
 
   const fetchPosts = async (currentPage = 1) => {
     try {
       const response = await axiosPrivate.get(`${UrlConfig.posts.getMyPosts}?limit=10&page=${currentPage}`)
       let rslt = response.data
       setNumberPost(rslt.total)
+      // postsDispatch({ type: 'ADD_POSTS_IN_PROFILE', payload: { posts: rslt.data, totalPosts: rslt.total } })
       return rslt
     } catch (error) {
       console.log(error)
@@ -282,7 +284,7 @@ function page() {
                                 marginTop: '6px !important'
                               }}
                             >
-                              {numberPost}
+                              {postsState.profile.totalPosts}
                             </Typography>
                           </Stack>
                         </Grid>

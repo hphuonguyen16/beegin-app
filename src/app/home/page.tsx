@@ -152,11 +152,7 @@ function Home() {
                   <PostSkeleton />
                 </>
               ) : (
-                <>
-                  <Box sx={{ height: '130px' }}>
-                    <CheckCircleOutlineRoundedIcon sx={{ fontSize: '60px' }} color='primary' />
-                  </Box>
-                </>
+                <></>
               )}
             </Box>
           </InfiniteScroll>
