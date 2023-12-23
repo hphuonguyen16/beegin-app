@@ -141,11 +141,8 @@ const menuBusinessItems = [
 ]
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
+  const role = localStorage.getItem('role')
   const noLayoutPaths = ['/login', '/register', '/register/business', '/register/personal', '/forgot-password']
-  const isAdminPath = menuAdminItems.some((item) => pathname.startsWith(item.path) || pathname.startsWith('/posts'))
-  const isBusinessPath = menuBusinessItems.some(
-    (item) => pathname.startsWith(item.path) || pathname.startsWith('/posts')
-  )
 
   return (
     <html lang='en'>
@@ -169,9 +166,9 @@ export default function RootLayout({ children, session }: { children: React.Reac
                       <ThemeProvider>{children}</ThemeProvider>
                     ) : (
                       <ThemeProvider>
-                        {isAdminPath ? (
+                        {role === 'admin' ? (
                           <Layout menuItems={menuAdminItems}>{children}</Layout>
-                        ) : isBusinessPath ? (
+                        ) : role === 'business' ? (
                           <Layout menuItems={menuBusinessItems}>{children}</Layout>
                         ) : (
                           <Layout menuItems={menuItems}>{children}</Layout>
