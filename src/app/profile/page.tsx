@@ -174,6 +174,16 @@ function page() {
     fetchData()
   }, [open])
 
+  useEffect(() => {
+    postsDispatch({
+      type: 'SET_PROFILE_POSTS',
+      payload: {
+        posts: [],
+        totalPosts: undefined
+      }
+    })
+  }, [])
+
   const handleOpen = () => {
     setOpen(true)
   }

@@ -181,6 +181,17 @@ function page() {
     }
     fetchData()
   }, [])
+
+  useEffect(() => {
+    postsDispatch({
+      type: 'SET_PROFILE_POSTS',
+      payload: {
+        posts: [],
+        totalPosts: undefined
+      }
+    })
+  }, [])
+
   return (
     <StyledProfile id='postsProfile'>
       <title>Profile | Beegin</title>

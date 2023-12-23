@@ -44,16 +44,8 @@ const PostsProfile: React.FC<PostsProfileProps> = ({ propFetchMoreData }: PostsP
       })
     }
     fetchData()
-    return () => {
-      postsDispatch({
-        type: 'SET_PROFILE_POSTS',
-        payload: {
-          posts: [],
-          totalPosts: undefined
-        }
-      })
-    }
   }, [])
+
 
   return postsState.profile.totalPosts !== undefined ? (
     <InfiniteScroll
