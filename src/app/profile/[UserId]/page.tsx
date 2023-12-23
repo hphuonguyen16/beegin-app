@@ -19,7 +19,6 @@ import {
 import Image from 'next/image'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import Friends from '../Friends'
-import PostCard from '../../../components/Posts/PostCard'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import UrlConfig from '@/config/urlConfig'
 import ButtonFollow from '../../../components/ButtonFollow/ButtonFollow'
@@ -27,8 +26,7 @@ import DefaultBackground from '@/assets/default_background.jpg'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import React from 'react'
-import { Post } from '@/types/post'
-import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
+import { usePosts } from '@/context/PostContext'
 
 //icons
 import { IoMdImages } from 'react-icons/io'
@@ -108,7 +106,7 @@ function page() {
   const userId = segments[2]
   const axiosPrivate = useAxiosPrivate()
   const [showPosts, setShowPosts] = useState(true)
-  const [posts, setPosts] = useState<Post[]>([])
+  const { postsState, postsDispatch } = usePosts()
   const [data, setData] = useState<{
     firstname: string
     lastname: string
@@ -130,12 +128,10 @@ function page() {
     gender: true,
     slug: ''
   })
-  const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
   })
-  const [loading, setLoading] = useState(true)
   const handleDataFromChild = (data: string) => {
     if (data === 'follow') {
       setNumber({
@@ -168,7 +164,6 @@ function page() {
     try {
       const response = await axiosPrivate.get(`${UrlConfig.posts.getPostByUserId(userId)}?limit=10&page=${currentPage}`)
       let rslt = response.data
-      setNumberPost(rslt.total)
       return rslt
     } catch (error) {
       console.log(error)
@@ -270,7 +265,7 @@ function page() {
                                 marginTop: '6px !important'
                               }}
                             >
-                              {numberPost}
+                              {postsState.profile.totalPosts}
                             </Typography>
                           </Stack>
                         </Grid>

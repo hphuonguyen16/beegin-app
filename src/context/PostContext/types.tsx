@@ -66,6 +66,10 @@ interface DeletePostAction {
 export interface PostState {
   posts: Post[]
   selectedPost: Post | null
+  profile: {
+    posts: Post[]
+    totalPosts: number | undefined
+  }
 }
 
 interface SetPostsAction {
@@ -81,6 +85,22 @@ interface SetLikedPostAction {
   }
 }
 
+interface AddPostsInProfileAction {
+  type: 'ADD_POSTS_IN_PROFILE'
+  payload: {
+    posts: Post[]
+    totalPosts: number | undefined
+  }
+}
+
+interface SetPostsProfileAction {
+  type: 'SET_PROFILE_POSTS'
+  payload: {
+    posts: Post[]
+    totalPosts: number | undefined
+  }
+}
+
 export type PostAction =
   | SetPostsAction
   | AddPostAction
@@ -93,3 +113,5 @@ export type PostAction =
   | SelectPostAction
   | SetLikedPostAction
   | DeletePostAction
+  | AddPostsInProfileAction
+  | SetPostsProfileAction
