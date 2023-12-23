@@ -27,8 +27,6 @@ import DefaultBackground from '@/assets/default_background.jpg'
 import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import PersistentScrollView from '@/components/common/PersistentScrollView'
 import { ToastContainer, toast } from 'react-toastify'
-import { usePosts } from '@/context/PostContext/index'
-
 
 // hooks
 import React, { useEffect, useState } from 'react'
@@ -134,7 +132,6 @@ function page() {
     gender: true,
     slug: ''
   })
-  const [numberPost, setNumberPost] = useState(0)
   const [number, setNumber] = useState<{ NumberOfFollowing: number; NumberOfFollower: number }>({
     NumberOfFollowing: 0,
     NumberOfFollower: 0
@@ -145,8 +142,6 @@ function page() {
     try {
       const response = await axiosPrivate.get(`${UrlConfig.posts.getMyPosts}?limit=10&page=${currentPage}`)
       let rslt = response.data
-      setNumberPost(rslt.total)
-      // postsDispatch({ type: 'ADD_POSTS_IN_PROFILE', payload: { posts: rslt.data, totalPosts: rslt.total } })
       return rslt
     } catch (error) {
       console.log(error)
@@ -158,10 +153,7 @@ function page() {
       const url = UrlConfig.me.getMe
       const response = await axiosPrivate.get(url)
       setData(response.data.data)
-    } catch (err) {
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) {}
   }
   const getNumberOfFollow = async () => {
     try {
@@ -224,8 +216,8 @@ function page() {
             </Button>
             <EditProfile open={open} onClose={handleClose} data={data}></EditProfile>
             <div>
-                <ToastContainer />
-              </div>
+              <ToastContainer />
+            </div>
           </Box>
         </Grid>
         <Grid item xs={12} md={3} sx={{ transform: 'translateY(-80px)' }}>
