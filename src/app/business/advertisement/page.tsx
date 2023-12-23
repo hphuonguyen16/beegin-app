@@ -98,7 +98,8 @@ function BussinessStepper() {
       targetLocation: null,
       targetGender: advertisementForm.targetGender,
       targetAge: advertisementForm.targetAge,
-      amount: `${advertisementForm.amount}`
+      amount:
+        advertisementForm.amount * dayjs(advertisementForm.expireDate).diff(dayjs(advertisementForm.activeDate), 'day')
     }
     const response = await axiosPrivate.post(UrlConfig.bussiness.createAdvertisement, advertisement)
     const paymentUrl = response.data.url
@@ -106,6 +107,9 @@ function BussinessStepper() {
       const response = axios.get(paymentUrl)
       setIsLoading(false)
       window.location.href = paymentUrl
+    } else {
+      setSnack({ open: true, message: 'Something went wrong', type: 'error' })
+      setIsLoading(false)
     }
   }
 
