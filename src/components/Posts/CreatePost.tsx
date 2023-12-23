@@ -359,7 +359,8 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
                       sx={{
                         color:
                           images.length === 4
-                            ? (theme) => theme.palette.disabled
+                            ? //@ts-ignore
+                              (theme) => theme.palette.disabled
                             : (theme) => theme.palette.secondary.main
                       }}
                       fontSize='large'
