@@ -89,7 +89,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 function page() {
   const axiosPrivate = useAxiosPrivate()
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(0)
   const [data, setData] = useState<any[]>([])
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [selectedRole, setSelectedRole] = useState('')
@@ -136,7 +136,7 @@ function page() {
       }
     }
     fetchData()
-  }, [page, selectedRole])
+  }, [page, selectedRole, rowsPerPage])
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage)
   }
@@ -197,8 +197,8 @@ function page() {
         </Grid>
         <Grid item xs={4}></Grid>
       </Grid>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 500, height: '100%' }} aria-label='custom pagination table'>
+      <TableContainer component={Paper} style={{paddingBottom: '20px'}}>
+        <Table sx={{ minWidth: 500, height: '100%'}} aria-label='custom pagination table'>
           <TableHead>
             <TableRow>
               <TableCell style={{ textAlign: 'center' }}>First Name</TableCell>
