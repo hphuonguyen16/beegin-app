@@ -35,6 +35,7 @@ import { User } from '@/types/user'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import Snackbar from '@/components/common/Snackbar'
+import HeartIcon from '@/components/common/HeartIcon'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -424,12 +425,14 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   handleLike()
                 }}
               >
-                {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
+                {/* {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />} */}
+                <HeartIcon isLiked={like} handleLike={handleLike} />
                 {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                 <Typography
                   component={'span'}
                   sx={{
                     marginLeft: isMobile ? '7px' : '12px',
+                    marginTop: '2px',
                     fontSize: '13px',
                     cursor: 'pointer',
                     '&:hover': {
@@ -451,7 +454,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   openPostDetail()
                 }}
               >
-                <ChatBubbleOutlineIcon color='secondary' />{' '}
+                <ChatBubbleOutlineIcon color='secondary' sx={{ fontSize: '28px' }} />{' '}
                 <span style={{ marginLeft: isMobile ? '7px' : '12px', fontWeight: 500 }}>{post.numComments}</span>
               </Button>
               <Button
@@ -459,7 +462,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   setRepostOpen(true)
                 }}
               >
-                <ShareIcon color='secondary' />
+                <ShareIcon color='secondary' sx={{ fontSize: '28px' }} />
                 <Typography
                   component={'span'}
                   sx={{

@@ -15,6 +15,7 @@ import {
   Modal
 } from '@mui/material'
 import Slider from '@/components/Posts/ImageSlider'
+import HeartIcon from '../common/HeartIcon'
 import RootModal from '@/components/common/modals/RootModal'
 import useResponsive from '@/hooks/useResponsive'
 import { CardHeader, Avatar, Button, Typography, Stack, TextField } from '@mui/material'
@@ -400,11 +401,12 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                           handleLike()
                         }}
                       >
-                        {post.isLiked ? (
+                        {/* {post.isLiked ? (
                           <FavoriteRoundedIcon color='secondary' />
                         ) : (
                           <FavoriteBorderRoundedIcon color='secondary' />
-                        )}
+                        )} */}
+                        <HeartIcon isLiked={post.isLiked || false} handleLike={handleLike} />
                         {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                       </IconButton>
                       <Typography
@@ -426,7 +428,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                     </Stack>
                     <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
                       <IconButton>
-                        <ChatBubbleOutlineIcon color='secondary' />
+                        <ChatBubbleOutlineIcon color='secondary' sx={{ fontSize: '26px' }} />
                       </IconButton>
                       <span style={{ marginLeft: isMobile ? '7px' : '5px', fontWeight: 600, fontSize: '13px' }}>
                         {post.numComments}
