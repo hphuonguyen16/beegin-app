@@ -104,7 +104,7 @@ function BussinessStepper() {
     const response = await axiosPrivate.post(UrlConfig.bussiness.createAdvertisement, advertisement)
     const paymentUrl = response.data.url
     if (response.status === 200) {
-      const response = axios.get(paymentUrl)
+      // const response = axiosPrivate.get(paymentUrl)
       setIsLoading(false)
       window.location.href = paymentUrl
     } else {

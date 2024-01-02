@@ -8,6 +8,6 @@ export function formatNumber(value: number): string {
   } else if (absValue >= 1e3) {
     return (value / 1e3).toFixed(2) + 'K'
   } else {
-    return value.toFixed(2)
+    return '~'
   }
 }
