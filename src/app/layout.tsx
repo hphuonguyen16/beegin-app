@@ -124,7 +124,7 @@ const menuBusinessItems = [
     icon: <SummarizeOutlinedIcon />,
     iconActive: <SummarizeIcon />,
     label: 'Advertisements',
-    path: '/business/advertisements'
+    path: '/business/advertisement'
   },
   {
     icon: <BiMessageSquareDetail />,
