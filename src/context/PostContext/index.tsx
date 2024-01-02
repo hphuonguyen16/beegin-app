@@ -40,7 +40,11 @@ interface PostProviderProps {
 export function PostProvider({ children }: PostProviderProps) {
   const initialState: PostState = {
     posts: [],
-    selectedPost: null
+    selectedPost: null,
+    profile: {
+      posts: [],
+      totalPosts: undefined
+    }
   }
 
   //@ts-ignore

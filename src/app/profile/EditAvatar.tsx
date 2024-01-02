@@ -1,8 +1,10 @@
+/* eslint-disable prettier/prettier */
 'use client'
 import { useState, useEffect } from 'react'
 import { Box, Button } from '@mui/material'
 import Image from 'next/image'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface FileInputProps {
   editAvatar: (imageUrl: string) => void
@@ -11,6 +13,7 @@ interface FileInputProps {
 const EditAvatar = ({ editAvatar }: FileInputProps) => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [imageUrl, setImageUrl] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (selectedImage) {
@@ -25,6 +28,7 @@ const EditAvatar = ({ editAvatar }: FileInputProps) => {
 
   const uploadImageToCloudinary = async (imageFile: File) => {
     try {
+      setLoading(true)
       const formData = new FormData()
       formData.append('file', imageFile)
       formData.append('upload_preset', `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`)
@@ -36,26 +40,27 @@ const EditAvatar = ({ editAvatar }: FileInputProps) => {
           body: formData
         }
       )
-
       if (response.ok) {
         const data = await response.json()
         setImageUrl(data.secure_url)
-        // Pass the image URL to the parent component
+        setLoading(false)
         editAvatar(data.secure_url)
       } else {
         console.error('Failed to upload image to Cloudinary')
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error uploading image:', error)
+      setLoading(false)
     }
   }
-
   return (
     <>
       <input accept='image/*' type='file' id='select-image-1' style={{ display: 'none' }} onChange={handleFileChange} />
       <label htmlFor='select-image-1'>
         <Button
           variant='outlined'
+          // color={loading ? 'disabled' : 'primary'}
           color='primary'
           component='span'
           style={{
@@ -64,10 +69,21 @@ const EditAvatar = ({ editAvatar }: FileInputProps) => {
             width: '40px',
             height: '55px',
             alignItems: 'center',
-            margin: '45px'
+            margin: '45px',
+            objectFit: 'cover',
+            // //@ts-ignore
+            // backgroundColor: loading ? (theme) => `${theme.palette.disabled}!important` : '#E078D8 !important',
           }}
+          disabled={loading}
         >
-          <AddAPhotoIcon fontSize='medium' />
+            {loading ? (
+              <CircularProgress
+                size={30}
+                sx={{
+                  color:'white'
+                }}
+              />
+            ):(<AddAPhotoIcon fontSize='medium' />)}
         </Button>
       </label>
       {imageUrl && (
@@ -81,7 +97,8 @@ const EditAvatar = ({ editAvatar }: FileInputProps) => {
               width: '150px',
               height: '150px',
               borderRadius: '50%',
-              margin:'-160px 0px'
+              margin: '-160px 0px',
+              objectFit: 'cover'
             }}
           />
         </Box>

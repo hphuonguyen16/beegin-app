@@ -15,6 +15,7 @@ import {
   Modal
 } from '@mui/material'
 import Slider from '@/components/Posts/ImageSlider'
+import HeartIcon from '../common/HeartIcon'
 import RootModal from '@/components/common/modals/RootModal'
 import useResponsive from '@/hooks/useResponsive'
 import { CardHeader, Avatar, Button, Typography, Stack, TextField } from '@mui/material'
@@ -264,70 +265,12 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                 id='commentDiv'
               >
                 <Box sx={{ overflow: 'auto', width: '100%', height: '93%', overflowX: 'hidden' }}>
-                  <List
-                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', cursor: 'pointer' }}
+                  <Stack
+                    direction={'row'}
+                    gap={isMobile ? 1 : 3}
+                    sx={{ margin: '15px 0px 15px 15px', cursor: 'pointer' }}
                     onClick={navigateToProfile}
                   >
-                    <ListItem alignItems='flex-start'>
-                      <ListItemAvatar>
-                        <Avatar alt='Remy Sharp' src={post.user?.profile?.avatar} />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Stack
-                            direction={'row'}
-                            sx={{
-                              alignItems: 'center',
-                              marginTop: '3px',
-                              marginBottom: '5px',
-                              minWidth: 'max-content'
-                            }}
-                          >
-                            <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-                              {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: 'rgba(0, 0, 0, 0.50)',
-                                fontSize: isMobile ? '10px' : '13px',
-                                fontWeight: 400,
-                                marginLeft: '7px'
-                              }}
-                            >
-                              @{post.user?.profile?.slug}
-                            </Typography>
-                            <Box
-                              sx={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                marginLeft: '15px',
-                                backgroundColor: 'rgba(0, 0, 0, 0.50)'
-                              }}
-                            ></Box>
-                            <Typography
-                              sx={{
-                                fontSize: isMobile ? '10px' : '14px',
-                                fontWeight: 600,
-                                marginLeft: '15px',
-                                cursor: 'pointer',
-                                '&:hover': {
-                                  color: 'primary.main'
-                                }
-                              }}
-                              color='secondary'
-                              onClick={handleFollow}
-                            >
-                              {isFollowing ? 'Following' : 'Follow'}
-                            </Typography>
-                          </Stack>
-                        }
-                        secondary={<React.Fragment>{'Spain'}</React.Fragment>}
-                      />
-                    </ListItem>
-                  </List>
-                  <Divider variant='inset' />
-                  <Stack direction={'row'} gap={isMobile ? 1 : 3} sx={{ margin: '15px 0px 15px 15px' }}>
                     <Avatar
                       sx={{ width: isMobile ? '45px' : '40px', height: isMobile ? '45px' : '40px' }}
                       src={post.user?.profile?.avatar}
@@ -414,10 +357,9 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                       <CommentCard key={comment._id} comment={comment} replyComment={replyComment} postId={post._id} />
                     ))}
                     {post.comments?.length < post.totalComments && (
-                      <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '20px' }}>
+                      <Stack direction={'row'} sx={{ alignItems: 'center', marginLeft: '20px', marginTop: '15px' }}>
                         <Typography
                           onClick={() => fetchComments()}
-                          color='primary'
                           sx={{
                             fontWeight: 'bold',
                             verticalAlign: 'middle',
@@ -442,7 +384,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                     backgroundColor: 'white', // Background color
                     height: '190px',
                     borderTop: '1px solid #e8ebed',
-                    borderRadius: '12px'
+                    borderRadius: '0px 0px 12px 0px'
                   }}
                 >
                   <Stack
@@ -459,11 +401,12 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                           handleLike()
                         }}
                       >
-                        {post.isLiked ? (
+                        {/* {post.isLiked ? (
                           <FavoriteRoundedIcon color='secondary' />
                         ) : (
                           <FavoriteBorderRoundedIcon color='secondary' />
-                        )}
+                        )} */}
+                        <HeartIcon isLiked={post.isLiked || false} handleLike={handleLike} />
                         {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                       </IconButton>
                       <Typography
@@ -485,7 +428,7 @@ const PostDetail = ({ post, open, handleClose, handleLike, postParent }: PostDet
                     </Stack>
                     <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
                       <IconButton>
-                        <ChatBubbleOutlineIcon color='secondary' />
+                        <ChatBubbleOutlineIcon color='secondary' sx={{ fontSize: '26px' }} />
                       </IconButton>
                       <span style={{ marginLeft: isMobile ? '7px' : '5px', fontWeight: 600, fontSize: '13px' }}>
                         {post.numComments}

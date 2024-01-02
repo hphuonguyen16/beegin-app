@@ -49,19 +49,46 @@ export const postReducer = (state: PostState, action: PostAction) => {
     case 'SET_POSTS': {
       return { ...state, posts: action.payload }
     }
-    case 'ADD_POST': {
-      return { ...state, posts: [action.payload, ...state.posts] }
+    case 'SET_PROFILE_POSTS': {
+      const { posts, totalPosts } = action.payload
+      return { ...state, profile: { posts, totalPosts } }
     }
-    case 'UPDATE_POST': {
+    case 'ADD_POSTS_IN_PROFILE': {
+      const { posts, totalPosts } = action.payload
+      return { ...state, profile: { posts: [...state.profile.posts, ...posts], totalPosts: totalPosts } }
+    }
+    case 'ADD_POST': {
       return {
         ...state,
-        posts: state.posts.map((item) => {
-          item._id === action.payload._id ? action.payload : item
-        })
+        posts: [action.payload, ...state.posts],
+        profile: {
+          ...state.profile,
+          posts: [action.payload, ...state.profile.posts],
+          totalPosts: state.profile.totalPosts ? state.profile.totalPosts + 1 : 1
+        }
+      }
+    }
+    case 'UPDATE_POST': {
+      console.log(action.payload)
+      return {
+        ...state,
+        posts: state.posts.map((item) => (item._id === action.payload._id ? action.payload : item)),
+        profile: {
+          ...state.profile,
+          posts: state.profile.posts.map((item) => (item._id === action.payload._id ? action.payload : item))
+        }
       }
     }
     case 'DELETE_POST': {
-      return { ...state, posts: state.posts.filter((item) => item._id !== action.payload.postId) }
+      return {
+        ...state,
+        posts: state.posts.filter((item) => item._id !== action.payload.postId),
+        profile: {
+          ...state.profile,
+          posts: state.profile.posts.filter((item) => item._id !== action.payload.postId),
+          totalPosts: state.profile.totalPosts ? state.profile.totalPosts - 1 : 0
+        }
+      }
     }
     case 'ADD_MULTIPLE_POSTS': {
       const { payload: multiplePosts } = action

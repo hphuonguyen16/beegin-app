@@ -141,9 +141,9 @@ const menuBusinessItems = [
 ]
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: any }) {
   const pathname = usePathname()
+  const role = localStorage.getItem('role')
   const noLayoutPaths = ['/login', '/register', '/register/business', '/register/personal', '/forgot-password']
-  const isAdminPath = pathname.startsWith('/admin')
-  const isBusinessPath = pathname.startsWith('/business')
+
   return (
     <html lang='en'>
       <head>
@@ -166,9 +166,9 @@ export default function RootLayout({ children, session }: { children: React.Reac
                       <ThemeProvider>{children}</ThemeProvider>
                     ) : (
                       <ThemeProvider>
-                        {isAdminPath ? (
+                        {role === 'admin' ? (
                           <Layout menuItems={menuAdminItems}>{children}</Layout>
-                        ) : isBusinessPath ? (
+                        ) : role === 'business' ? (
                           <Layout menuItems={menuBusinessItems}>{children}</Layout>
                         ) : (
                           <Layout menuItems={menuItems}>{children}</Layout>

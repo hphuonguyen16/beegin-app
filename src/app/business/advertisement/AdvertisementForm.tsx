@@ -59,7 +59,7 @@ const AdvertisementForm = ({ step, advertisementForm, setAdvertisementForm }: Re
     //@ts-ignore
     setAgeValue(event.target.value)
     if (event.target.value === 'all') {
-      setAdvertisementForm({ ...advertisementForm, targetAge: null })
+      setAdvertisementForm({ ...advertisementForm })
     } else {
       //@ts-ignore
       setAdvertisementForm({ ...advertisementForm, targetAge: [13, 100] })
@@ -246,11 +246,16 @@ const AdvertisementForm = ({ step, advertisementForm, setAdvertisementForm }: Re
                           id='outlined-basic'
                           required
                           variant='outlined'
+                          type='number'
                           placeholder='Enter a budget'
                           sx={{ width: '32%', minWidth: '120px' }}
                           value={advertisementForm.amount}
                           onChange={(event: any) => {
                             setAdvertisementForm({ ...advertisementForm, amount: event.target.value })
+                          }}
+                          inputProps={{
+                            min: 0,
+                            max: 10000000000 // Set your desired maximum value
                           }}
                           helperText={
                             !advertisementForm.amount
@@ -378,11 +383,11 @@ const AdvertisementForm = ({ step, advertisementForm, setAdvertisementForm }: Re
                         <Stack direction={'column'} gap={2}>
                           <Box>
                             <Typography variant='h5'>Daily budget</Typography>
-                            <Typography>{`${advertisementForm.amount} vnd`} </Typography>
+                            <Typography>{`${formatNumber(advertisementForm.amount)} vnd`} </Typography>
                           </Box>
                           <Box>
                             <Typography variant='h5'>Total</Typography>
-                            <Typography>{`${advertisementForm.amount * daysDifference} vnd`}</Typography>
+                            <Typography>{`${formatNumber(advertisementForm.amount * daysDifference)} vnd`}</Typography>
                           </Box>
                         </Stack>
                       </Grid>

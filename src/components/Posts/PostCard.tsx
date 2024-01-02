@@ -34,6 +34,8 @@ import SharePostList from './SharePostList'
 import { User } from '@/types/user'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
+import Snackbar from '@/components/common/Snackbar'
+import HeartIcon from '@/components/common/HeartIcon'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -166,13 +168,8 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
 
   async function handleDeletePost() {
     const result = await axiosPrivate.delete(UrlConfig.posts.deletePost(post._id))
-    queryClient.setQueryData(['profilePosts'], (oldData: any) => {
-      let updatedPosts = [...oldData]
-      updatedPosts = updatedPosts.filter((item: any) => item._id !== post._id)
-      //@ts-ignore
-      return updatedPosts
-    })
     queryClient.setQueryData(['categoryPosts'], (oldData: any) => {
+      if (!oldData) return
       let updatedPosts = [...oldData]
       updatedPosts = updatedPosts.filter((item: any) => item._id !== post._id)
       return updatedPosts
@@ -180,7 +177,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
     postsDispatch({ type: 'DELETE_POST', payload: { postId: post._id } })
     if (result) {
       setOpenDeleteModal(false)
-      setSnack({ open: true, message: 'Deleted post successfully' })
+      setSnack({ open: true, message: 'Deleted post successfully', type: 'success' })
     }
   }
 
@@ -233,6 +230,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         // @ts-ignore
         propFetchMoreData={fetchSharePostList}
       />
+      <Snackbar />
       <Modal open={repostOpen} onClose={() => setRepostOpen(false)}>
         <Box
           sx={{
@@ -427,12 +425,14 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   handleLike()
                 }}
               >
-                {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />}
+                {/* {like ? <FavoriteRoundedIcon color='secondary' /> : <FavoriteBorderRoundedIcon color='secondary' />} */}
+                <HeartIcon isLiked={like} handleLike={handleLike} />
                 {/* <FavoriteBorderRoundedIcon color='secondary' /> */}
                 <Typography
                   component={'span'}
                   sx={{
                     marginLeft: isMobile ? '7px' : '12px',
+                    marginTop: '2px',
                     fontSize: '13px',
                     cursor: 'pointer',
                     '&:hover': {
@@ -454,7 +454,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   openPostDetail()
                 }}
               >
-                <ChatBubbleOutlineIcon color='secondary' />{' '}
+                <ChatBubbleOutlineIcon color='secondary' sx={{ fontSize: '28px' }} />{' '}
                 <span style={{ marginLeft: isMobile ? '7px' : '12px', fontWeight: 500 }}>{post.numComments}</span>
               </Button>
               <Button
@@ -462,7 +462,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                   setRepostOpen(true)
                 }}
               >
-                <ShareIcon color='secondary' />
+                <ShareIcon color='secondary' sx={{ fontSize: '28px' }} />
                 <Typography
                   component={'span'}
                   sx={{
@@ -499,7 +499,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
           <div>Are you sure you want to delete this post?</div>
         </RootModal>
       )}
-      {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} />}
+      {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} repost={postParent} />}
     </>
   )
 }

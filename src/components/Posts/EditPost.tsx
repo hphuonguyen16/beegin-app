@@ -149,35 +149,24 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
       parent: repost?._id
     })
 
-    return response.data.data
-  }
-
-  const updatePostMutation = useMutation({
-    mutationFn: updatePostApi,
-    onSuccess: (data: NewPostProps) => {
-      // Invalidates cache and refetch
-      // Add new post to the top of the list
-      queryClient.setQueryData(['profilePosts'], (oldData: any) => {
-        const updatedPosts = [...oldData]
-        const index = updatedPosts.findIndex((item: any) => item._id === post?._id)
-        updatedPosts[index] = data
-        return updatedPosts
-      })
-      queryClient.setQueryData(['categoryPosts'], (oldData: any) => {
-        const updatedPosts = [...oldData]
-        const index = updatedPosts.findIndex((item: any) => item._id === post?._id)
-        updatedPosts[index] = data
-        return updatedPosts
-      })
-      //@ts-ignore
-      postsDispatch({ type: 'UPDATE_POST', payload: data })
-    },
-    onError: (error: any) => {
+    if (response.data.status === 'success') {
       setIsLoad(false)
-      console.log(error)
+      setOpen(false)
+      queryClient.setQueryData(['categoryPosts'], (oldData: any) => {
+        if (!oldData) return
+        const updatedPosts = [...oldData]
+        const index = updatedPosts.findIndex((item: any) => item._id === post?._id)
+        updatedPosts[index] = data
+        return updatedPosts
+      })
+      postsDispatch({ type: 'UPDATE_POST', payload: response.data.data })
+      setSnack({ open: true, message: 'Update post successfully!', type: 'success' })
+    } else {
+      setIsLoad(false)
+      setOpen(false)
       setSnack({ open: true, message: 'Update post failed!', type: 'error' })
     }
-  })
+  }
 
   const createPost = async () => {
     if (!content && images.length === 0 && !repost) {
@@ -190,25 +179,13 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
     }
     setIsLoad(true)
     const uploadedUrls = await handleFileUpload(images)
-    updatePostMutation.mutate({
+    const data = {
       content: content,
       images: uploadedUrls,
-      categories: selectedCategories.map((item) => item._id)
-    })
-    // const updatedPost = await updatePostApi({
-    //   content: content,
-    //   images: uploadedUrls,
-    //   categories: selectedCategories.map((item) => item._id)
-    // })
-    // postsDispatch({ type: 'UPDATE_POST', payload: updatedPost })
-    setSnack({ open: true, message: 'Update post successfully!', type: 'success' })
-    setIsSuccess(true)
-    console.log('okkkkkk')
-    setIsLoad(false)
-    setSelectedCategories([])
-    setContent('')
-    setImages([])
-    setOpen(false)
+      categories: selectedCategories
+    }
+    //@ts-ignore
+    updatePostApi(data)
   }
 
   React.useEffect(() => {
@@ -226,6 +203,7 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
 
   return (
     <>
+      <Snackbar />
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box
           sx={{
@@ -243,7 +221,6 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
           }}
         >
           {isLoad && <PostLoader />}
-          {isSuccess && <Snackbar />}
           <Stack direction={'row'} sx={{ alignItems: 'center' }} gap={2}>
             <Avatar alt='Remy Sharp' src={user?.profile?.avatar} sx={{ width: 60, height: 60 }} />
             <Box>
@@ -403,8 +380,8 @@ const EditPost = ({ open, setOpen, post, repost }: CreatePostProps) => {
                         sx={{
                           color:
                             images.length === 4
-                              //@ts-ignore
-                              ? (theme) => theme.palette.disabled
+                              ? //@ts-ignore
+                                (theme) => theme.palette.disabled
                               : (theme) => theme.palette.secondary.main
                         }}
                         fontSize='large'
