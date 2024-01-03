@@ -35,6 +35,7 @@ const BoxStyle = styled(Card)(({ theme }) => ({
 }))
 function page() {
   const [selectedYear, setSelectedYear] = useState(2023)
+  const [revenue, setRevenue] = useState(0)
   const startYear = 2022
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: currentYear - startYear + 1 }, (_, index) => startYear + index).reverse()
@@ -66,6 +67,19 @@ function page() {
     }
     fetchData()
   }, [selectedYear])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosPrivate.get(UrlConfig.admin.getRevenue)
+        console.log(response.data)
+        setRevenue(response.data.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [])
   function createData(ID: number, Fullname: string, Total: number) {
     return { ID, Fullname, Total }
   }
@@ -150,7 +164,7 @@ function page() {
                     marginTop: '20px !important'
                   }}
                 >
-                  {0}
+                  {revenue.toLocaleString()}
                 </Typography>
               </Stack>
             </BoxStyle>

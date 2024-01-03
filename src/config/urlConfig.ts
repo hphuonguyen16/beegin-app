@@ -9,7 +9,8 @@ const UrlConfig: any = {
     sendApprovalRequest: `/api/v1/users/business/approve`,
     cancelApprovalRequest: `/api/v1/users/business/cancel`,
     lockOrUnlockAccount: (userId: string) => `/api/v1/users/lockOrUnlockAccount/${userId}`,
-    getTransactions: `/api/v1/transactions/all`
+    getTransactions: `/api/v1/transactions/all`,
+    getRevenue: `/api/v1/transactions/revenue`
   },
   user: {
     login: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/login`,
