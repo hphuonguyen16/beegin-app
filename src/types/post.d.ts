@@ -17,4 +17,5 @@ export interface Post {
   comments: Comment[]
   totalComments: number
   isFollowing?: boolean
+  type?: string
 }

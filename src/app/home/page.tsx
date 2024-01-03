@@ -35,6 +35,7 @@ function Home() {
       let posts = feeds.map((feed: Feed) => {
         return {
           ...feed.post,
+          type: feed.type,
           _feedId: feed._id,
           comments: []
         }
