@@ -27,13 +27,13 @@ import FirstPageIcon from '@mui/icons-material/FirstPage'
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 import withAuth from '@/authorization/withAuth'
 import { BusinessRequest } from '@/types/businessRequest'
 import { axiosPrivate } from '@/axios'
 import UrlConfig from '@/config/urlConfig'
 import { PostTransaction } from '@/types/postTransaction'
-import { useRouter } from 'next/navigation'
 
 interface TablePaginationActionsProps {
   count: number
@@ -87,21 +87,17 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
     </Box>
   )
 }
-const status = ['all', 'pending', 'success', 'failed']
+const status = ['all', 'pending', 'verified', 'approved', 'canceled', 'rejected']
 
 export default function Transaction() {
   const [requestStatus, setRequestStatus] = React.useState('')
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  const router = useRouter()
+  // const [requests, setRequests] = React.useState<BusinessRequest[]>([])
   const [transactions, setTransactions] = React.useState<PostTransaction[]>([])
   const [total, setTotal] = React.useState(0)
   const handleChange = (event: SelectChangeEvent) => {
     setRequestStatus(event.target.value)
-  }
-
-  const handleViewPost = (postId: String) => {
-    router.push(`/posts/${postId}`)
   }
   React.useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +117,9 @@ export default function Transaction() {
           params.status = requestStatus
         }
         const response = await axiosPrivate.get(UrlConfig.admin.getTransactions, { params })
+        // setRequests(response.data.data)
+        console.log('------------------', response.data)
+        console.log(response.data.data.data)
         setTransactions(response.data.data.data)
         setTotal(response.data.total)
       } catch (err) {
@@ -206,44 +205,47 @@ export default function Transaction() {
                 <TableCell style={{ textAlign: 'center', width: '10%' }}>
                   <Typography variant='h5'>Post detail</Typography>
                 </TableCell>
+                {/* <TableCell style={{ textAlign: 'center', width: '10%' }}>
+                  <Typography variant='h5'>Status</Typography>
+                </TableCell>
+                <TableCell style={{ textAlign: 'center', width: '20%' }}>
+                  <Typography variant='h5'>Updated At</Typography>
+                </TableCell>
+                <TableCell style={{ textAlign: 'center', width: '10%' }}>
+                  <Typography variant='h5'>Action</Typography>
+                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {transactions.map((transaction, index) => (
+              {transactions.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell style={{ textAlign: 'center' }}>
-                    <Typography>{page * rowsPerPage + index + 1}</Typography>
+                    <Typography>{transaction._id}</Typography>
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
                     <Typography>{transaction._id}</Typography>
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
-                    <Typography>{new Date(transaction.createdAt).toLocaleString()}</Typography>
+                    <Typography>{transaction.createdAt}</Typography>
                   </TableCell>
 
                   <TableCell style={{ textAlign: 'center' }}>
                     <Typography>{transaction.amount}</Typography>
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
+                    <Typography>{transaction.status === 'approved' ? <CheckCircleIcon /> : '-'}</Typography>
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
                     <Typography>{transaction.status}</Typography>
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>
                     <Typography>
-                      <Typography
-                        onClick={() => {
-                          handleViewPost(transaction.post)
-                        }}
-                        color='primary'
-                        sx={{
-                          fontWeight: 'bold',
-                          verticalAlign: 'middle',
-                          fontSize: '18px',
-                          cursor: 'pointer',
-                          margin: '0 0 20px 0'
-                        }}
-                      >
-                        View
-                      </Typography>
+                      <Typography>AAA</Typography>
+                      {/* <ActionPopOver
+                        request={request._id}
+                        user={request.user?.id}
+                        setRequests={handleRequestChange}
+                      ></ActionPopOver> */}
                     </Typography>
                   </TableCell>
                 </TableRow>
