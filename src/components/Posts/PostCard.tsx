@@ -1,5 +1,5 @@
 'use client'
-import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton } from '@mui/material'
+import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton, Chip } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 import React, { useEffect, useRef, useState } from 'react'
@@ -36,6 +36,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import Snackbar from '@/components/common/Snackbar'
 import HeartIcon from '@/components/common/HeartIcon'
+import VerifiedRoundedIcon from '@mui/icons-material/VerifiedRounded'
+import BusinessAvatar from '../common/Avatar/BusinessAvatar'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -299,6 +301,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
             src={post.user?.profile?.avatar}
             onClick={redirectToProfile}
           ></Avatar>
+          {/* <BusinessAvatar avatar={post.user?.profile?.avatar} type={post.type} redirectToProfile={redirectToProfile} /> */}
         </Grid>
         <Grid
           item
@@ -321,6 +324,18 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ fontWeight: 'bold', fontSize: '16px' }}>
                 {post.user?.profile?.firstname + ' ' + post.user?.profile?.lastname}
               </Typography>
+              {post.user.role == 'business' && (
+                <VerifiedRoundedIcon
+                  sx={{
+                    fontSize: '22px',
+                    marginLeft: '10px'
+                    // position: 'absolute',
+                    // bottom: '-2px',
+                    // right: '-6px'
+                  }}
+                  color='secondary'
+                />
+              )}
               <Typography
                 sx={{
                   color: 'rgba(0, 0, 0, 0.50)',
@@ -331,6 +346,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               >
                 @{post.user?.profile?.slug}
               </Typography>
+
               <Box
                 sx={{
                   width: '6px',
@@ -352,6 +368,12 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               >
                 {timeSince(new Date(post.createdAt))}
               </Typography>
+              {post.type === 'advertisement' && (
+                <Chip label='Sponsored' variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
+              )}
+              {post.type === 'suggested' && (
+                <Chip label='Suggested' variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
+              )}
             </Stack>
             <Popover
               icon={<MoreVert />}
