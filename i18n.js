@@ -4,7 +4,7 @@ module.exports = {
 	localeDetection: false,
 	pages: {
 		"*": ["common"],
-		"/home": ["home"],
+		"/[lang]/home": ["home"],
 
 	},
 	loadLocaleFrom: (lang, namespace) => {

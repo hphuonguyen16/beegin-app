@@ -17,8 +17,10 @@ import PostSkeleton from '@/components/common/Skeleton/PostSkeleton'
 import withAuth from '@/authorization/withAuth'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import { usePosts } from '@/context/PostContext'
+import useTranslation from 'next-translate/useTranslation'
 
 function Home() {
+  const { t } = useTranslation('common')
   const isMobile = useResponsive('down', 'sm')
   const { postsState, postsDispatch } = usePosts()
   const [open, setOpen] = useState(false)
@@ -103,7 +105,7 @@ function Home() {
             <TextField
               size='small'
               variant='outlined'
-              placeholder='What’s on your mind?'
+              placeholder={t("CreatePostPlaceholder")}
               onClick={() => setOpen(true)}
               sx={{
                 '& .MuiInputBase-root': {

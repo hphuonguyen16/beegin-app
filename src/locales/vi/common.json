@@ -9,6 +9,29 @@
     "401": "Bạn không có quyền truy cập trang này",
     "404": "Trang không tồn tại",
 
+	"Home": "Trang chủ",
+	"Explore": "Khám phá",
+	"Messages": "Tin nhắn",
+	"Profile": "Hồ sơ",
+
+	"CreatePostPlaceholder" : "Bạn đang nghĩ gì?",
+
+	"SuggestionsLabel" : "Đề xuất",
+
+	"ShowMore": "Nhiều hơn",
+	"ShowLess": "Ít hơn",
+
+	"Sponsored" : "Được tài trợ",
+    "Suggested" : "Được đề xuất",
+
+	"MutualFollowing": "following chung",
+	"SameInterests": "Chung sở thích",
+
+	"days": "ngày",
+	"hrs": "tiếng",
+	"Following": "Đang theo dõi",
+	"Follow": "Theo dõi",
+
     "STT": "STT",
     "Edit": "Sửa",
     "Delete": "Xóa",

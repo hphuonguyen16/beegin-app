@@ -29,6 +29,7 @@ import { FaCompass, FaRegCompass } from 'react-icons/fa'
 import { BiSolidMessageSquareDetail } from 'react-icons/bi'
 import { BiMessageSquareDetail } from 'react-icons/bi'
 import { AiOutlineHome, AiFillHome } from 'react-icons/ai'
+import useTranslation from 'next-translate/useTranslation'
 
 const poppins = Poppins({
   weight: '400',
@@ -41,38 +42,6 @@ const metadata = {
   title: 'Beegin',
   description: 'A new next generation social media application! Where your stories beegin.'
 }
-const menuItems = [
-  {
-    icon: <AiOutlineHome />,
-    iconActive: <AiFillHome />,
-    label: 'Home',
-    path: '/home'
-  },
-  {
-    icon: <FaRegCompass />,
-    iconActive: <FaCompass />,
-    label: 'Explore',
-    path: '/explore'
-  },
-  {
-    icon: <BiMessageSquareDetail />,
-    iconActive: <BiSolidMessageSquareDetail />,
-    label: 'Messages',
-    path: '/messages'
-  },
-  {
-    icon: <FaRegCircleUser />,
-    iconActive: <FaCircleUser />,
-    label: 'Profile',
-    path: '/profile'
-  }
-  // {
-  //   icon: <SettingsOutlined />,
-  //   iconActive: <SettingsRoundedIcon />,
-  //   label: 'Settings',
-  //   path: '/settings'
-  // }
-]
 
 const menuAdminItems = [
   {
@@ -143,6 +112,42 @@ export default function RootLayout({ children, session }: { children: React.Reac
   const pathname = usePathname()
   const role = localStorage.getItem('role')
   const noLayoutPaths = ['/login', '/register', '/register/business', '/register/personal', '/forgot-password']
+
+  const { t } = useTranslation("common");
+
+
+  const menuItems = [
+    {
+      icon: <AiOutlineHome />,
+      iconActive: <AiFillHome />,
+      label: t('Home'),
+      path: '/home'
+    },
+    {
+      icon: <FaRegCompass />,
+      iconActive: <FaCompass />,
+      label: t('Explore'),
+      path: '/explore'
+    },
+    {
+      icon: <BiMessageSquareDetail />,
+      iconActive: <BiSolidMessageSquareDetail />,
+      label: t('Messages'),
+      path: '/messages'
+    },
+    {
+      icon: <FaRegCircleUser />,
+      iconActive: <FaCircleUser />,
+      label: t('Profile'),
+      path: '/profile'
+    }
+    // {
+    //   icon: <SettingsOutlined />,
+    //   iconActive: <SettingsRoundedIcon />,
+    //   label: 'Settings',
+    //   path: '/settings'
+    // }
+  ]
 
   return (
     <html lang='en'>

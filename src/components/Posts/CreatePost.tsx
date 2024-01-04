@@ -21,6 +21,7 @@ import { usePathname } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Video from 'next-video'
 import getFileType from '@/utils/getFileType'
+import useTranslation from 'next-translate/useTranslation'
 
 interface NewPostProps {
   content: string | ''
@@ -110,6 +111,7 @@ interface CreatePostProps {
 }
 
 const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostProps) => {
+  const { t } = useTranslation('common')
   const isMobile = useResponsive('down', 'sm')
   const { user } = useAuth()
   const [categories, setCategories] = useState<Category[]>([])
@@ -237,7 +239,7 @@ const CreatePost = ({ open, setOpen, newPost, setNewPost, repost }: CreatePostPr
             <TextField
               id='outlined-multiline-static'
               multiline
-              placeholder="What's on your mind?"
+              placeholder={t("What's on your mind?")}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               sx={{

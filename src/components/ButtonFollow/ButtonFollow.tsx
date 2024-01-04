@@ -12,21 +12,21 @@ const ButtonFollow = (props: any) => {
       const url = UrlConfig.me.isFollowing.replace(':id', id)
       const response = await axiosPrivate.get(url)
       setFollow(response.data.data)
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const followingOtherUser = async (id: any) => {
     try {
       const url = UrlConfig.me.followingOtherUser
       await axiosPrivate.post(url, { id: id })
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const unfollow = async (id: any) => {
     try {
       const url = UrlConfig.me.unfollow.replace(':id', id)
       await axiosPrivate.delete(url)
-    } catch (err) {}
+    } catch (err) { }
   }
 
   useEffect(() => {
