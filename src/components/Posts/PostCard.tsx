@@ -537,7 +537,8 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} repost={postParent} />}
       {openReportModal && (
         <RootModal
-          variant='Delete'
+          variant='Primary'
+          title='Report'
           handleOk={handleReportPost}
           handleClose={() => setOpenReportModal(false)}
           open={openReportModal}
