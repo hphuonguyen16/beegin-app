@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { TextField, InputAdornment, FormControl, Box, Stack, Button, Typography } from '@mui/material'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import { useRouter } from 'next/navigation'
+import useTranslation from 'next-translate/useTranslation'
 
 export default function SearchTextbox() {
+  const { t } = useTranslation('common');
   const [searchText, setSearchText] = useState<string>('')
   const router = useRouter()
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -25,7 +27,7 @@ export default function SearchTextbox() {
       <TextField
         size='small'
         variant='outlined'
-        placeholder='Search'
+        placeholder={t('Search')}
         sx={{
           marginLeft: '15px',
           '& .MuiInputBase-root': {

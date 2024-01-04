@@ -49,6 +49,7 @@ const UrlConfig: any = {
     checkLikePost: (postId: string) => `/api/v1/posts/${postId}/like`,
     getPostByUserId: (userId: string) => `/api/v1/posts/getPostByUserId/${userId}`,
     deletePost: (postId: string) => `/api/v1/posts/${postId}`,
+    reportPost: `/api/v1/reports/createReport`,
     update: (postId: string | undefined) => `/api/v1/posts/${postId}`,
     getUsersLikedPost: (postId: string) => `/api/v1/posts/${postId}/users/like`,
     getUsersSharedPost: (postId: string) => `/api/v1/posts/${postId}/users/share`

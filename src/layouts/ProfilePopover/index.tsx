@@ -51,6 +51,7 @@ import Link from 'next/link'
 // configs
 import UrlConfig from '@/config/urlConfig'
 import { useAuth } from '@/context/AuthContext'
+import useSetLanguage from '@/hooks/useSetLanguage'
 
 //----------------------------------------------------------------
 
@@ -100,6 +101,7 @@ const ProfilePopover = () => {
   const router = useRouter()
   const [profileImage, setProfileImage] = useState<any>(null)
 
+  const setLanguage = useSetLanguage();
   const containerRef = useRef(null)
   const [anchorEl, setAnchorEl] = useState(null)
 

@@ -9,6 +9,29 @@
 	"401": "You are not authorized to access this page",
 	"404": "This page does not exist",
 
+	"Home": "Home",
+	"Explore": "Explore",
+	"Messages": "Messages",
+	"Profile": "Profile",
+
+	"CreatePostPlaceholder" : "What's on your mind?",
+
+	"SuggestionsLabel" : "Suggestions For You",
+
+	"ShowMore": "Show More",
+	"ShowLess": "Show Less",
+
+	"Sponsored" : "Sponsored",
+	"Suggested": "Suggested",
+
+	"MutualFollowing": "mutual followings",
+	"SameInterests": "Same interests",
+
+	"days": "days",
+	"hrs": "hrs",
+	"Following": "Following",
+	"Follow": "Follow",
+
 	"STT": "No.",
     "Edit": "Edit",
     "Delete": "Delete",

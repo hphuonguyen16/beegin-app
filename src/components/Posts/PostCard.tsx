@@ -1,5 +1,5 @@
 'use client'
-import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton, Chip } from '@mui/material'
+import { Avatar, Box, Stack, Typography, Button, Modal, Grid, IconButton, Chip, TextField, OutlinedInput } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 import React, { useEffect, useRef, useState } from 'react'
@@ -38,6 +38,7 @@ import Snackbar from '@/components/common/Snackbar'
 import HeartIcon from '@/components/common/HeartIcon'
 import VerifiedRoundedIcon from '@mui/icons-material/VerifiedRounded'
 import BusinessAvatar from '../common/Avatar/BusinessAvatar'
+import useTranslation from 'next-translate/useTranslation'
 
 const ImageContainerStyled = styled('div')<{ number: number }>((props) => ({
   display: props.number === 0 ? 'none' : 'grid',
@@ -91,6 +92,7 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
+  const { t } = useTranslation('common')
   const [newPost, setNewPost] = useState<Post | null>(null)
   const { postsState, postsDispatch } = usePosts()
   const router = useRouter()
@@ -132,7 +134,7 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         })
         await axiosPrivate.delete(UrlConfig.posts.unlikePost(post._id))
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   const openPostDetail = async () => {
@@ -157,15 +159,26 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
       } else {
         router.push(`/profile/${post.user._id}`)
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   const { snack, setSnack } = useSnackbar()
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
+  const [reason, setReason] = useState('');
+  const [openReportModal, setOpenReportModal] = useState(false)
 
   const onDeleteBtnClick = () => {
     setOpenDeleteModal(true)
+  }
+
+  async function handleReportPost() {
+    const result = await axiosPrivate.post(UrlConfig.posts.reportPost, { post: post._id, reason: reason })
+
+    if (result) {
+      setOpenReportModal(false)
+      setSnack({ open: true, message: 'Reported post successfully', type: 'success' })
+    }
   }
 
   async function handleDeletePost() {
@@ -369,10 +382,10 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
                 {timeSince(new Date(post.createdAt))}
               </Typography>
               {post.type === 'advertisement' && (
-                <Chip label='Sponsored' variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
+                <Chip label={t('Sponsored')} variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
               )}
               {post.type === 'suggested' && (
-                <Chip label='Suggested' variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
+                <Chip label={t('Suggested')} variant='outlined' color='secondary' sx={{ marginLeft: '15px' }} />
               )}
             </Stack>
             <Popover
@@ -380,10 +393,10 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
               items={
                 user?._id === post.user._id
                   ? [
-                      { icon: <FiEdit3 />, content: 'Edit', onClickFunc: () => setOpenEditModal(true) },
-                      { icon: <FaRegTrashAlt />, content: 'Delete', color: '#FF4842', onClickFunc: onDeleteBtnClick }
-                    ]
-                  : [{ icon: <FaRegFaceAngry />, content: 'Report' }]
+                    { icon: <FiEdit3 />, content: 'Edit', onClickFunc: () => setOpenEditModal(true) },
+                    { icon: <FaRegTrashAlt />, content: 'Delete', color: '#FF4842', onClickFunc: onDeleteBtnClick }
+                  ]
+                  : [{ icon: <FaRegFaceAngry />, content: 'Report', onClickFunc: () => setOpenReportModal(true) }]
               }
             />
           </Stack>
@@ -522,6 +535,34 @@ const PostCard = ({ post, isRepost, postParent }: PostCardProps) => {
         </RootModal>
       )}
       {openEditModal && <EditPost open={openEditModal} setOpen={setOpenEditModal} post={post} repost={postParent} />}
+      {openReportModal && (
+        <RootModal
+          variant='Delete'
+          handleOk={handleReportPost}
+          handleClose={() => setOpenReportModal(false)}
+          open={openReportModal}
+          closeOnly={false}
+          height={'auto'}
+          width='500px'
+        >
+          <div>What's wrong with this post?
+            <TextField
+              size='small'
+              variant='outlined' multiline
+              value={reason}
+              onChange={(e: any) => setReason(e.target.value)}
+              sx={{
+                '& .MuiInputBase-root': {
+                  overflow: 'auto'
+                },
+                marginTop: '20px',
+                marginBottom: '10px',
+                width: '100%',
+              }}
+            />
+          </div>
+        </RootModal>
+      )}
     </>
   )
 }

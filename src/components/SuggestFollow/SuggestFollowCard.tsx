@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { Card, CardHeader, Avatar, Button, Box, Typography } from '@mui/material'
 import ButtonFollow from '../ButtonFollow/ButtonFollow'
 import { useRouter } from 'next/navigation'
+import useTranslation from 'next-translate/useTranslation'
 
 export default function SuggestFollowCard(props: any) {
+  const { t } = useTranslation('common')
   const { firstname, lastname, avatar, slug } = props.user.user.profile
   const count = props.user.count ? props.user.count : null
   const router = useRouter()
@@ -37,7 +39,7 @@ export default function SuggestFollowCard(props: any) {
             </Typography>
           </>
         }
-        subheader={count ? `${count} mutual following` : `Same interests`}
+        subheader={count ? `${count} ${t('MutualFollowing')}` : `${t('SameInterests')}`}
         action={
           <ButtonFollow
             userId={props.user.user._id}
