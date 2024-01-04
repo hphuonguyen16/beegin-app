@@ -18,6 +18,7 @@ const useRefreshToken = () => {
     } catch (err: any) {
       if (err.response.status === 401 || err.response.status === 403) {
         router.push('/login')
+        //router.push('/401')
         localStorage.removeItem('persist')
       }
     }

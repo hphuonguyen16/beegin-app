@@ -34,6 +34,10 @@ const useAxiosPrivate = () => {
           const newAccessToken = await refresh()
           prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
           return axiosPrivate(prevRequest)
+        } else if (error?.response?.status === 404) {
+          router.push('/404')
+        } else if (error?.response?.status === 500) {
+          router.push('/500')
         }
         return Promise.reject(error)
       }
